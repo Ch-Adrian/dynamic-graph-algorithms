@@ -13,4 +13,10 @@ public class Node {
         this.key = key;
     }
 
+    @Override
+    public String toString() {
+        return "Node{" +
+                "key=" + key +
+                '}';
+    }
 }

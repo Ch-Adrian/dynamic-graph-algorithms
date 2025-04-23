@@ -114,10 +114,88 @@ public class TestSplayTree {
     }
 
     @Test
+    public void testGetRoot(){
+        assertEquals(root1, SplayTree.getRootNode(root1));
+        SplayTree.leftRotate(root1.right.right);
+        SplayTree.leftRotate(root1.right);
+        assertEquals(new Pair<>(2,2), SplayTree.getRootNode(root1).key);
+        assertEquals(new Pair<>(2,2), SplayTree.getRootNode(root1.right).key);
+    }
+
+    public void dfsNode(Node root){
+        System.out.println(root);
+        if(root.left != null) {
+            System.out.println("left: ");
+            dfsNode(root.left);
+        }
+        if(root.right != null) {
+            System.out.println("right: ");
+            dfsNode(root.right);
+        }
+        System.out.println("end");
+    }
+
+    @Test
     public void testSplay(){
         SplayTree.splay(root1.right.right.right.right.right.right.right);
+        assertEquals(new Pair<>(2,4), root1.parent.key);
+        assertNull(root1.left);
+        assertEquals(new Pair<>(1,2), root1.right.key);
         root1 = SplayTree.getRootNode(root1);
+        assertEquals(new Pair<>(1,1), root1.left.key);
+        assertNull(root1.parent);
+        assertEquals(new Pair<>(4,4), root1.right.key);
+        assertEquals(new Pair<>(2,4), root1.left.parent.key);
+        assertEquals(new Pair<>(1,1), root1.left.right.parent.key);
+    }
 
+    @Test
+    public void testDetach(){
+        SplayTree.splay(root1.right.right.right.right.right.right.right);
+        SplayTree.splay(root1.right.right.right.right);
+        Node rightTreeRoot = SplayTree.getRootNode(root1);
+        Node leftTreeRoot = SplayTree.detachNodeFromTree(root1);
+        assertEquals(new Pair<>(3,3), rightTreeRoot.key);
+        assertEquals(new Pair<>(1,1), leftTreeRoot.key);
+        assertNull(rightTreeRoot.left);
+        assertNull(leftTreeRoot.parent);
+    }
+
+    @Test
+    public void testPredecessor(){
+        SplayTree.splay(root1.right.right.right.right.right.right.right);
+        assertEquals(new Pair<>(2,2), SplayTree.predecessor(SplayTree.getRootNode(root1)).key);
+    }
+
+    @Test
+    public void testSuccessor(){
+        SplayTree.splay(root1.right.right.right.right.right.right.right);
+        SplayTree.splay(root1.right.right.right.right);
+        assertEquals(new Pair<>(3,2), SplayTree.successor(SplayTree.getRootNode(root1)).key);
+    }
+
+    @Test
+    public void testFirstNode(){
+        SplayTree.splay(root1.right.right.right.right.right.right.right);
+        SplayTree.splay(root1.right.right.right.right);
+        assertEquals(new Pair<>(1,1), SplayTree.firstNode(root1).key);
+    }
+
+    @Test
+    public void testLastNode(){
+        SplayTree.splay(root1.right.right.right.right.right.right.right);
+        SplayTree.splay(root1.right.right.right.right);
+        assertEquals(new Pair<>(1,1), SplayTree.lastNode(root1).key);
+    }
+
+    @Test
+    public void testRemoveNode(){
+        SplayTree.splay(root1.right.right.right.right.right.right.right);
+        SplayTree.splay(root1.right.right.right.right);
+        Node root = SplayTree.getRootNode(root1);
+        SplayTree.removeNode(root1);
+        assertEquals(new Pair<>(1,2), root.left.key);
+        assertEquals(new Pair<>(3,3), root1.right.parent.key);
     }
 
 }
