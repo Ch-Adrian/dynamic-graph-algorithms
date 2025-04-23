@@ -102,6 +102,25 @@ public class SplayTree {
         return treeNode;
     }
 
+    static Pair<Node, Node> split(Node treeNode){
+        /* Splits tree where treeNode is the last node in sequence. */
+        if(treeNode == null) return null;
+        Node succ = SplayTree.successor(treeNode);
+        if(succ == null) return new Pair<>(treeNode, succ);
+
+        SplayTree.splay(succ);
+        Node leftSubTree = SplayTree.detachNodeFromTree(succ.left);
+        return new Pair<>(leftSubTree, succ);
+    }
+
+    static Node join(Node leftTree, Node rightTree){
+        Node leftMostOfLeftTree = SplayTree.lastNode(leftTree);
+        SplayTree.splay(leftMostOfLeftTree);
+        assert(leftMostOfLeftTree.right == null);
+        leftMostOfLeftTree.right = rightTree;
+        return leftMostOfLeftTree;
+    }
+
     static Node getRootNode(Node treeNode){
         if(treeNode == null) return null;
         if(treeNode.parent == null) return treeNode;

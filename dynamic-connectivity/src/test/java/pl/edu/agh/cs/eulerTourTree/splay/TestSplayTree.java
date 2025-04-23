@@ -198,4 +198,19 @@ public class TestSplayTree {
         assertEquals(new Pair<>(3,3), root1.right.parent.key);
     }
 
+    @Test
+    public void testSplit(){
+        Pair<Node, Node> trees = SplayTree.split(root1.right.right.right.right.right.right.right);
+        assertEquals(new Pair<>(1,1), trees.getFirst().key);
+        assertEquals(new Pair<>(4,4), trees.getSecond().key);
+    }
+
+    @Test
+    public void testJoin(){
+        Pair<Node, Node> trees = SplayTree.split(root1.right.right.right.right.right.right.right);
+        Node concatenatedTree = SplayTree.join(trees.getFirst(), trees.getSecond());
+        assertEquals(new Pair<>(2,4), concatenatedTree.key);
+        dfsNode(concatenatedTree);
+    }
+
 }
