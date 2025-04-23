@@ -77,11 +77,113 @@ public class SplayTree {
                     }
                 }
             }
-
-
-
         }
-
-
     }
+
+    static Node insertToRight(Node treeNode, Pair<Integer, Integer> key) {
+        Node newNode = new Node(key);
+        if (treeNode == null) return newNode;
+
+        for (SplayTree.splay(treeNode); treeNode.right != null; treeNode = treeNode.right) ;
+        treeNode.right = newNode;
+        newNode.parent = treeNode;
+        return newNode;
+    }
+
+    static Node detachNodeFromTree(Node treeNode){
+        if(treeNode == null || treeNode.parent == null) return treeNode;
+        if(treeNode.parent.left == treeNode){
+            treeNode.parent.left = null;
+        } else {
+            treeNode.parent.right = null;
+        }
+        treeNode.parent = null;
+        return treeNode;
+    }
+
+    static Node getRootNode(Node treeNode){
+        if(treeNode == null) return null;
+        if(treeNode.parent == null) return treeNode;
+        for(treeNode = treeNode.parent; treeNode.parent != null; treeNode = treeNode.parent);
+        return treeNode;
+    }
+
+    static Node predecessor(Node treeNode){
+        if(treeNode == null) return null;
+        Node root = SplayTree.getRootNode(treeNode);
+        SplayTree.splay(treeNode);
+        if (treeNode.left == null){
+            return null;
+        }
+        for(treeNode = treeNode.left; treeNode.right != null; treeNode = treeNode.right);
+        SplayTree.splay(root);
+        return treeNode;
+    }
+
+    static Node successor(Node treeNode){
+        if(treeNode == null) return null;
+        Node root = SplayTree.getRootNode(treeNode);
+        SplayTree.splay(treeNode);
+        if (treeNode.right == null){
+            return null;
+        }
+        for(treeNode = treeNode.right; treeNode.left != null; treeNode = treeNode.left);
+        SplayTree.splay(root);
+        return treeNode;
+    }
+
+    static Node firstNode(Node treeNode){
+        if(treeNode == null) return null;
+        Node root = SplayTree.getRootNode(treeNode);
+        for(; root.left != null; root = root.left);
+        return root;
+    }
+
+    static Node lastNode(Node treeNode){
+        if(treeNode == null) return null;
+        Node root = SplayTree.getRootNode(treeNode);
+        for(; root.right != null; root = root.right);
+        return root;
+    }
+
+    static void removeNode(Node treeNode){
+        Node parent = treeNode.parent;
+        treeNode.parent = null;
+
+        if(treeNode.left == null && treeNode.right == null){
+            if(parent.right == treeNode){
+                parent.right = null;
+            } else {
+                parent.left = null;
+            }
+            return;
+        } else if(treeNode.right == null){
+            if(parent.right == treeNode){
+                parent.right = treeNode.left;
+            } else {
+                parent.left = treeNode.left;
+            }
+            treeNode.left.parent = parent;
+        } else if(treeNode.left == null){
+            if(parent.right == treeNode){
+                parent.right = treeNode.right;
+            } else {
+                parent.left = treeNode.right;
+            }
+            treeNode.right.parent = parent;
+        } else {
+            Node pred = SplayTree.predecessor(treeNode);
+            if(pred.right == null)
+                pred.right = treeNode.right;
+            else
+                throw new RuntimeException("Right child should be null.");
+            if(parent.right == treeNode){
+                parent.right = treeNode.left;
+            } else {
+                parent.left = treeNode.left;
+            }
+            treeNode.left.parent = parent;
+        }
+    }
+
 }
