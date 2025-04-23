@@ -5,6 +5,7 @@ import pl.edu.agh.cs.common.Pair;
 public class SplayTree {
 
     static void rightRotate(Node node){
+        if(node.parent == null) return;
         Node parent = node.parent;
         Node grandParent = parent.parent;
 

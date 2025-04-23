@@ -1,15 +1,13 @@
 package pl.edu.agh.cs.common;
 
 
-import org.junit.Test;
-
-
+import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestPair {
 
     @Test
-    public void testPair() {
+    public void testElements() {
         Pair<Integer, Integer> pair = new Pair<>(1, 2);
         assertEquals(1, (int) pair.getFirst());
         assertEquals(2, (int) pair.getSecond());
