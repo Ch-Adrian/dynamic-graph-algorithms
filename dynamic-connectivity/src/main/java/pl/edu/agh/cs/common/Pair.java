@@ -2,7 +2,7 @@ package pl.edu.agh.cs.common;
 
 import java.util.Objects;
 
-public class Pair<T1, T2> implements Comparable {
+public class Pair<T1, T2> {
     private T1 first;
     private T2 second;
 
