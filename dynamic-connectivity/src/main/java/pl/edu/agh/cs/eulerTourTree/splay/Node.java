@@ -8,9 +8,11 @@ public class Node {
     public Node left;
     public Node right;
     public Node parent;
+    public int sizeOfTree;
 
     public Node(Pair<Integer, Integer> key) {
         this.key = key;
+        this.sizeOfTree = 1;
     }
 
     @Override

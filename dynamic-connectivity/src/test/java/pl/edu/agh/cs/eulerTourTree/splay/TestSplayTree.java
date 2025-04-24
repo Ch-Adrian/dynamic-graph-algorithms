@@ -213,4 +213,33 @@ public class TestSplayTree {
         dfsNode(concatenatedTree);
     }
 
+    @Test
+    public void testGetSize(){
+        assertEquals(13, SplayTree.getSizeOfTree(root1));
+        SplayTree.splay(root1.right.right.right.right.right.right.right);
+        assertEquals(13, SplayTree.getSizeOfTree(root1));
+        assertEquals(7, root1.sizeOfTree);
+        assertEquals(5, root1.parent.right.sizeOfTree);
+
+        SplayTree.splay(root1.right.right.right.right);
+        assertEquals(13, SplayTree.getSizeOfTree(root1));
+        assertEquals(4, root1.sizeOfTree);
+        assertEquals(2, root1.parent.right.left.sizeOfTree);
+        assertEquals(8, root1.parent.right.sizeOfTree);
+
+        SplayTree.insertToRight(SplayTree.getRootNode(root1), new Pair<>(8,8));
+        assertEquals(14, root1.parent.sizeOfTree);
+        SplayTree.removeNode(SplayTree.lastNode(SplayTree.getRootNode(root1)));
+        assertEquals(13, root1.parent.sizeOfTree);
+
+        Node rightTree = root1.parent;
+        SplayTree.detachNodeFromTree(root1);
+        assertEquals(4, root1.sizeOfTree);
+        assertEquals(9, rightTree.sizeOfTree);
+
+        SplayTree.join(root1, rightTree);
+        assertEquals(13, SplayTree.getSizeOfTree(root1));
+
+    }
+
 }

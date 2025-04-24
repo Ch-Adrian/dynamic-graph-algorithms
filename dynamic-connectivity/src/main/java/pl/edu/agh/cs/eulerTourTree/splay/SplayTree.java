@@ -4,6 +4,13 @@ import pl.edu.agh.cs.common.Pair;
 
 public class SplayTree {
 
+    private static void updateSize(Node treeNode){
+        int size = 0;
+        if(treeNode.left != null) size += treeNode.left.sizeOfTree;
+        if(treeNode.right != null) size += treeNode.right.sizeOfTree;
+        treeNode.sizeOfTree = size + 1;
+    }
+
     public static void rightRotate(Node node){
         if(node.parent == null) return;
         Node parent = node.parent;
@@ -27,6 +34,8 @@ public class SplayTree {
         }
         node.right = parent;
         parent.parent = node;
+        updateSize(parent);
+        updateSize(node);
     }
 
     public static void leftRotate(Node node){
@@ -51,6 +60,8 @@ public class SplayTree {
         }
         node.left = parent;
         parent.parent = node;
+        updateSize(parent);
+        updateSize(node);
     }
 
     public static void splay(Node node){
@@ -85,7 +96,8 @@ public class SplayTree {
         Node newNode = new Node(key);
         if (treeNode == null) return newNode;
 
-        for (SplayTree.splay(treeNode); treeNode.right != null; treeNode = treeNode.right) ;
+        for (SplayTree.splay(treeNode); treeNode.right != null; treeNode.sizeOfTree++, treeNode = treeNode.right);
+        treeNode.sizeOfTree++;
         treeNode.right = newNode;
         newNode.parent = treeNode;
         return newNode;
@@ -98,6 +110,7 @@ public class SplayTree {
         } else {
             treeNode.parent.right = null;
         }
+        updateSize(treeNode.parent);
         treeNode.parent = null;
         return treeNode;
     }
@@ -118,6 +131,7 @@ public class SplayTree {
         SplayTree.splay(leftMostOfLeftTree);
         assert(leftMostOfLeftTree.right == null);
         leftMostOfLeftTree.right = SplayTree.getRootNode(rightTree);
+        updateSize(leftMostOfLeftTree);
         return leftMostOfLeftTree;
     }
 
@@ -176,6 +190,10 @@ public class SplayTree {
                 } else {
                     parent.left = null;
                 }
+                while(parent != null){
+                    updateSize(parent);
+                    parent = parent.parent;
+                }
                 treeNode.parent = null;
             }
             return;
@@ -186,6 +204,10 @@ public class SplayTree {
                 } else {
                     parent.left = treeNode.left;
                 }
+                while(parent != null){
+                    updateSize(parent);
+                    parent = parent.parent;
+                }
                 treeNode.parent = null;
             }
             treeNode.left.parent = parent;
@@ -195,6 +217,10 @@ public class SplayTree {
                     parent.right = treeNode.right;
                 } else {
                     parent.left = treeNode.right;
+                }
+                while(parent != null){
+                    updateSize(parent);
+                    parent = parent.parent;
                 }
                 treeNode.parent = null;
             }
@@ -213,9 +239,17 @@ public class SplayTree {
                 } else {
                     parent.left = treeNode.left;
                 }
+                while(parent != null){
+                    updateSize(parent);
+                    parent = parent.parent;
+                }
                 treeNode.parent = null;
             }
             treeNode.left.parent = parent;
         }
+    }
+
+    public static int getSizeOfTree(Node treeNode){
+        return SplayTree.getRootNode(treeNode).sizeOfTree;
     }
 }

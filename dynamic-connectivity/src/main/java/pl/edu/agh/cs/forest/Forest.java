@@ -1,4 +1,180 @@
 package pl.edu.agh.cs.forest;
 
+import pl.edu.agh.cs.DynamicConnectivity;
+import pl.edu.agh.cs.common.Pair;
+import pl.edu.agh.cs.eulerTourTree.splay.Node;
+
+import java.util.*;
+
 public class Forest {
+
+    private Map<Integer, LinkedHashSet<Integer>> nonTreeEdges;
+    private Map<Integer, Integer> vertexIdToTkey;
+    private Map<Integer, Tree> tkeyToTree;
+    private ArrayList<Tree> trees;
+    private int level;
+    private int treeCounter = 0;
+    private DynamicConnectivity dynamicConnectivity;
+
+    public Forest(int level, DynamicConnectivity dcAlgo) { this.level = level;  this.dynamicConnectivity = dcAlgo; }
+
+    private Integer createNewTree(Node treeNode){
+        Tree t = new Tree(treeCounter, treeNode);
+        this.trees.add(t);
+        this.tkeyToTree.put(treeCounter, t);
+        treeCounter++;
+        return treeCounter-1;
+    }
+
+    public void createNewTree(int u, int v){
+        Tree t = new Tree(treeCounter);
+        t.addTreeEdge(u, v);
+        this.trees.add(t);
+        this.vertexIdToTkey.put(u, treeCounter);
+        this.vertexIdToTkey.put(v, treeCounter);
+        this.tkeyToTree.put(treeCounter, t);
+        treeCounter++;
+    }
+
+    public void addTreeEdge(int u, int v) throws Exception {
+        Integer tkeyU = vertexIdToTkey.get(u);
+        Integer tkeyV = vertexIdToTkey.get(v);
+        if(tkeyU != null && tkeyV != null){
+            if(Objects.equals(tkeyU, tkeyV)){
+                throw new Exception("This edge should be a non tree edge!");
+            } else {
+                tkeyToTree.get(tkeyU).linkTwoTreesWithEdge(u, v, tkeyToTree.get(tkeyV));
+                for(Integer treeVertex: this.tkeyToTree.get(tkeyU).getVertices()){
+                    this.vertexIdToTkey.put(treeVertex, tkeyU); //TODO: to optimize
+                }
+            }
+        } else if(tkeyU != null){
+            tkeyToTree.get(tkeyU).addTreeEdge(u, v);
+            vertexIdToTkey.put(v, tkeyU);
+        } else if(tkeyV != null){
+            tkeyToTree.get(tkeyV).addTreeEdge(u, v);
+            vertexIdToTkey.put(u, tkeyV);
+        } else {
+            this.createNewTree(u, v);
+        }
+    }
+
+    public void addNonTreeEdge(int u, int v){
+        if(!this.nonTreeEdges.containsKey(u))
+            this.nonTreeEdges.put(u, new LinkedHashSet<>());
+        if(!this.nonTreeEdges.containsKey(v))
+            this.nonTreeEdges.put(v, new LinkedHashSet<>());
+        this.nonTreeEdges.get(u).add(v);
+        this.nonTreeEdges.get(v).add(u);
+    }
+
+    public void deleteNonTreeEdge(int u, int v){
+        if(this.nonTreeEdges.containsKey(u) && this.nonTreeEdges.containsKey(v)){
+            this.nonTreeEdges.get(u).remove(v);
+            this.nonTreeEdges.get(v).remove(u);
+        }
+    }
+
+    public LinkedHashSet<Integer> getNonTreeEdges(int u){
+        return this.nonTreeEdges.get(u);
+    }
+
+    public Tree getTree(int u) { return tkeyToTree.get(vertexIdToTkey.get(u)); }
+
+    public void deleteTreeEdge(int u, int v){
+        Integer tkeyU = vertexIdToTkey.get(u);
+        Integer tkeyV = vertexIdToTkey.get(v);
+        if(tkeyU != null && tkeyV != null){
+            if(Objects.equals(tkeyU, tkeyV)){
+                Node newTree = tkeyToTree.get(tkeyU).deleteEdge(u, v);
+
+                Integer t = this.createNewTree(newTree);
+                for(Integer treeVertex: this.tkeyToTree.get(t).getVertices()){
+                    this.vertexIdToTkey.put(treeVertex, t); //TODO: to optimize
+                }
+
+            } else {
+                if(Objects.equals(tkeyToTree.get(tkeyU).getRoot(), tkeyToTree.get(tkeyV).getRoot())){
+                    Node newTree = tkeyToTree.get(tkeyU).deleteEdge(u, v);
+
+                    Integer t = this.createNewTree(newTree);
+                    for(Integer treeVertex: this.tkeyToTree.get(t).getVertices()){
+                        this.vertexIdToTkey.put(treeVertex, t); //TODO: to optimize
+                    }
+
+                } else {
+                    throw new Error("Cannot be situation that edge connects two different trees!");
+                }
+            }
+        }
+    }
+
+    public void findReplacementEdge(int v, int w, int level) throws Exception {
+        Tree Tv = this.tkeyToTree.get(vertexIdToTkey.get(v));
+        Tree Tw = this.tkeyToTree.get(vertexIdToTkey.get(w));
+        Tree Tmin;
+        Integer V;
+        if(Tv == null){
+            Tmin = null;
+            V = v;
+        }
+        else if(Tw == null){
+            Tmin = null;
+            V = w;
+        }
+        else if(Tv.getSize() > Tw.getSize()){
+            Tmin = Tw;
+            V = w;
+        } else {
+            Tmin = Tv;
+            V = v;
+        }
+
+        if(Tmin != null){
+            for(Pair<Integer, Integer> edge: Tmin.getEdges()){
+                this.dynamicConnectivity.getForestForLevel(level+1).addTreeEdge(edge.getFirst(), edge.getSecond());
+            }
+            boolean nonTreeEdgeFound = false;
+            Pair<Integer, Integer> nonTreeEdge = null;
+            for(Integer vertex: Tmin.getVertices()){
+                for(Integer nonTreeEdgeEnd: this.dynamicConnectivity.getForestForLevel(level).getNonTreeEdges(vertex)){
+                    if(this.getTree(nonTreeEdgeEnd) != Tmin){
+                        nonTreeEdgeFound = true;
+                        nonTreeEdge = new Pair<>(vertex, nonTreeEdgeEnd);
+                        for(int lvl= 0; lvl < dynamicConnectivity.getAmtOfLevels(); lvl++){
+                            dynamicConnectivity.getForestForLevel(lvl).deleteNonTreeEdge(vertex, nonTreeEdgeEnd);
+                        }
+                        break;
+                    } else {
+                        dynamicConnectivity.getForestForLevel(level+1).addNonTreeEdge(vertex, nonTreeEdgeEnd);
+                    }
+                }
+                if(nonTreeEdgeFound) break;
+            }
+            if(nonTreeEdgeFound){
+                for(int lvl= 0; lvl < dynamicConnectivity.getAmtOfLevels(); lvl++){
+                    dynamicConnectivity.getForestForLevel(lvl).deleteTreeEdge(nonTreeEdge.getFirst(), nonTreeEdge.getSecond());
+                }
+            } else {
+                this.findReplacementEdge(v, w, level-1);
+            }
+        }
+    }
+
+    public boolean checkIfNonTreeEdgeExists(int u, int v){
+        if(this.nonTreeEdges.containsKey(u)){
+            if(this.nonTreeEdges.get(u).contains(v))
+                return true;
+        }
+        return false;
+    }
+
+    public boolean checkIfTreeEdgeExists(int u, int v){
+        Integer tkeyU = vertexIdToTkey.get(u);
+        Integer tkeyV = vertexIdToTkey.get(v);
+        if(tkeyU != null && Objects.equals(tkeyV, tkeyU)){
+            return true;
+        }
+        return false;
+    }
 }

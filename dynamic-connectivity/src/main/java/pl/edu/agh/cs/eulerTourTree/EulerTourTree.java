@@ -15,6 +15,14 @@ public class EulerTourTree {
         keyToNodes = new HashMap<>();
     }
 
+    public Node getSplayRoot(){
+        return splayRoot;
+    }
+
+    public void setSplayRoot(Node treeNode){
+        this.splayRoot = SplayTree.getRootNode(treeNode);
+    }
+
     public Node reRoot(Integer vertex){
         Node newRoot = keyToNodes.get(new Pair<>(vertex, vertex)).getFirst();
         if(Objects.equals(newRoot.key.getFirst(), newRoot.key.getSecond()) &&
@@ -33,16 +41,16 @@ public class EulerTourTree {
         return SplayTree.getRootNode(newRoot);
     }
 
-    public Node link(Integer u, Integer v) {
-        Node rootU = keyToNodes.get(new Pair<>(u, u)).getFirst();
-        Node rootV = keyToNodes.get(new Pair<>(v, v)).getFirst();
+    public Node link(Integer internal, Integer external, Node externalNode) {
+        Node rootInternal = keyToNodes.get(new Pair<>(internal, internal)).getFirst();
+        Node rootExternal = SplayTree.getRootNode(externalNode);
 
-        SplayTree.splay(rootU);
-        SplayTree.splay(rootV);
+        SplayTree.splay(rootInternal);
+        SplayTree.splay(rootExternal);
 
-        SplayTree.join(rootU, rootV);
-        SplayTree.join(rootU, new Node(rootU.key));
-        return SplayTree.getRootNode(rootU);
+        SplayTree.join(rootInternal, rootExternal);
+        SplayTree.join(rootInternal, new Node(rootInternal.key));
+        return SplayTree.getRootNode(rootInternal);
     }
 
     public Pair<Node, Node> cut(Integer u, Integer v) {
@@ -149,5 +157,16 @@ public class EulerTourTree {
         return listOfEdges;
     }
 
+    public Set<Integer> getVertices(){
+        Set<Integer> listOfVertices = new HashSet<>();
+        for(Pair<Integer, Integer> edge: keyToNodes.keySet()){
+            listOfVertices.add(edge.getFirst());
+        }
+        return listOfVertices;
+    }
+
+    public int getSizeOfTree(){
+        return SplayTree.getSizeOfTree(splayRoot);
+    }
 
 }

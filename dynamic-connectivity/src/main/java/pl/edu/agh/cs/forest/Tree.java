@@ -5,6 +5,7 @@ import pl.edu.agh.cs.eulerTourTree.EulerTourTree;
 import pl.edu.agh.cs.eulerTourTree.splay.Node;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 public class Tree {
 
@@ -13,10 +14,21 @@ public class Tree {
 
     public Tree(Integer key) {
         this.Tkey = key;
+        this.eulerTourTree = new EulerTourTree();
+    }
+
+    public Tree(Integer key, Node treeNode) {
+        this.Tkey = key;
+        this.eulerTourTree = new EulerTourTree();
+        this.eulerTourTree.setSplayRoot(treeNode);
     }
 
     public Integer getTkey() {
         return Tkey;
+    }
+
+    public void linkTwoTreesWithEdge(int internalVertexId, int externalVertexId, Tree externalTree){
+        eulerTourTree.link(internalVertexId, externalVertexId, externalTree.eulerTourTree.getSplayRoot());
     }
 
     public void addTreeEdge(int u, int v){
@@ -36,8 +48,12 @@ public class Tree {
         return eulerTourTree.getEdges();
     }
 
-    public Integer getSize() {
+    public Set<Integer> getVertices(){
+        return eulerTourTree.getVertices();
+    }
 
+    public Integer getSize() {
+        return eulerTourTree.getSizeOfTree();
     }
 
 
