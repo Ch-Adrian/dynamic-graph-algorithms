@@ -4,10 +4,10 @@ import pl.edu.agh.cs.common.Pair;
 
 public class Node {
 
-    Pair<Integer, Integer> key;
-    Node left;
-    Node right;
-    Node parent;
+    public Pair<Integer, Integer> key;
+    public Node left;
+    public Node right;
+    public Node parent;
 
     public Node(Pair<Integer, Integer> key) {
         this.key = key;

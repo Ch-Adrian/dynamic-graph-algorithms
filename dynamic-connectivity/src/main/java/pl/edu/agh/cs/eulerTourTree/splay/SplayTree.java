@@ -4,7 +4,7 @@ import pl.edu.agh.cs.common.Pair;
 
 public class SplayTree {
 
-    static void rightRotate(Node node){
+    public static void rightRotate(Node node){
         if(node.parent == null) return;
         Node parent = node.parent;
         Node grandParent = parent.parent;
@@ -29,7 +29,7 @@ public class SplayTree {
         parent.parent = node;
     }
 
-    static void leftRotate(Node node){
+    public static void leftRotate(Node node){
         Node parent = node.parent;
         Node grandParent = parent.parent;
 
@@ -53,7 +53,7 @@ public class SplayTree {
         parent.parent = node;
     }
 
-    static void splay(Node node){
+    public static void splay(Node node){
 
         if(node == null) return;
         while(node.parent != null){
@@ -81,7 +81,7 @@ public class SplayTree {
         }
     }
 
-    static Node insertToRight(Node treeNode, Pair<Integer, Integer> key) {
+    public static Node insertToRight(Node treeNode, Pair<Integer, Integer> key) {
         Node newNode = new Node(key);
         if (treeNode == null) return newNode;
 
@@ -91,7 +91,7 @@ public class SplayTree {
         return newNode;
     }
 
-    static Node detachNodeFromTree(Node treeNode){
+    public static Node detachNodeFromTree(Node treeNode){
         if(treeNode == null || treeNode.parent == null) return treeNode;
         if(treeNode.parent.left == treeNode){
             treeNode.parent.left = null;
@@ -102,7 +102,7 @@ public class SplayTree {
         return treeNode;
     }
 
-    static Pair<Node, Node> split(Node treeNode){
+    public static Pair<Node, Node> split(Node treeNode){
         /* Splits tree where treeNode is the last node in sequence. */
         if(treeNode == null) return null;
         Node succ = SplayTree.successor(treeNode);
@@ -113,22 +113,22 @@ public class SplayTree {
         return new Pair<>(leftSubTree, succ);
     }
 
-    static Node join(Node leftTree, Node rightTree){
+    public static Node join(Node leftTree, Node rightTree){
         Node leftMostOfLeftTree = SplayTree.lastNode(leftTree);
         SplayTree.splay(leftMostOfLeftTree);
         assert(leftMostOfLeftTree.right == null);
-        leftMostOfLeftTree.right = rightTree;
+        leftMostOfLeftTree.right = SplayTree.getRootNode(rightTree);
         return leftMostOfLeftTree;
     }
 
-    static Node getRootNode(Node treeNode){
+    public static Node getRootNode(Node treeNode){
         if(treeNode == null) return null;
         if(treeNode.parent == null) return treeNode;
         for(treeNode = treeNode.parent; treeNode.parent != null; treeNode = treeNode.parent);
         return treeNode;
     }
 
-    static Node predecessor(Node treeNode){
+    public static Node predecessor(Node treeNode){
         if(treeNode == null) return null;
         Node root = SplayTree.getRootNode(treeNode);
         SplayTree.splay(treeNode);
@@ -140,7 +140,7 @@ public class SplayTree {
         return treeNode;
     }
 
-    static Node successor(Node treeNode){
+    public static Node successor(Node treeNode){
         if(treeNode == null) return null;
         Node root = SplayTree.getRootNode(treeNode);
         SplayTree.splay(treeNode);
@@ -152,58 +152,70 @@ public class SplayTree {
         return treeNode;
     }
 
-    static Node firstNode(Node treeNode){
+    public static Node firstNode(Node treeNode){
         if(treeNode == null) return null;
         Node root = SplayTree.getRootNode(treeNode);
         for(; root.left != null; root = root.left);
         return root;
     }
 
-    static Node lastNode(Node treeNode){
+    public static Node lastNode(Node treeNode){
         if(treeNode == null) return null;
         Node root = SplayTree.getRootNode(treeNode);
         for(; root.right != null; root = root.right);
         return root;
     }
 
-    static void removeNode(Node treeNode){
+    public static void removeNode(Node treeNode){
         Node parent = treeNode.parent;
-        treeNode.parent = null;
 
         if(treeNode.left == null && treeNode.right == null){
-            if(parent.right == treeNode){
-                parent.right = null;
-            } else {
-                parent.left = null;
+            if(parent != null) {
+                if (parent.right == treeNode) {
+                    parent.right = null;
+                } else {
+                    parent.left = null;
+                }
+                treeNode.parent = null;
             }
             return;
         } else if(treeNode.right == null){
-            if(parent.right == treeNode){
-                parent.right = treeNode.left;
-            } else {
-                parent.left = treeNode.left;
+            if(parent != null) {
+                if (parent.right == treeNode) {
+                    parent.right = treeNode.left;
+                } else {
+                    parent.left = treeNode.left;
+                }
+                treeNode.parent = null;
             }
             treeNode.left.parent = parent;
         } else if(treeNode.left == null){
-            if(parent.right == treeNode){
-                parent.right = treeNode.right;
-            } else {
-                parent.left = treeNode.right;
+            if(parent != null) {
+                if (parent.right == treeNode) {
+                    parent.right = treeNode.right;
+                } else {
+                    parent.left = treeNode.right;
+                }
+                treeNode.parent = null;
             }
             treeNode.right.parent = parent;
         } else {
             Node pred = SplayTree.predecessor(treeNode);
-            if(pred.right == null)
+            if(pred.right == null) {
                 pred.right = treeNode.right;
+                treeNode.right.parent = pred;
+            }
             else
                 throw new RuntimeException("Right child should be null.");
-            if(parent.right == treeNode){
-                parent.right = treeNode.left;
-            } else {
-                parent.left = treeNode.left;
+            if(parent != null) {
+                if (parent.right == treeNode) {
+                    parent.right = treeNode.left;
+                } else {
+                    parent.left = treeNode.left;
+                }
+                treeNode.parent = null;
             }
             treeNode.left.parent = parent;
         }
     }
-
 }
