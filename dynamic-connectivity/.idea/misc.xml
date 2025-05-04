@@ -6,6 +6,8 @@
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/../dynamic-mst/pom.xml" />
+        <option value="$PROJECT_DIR$/../dynamic-connectivity-incremental/pom.xml" />
+        <option value="$PROJECT_DIR$/../dynamic-single-source-shortest-path/pom.xml" />
       </list>
     </option>
   </component>
