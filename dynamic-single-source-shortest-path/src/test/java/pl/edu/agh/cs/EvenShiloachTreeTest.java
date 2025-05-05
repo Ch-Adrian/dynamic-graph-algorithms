@@ -50,7 +50,6 @@ public class EvenShiloachTreeTest {
         assertEquals(Integer.valueOf(4), evenShiloachTree.vertices.get(8).getRank());
         assertEquals(Integer.valueOf(5), evenShiloachTree.vertices.get(9).getRank());
 
-
         try {
             evenShiloachTree.deleteEdge(2, 3);
         } catch (Exception e) {
@@ -71,6 +70,84 @@ public class EvenShiloachTreeTest {
         assertEquals(Integer.valueOf(5), evenShiloachTree.vertices.get(7).getRank());
         assertEquals(Integer.valueOf(4), evenShiloachTree.vertices.get(8).getRank());
         assertEquals(Integer.valueOf(6), evenShiloachTree.vertices.get(9).getRank());
+
+    }
+
+    @Test
+    public void overallTest2(){
+        EvenShiloachTree evenShiloachTree = new EvenShiloachTree();
+        ArrayList<Pair<Integer, Integer>> edges = new ArrayList<>();
+        edges.add(new Pair<>(0, 1));
+        edges.add(new Pair<>(0, 2));
+        edges.add(new Pair<>(0, 3));
+        edges.add(new Pair<>(1, 4));
+        edges.add(new Pair<>(1, 5));
+        edges.add(new Pair<>(1, 2));
+        edges.add(new Pair<>(2, 5));
+        edges.add(new Pair<>(3, 5));
+        edges.add(new Pair<>(4, 5));
+
+        for(Pair<Integer, Integer> edge : edges){
+            try {
+                evenShiloachTree.addEdge(edge.getFirst(), edge.getSecond());
+            } catch (Exception e) {
+                System.out.println("Error: " + e.getMessage());
+                return;
+            }
+        }
+
+        evenShiloachTree.changeOperatingMode();
+        try {
+            evenShiloachTree.runBFS();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+
+        assertEquals(Integer.valueOf(0), evenShiloachTree.vertices.get(0).getRank());
+        assertEquals(Integer.valueOf(1), evenShiloachTree.vertices.get(1).getRank());
+        assertEquals(Integer.valueOf(1), evenShiloachTree.vertices.get(2).getRank());
+        assertEquals(Integer.valueOf(1), evenShiloachTree.vertices.get(3).getRank());
+        assertEquals(Integer.valueOf(2), evenShiloachTree.vertices.get(4).getRank());
+        assertEquals(Integer.valueOf(2), evenShiloachTree.vertices.get(5).getRank());
+
+        try {
+            evenShiloachTree.deleteEdge(0, 1);
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+
+        assertEquals(Integer.valueOf(0), evenShiloachTree.vertices.get(0).getRank());
+        assertEquals(Integer.valueOf(2), evenShiloachTree.vertices.get(1).getRank());
+        assertEquals(Integer.valueOf(1), evenShiloachTree.vertices.get(2).getRank());
+        assertEquals(Integer.valueOf(1), evenShiloachTree.vertices.get(3).getRank());
+        assertEquals(Integer.valueOf(3), evenShiloachTree.vertices.get(4).getRank());
+        assertEquals(Integer.valueOf(2), evenShiloachTree.vertices.get(5).getRank());
+
+        try {
+            evenShiloachTree.deleteEdge(0, 2);
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+
+        assertEquals(Integer.valueOf(0), evenShiloachTree.vertices.get(0).getRank());
+        assertEquals(Integer.valueOf(3), evenShiloachTree.vertices.get(1).getRank());
+        assertEquals(Integer.valueOf(3), evenShiloachTree.vertices.get(2).getRank());
+        assertEquals(Integer.valueOf(1), evenShiloachTree.vertices.get(3).getRank());
+        assertEquals(Integer.valueOf(3), evenShiloachTree.vertices.get(4).getRank());
+        assertEquals(Integer.valueOf(2), evenShiloachTree.vertices.get(5).getRank());
+
+        try {
+            evenShiloachTree.deleteEdge(3, 5);
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+
+        assertEquals(Integer.valueOf(0), evenShiloachTree.vertices.get(0).getRank());
+        assertEquals(Integer.valueOf(-1), evenShiloachTree.vertices.get(1).getRank());
+        assertEquals(Integer.valueOf(-1), evenShiloachTree.vertices.get(2).getRank());
+        assertEquals(Integer.valueOf(1), evenShiloachTree.vertices.get(3).getRank());
+        assertEquals(Integer.valueOf(-1), evenShiloachTree.vertices.get(4).getRank());
+        assertEquals(Integer.valueOf(-1), evenShiloachTree.vertices.get(5).getRank());
 
     }
 

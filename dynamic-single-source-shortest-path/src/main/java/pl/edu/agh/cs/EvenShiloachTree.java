@@ -83,7 +83,7 @@ public class EvenShiloachTree extends Graph {
                         v.shiftByTwoRanks();
                     } else v.setUnreachable();
 
-                    if (v.getRank().equals(this.vertices.size()))
+                    if (v.getRank() >= (this.vertices.size()))
                         v.setUnreachable();
 
                     for(Vertex n: v.getNeighbours()){
