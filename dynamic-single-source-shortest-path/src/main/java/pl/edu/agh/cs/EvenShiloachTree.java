@@ -51,7 +51,6 @@ public class EvenShiloachTree extends Graph {
         } else W = vertices.get(w);
 
         this.deleteEdge(V, W);
-
     }
 
     @Override
@@ -59,13 +58,24 @@ public class EvenShiloachTree extends Graph {
         if(!this.operatingMode.equals(OperatingMode.DECREMENTAL))
             throw new Exception("Decremental mode needed!");
 
-        if(!v.getParent().equals(w) && !w.getParent().equals(v) && v.getRank().equals(w.getRank())){
-            super.deleteEdge(v,w);
-        }
-        else {
+        super.deleteEdge(v,w);
+        this.updateRank(v);
+        this.updateRank(w);
+    }
 
+    private void updateRank(Vertex v){
+        if(!v.equals(this.source)){
+            if(v.parentsIsEmpty()){
+                if(!v.friendsIsEmpty()){
+                    v.shiftByOneRank();
+                } else if(!v.childrenIsEmpty()){
+                    v.shiftByTwoRanks();
+                } else v.setUnreachable();
+                for(Vertex neighbour: v.getNeighbours()){
+                    this.updateRank(neighbour);
+                }
+            }
         }
-
     }
 
     public void runBFS() throws Exception {

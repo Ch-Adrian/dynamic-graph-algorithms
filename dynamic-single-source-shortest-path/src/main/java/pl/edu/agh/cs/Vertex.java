@@ -7,7 +7,6 @@ public class Vertex {
     private Integer id;
     private Map<Integer, Edge> adjacencyList;
     private Integer rank;
-    private Vertex parent;
     private Map<Integer, Vertex> parents;
     private Map<Integer, Vertex> friends;
     private Map<Integer, Vertex> children;
@@ -17,7 +16,6 @@ public class Vertex {
         this.adjacencyList = new HashMap<>();
         this.rank = -1;
         this.cleanNeighbours();
-        this.parent = null;
     }
 
     public void addDirectedEdge(Edge edge, Integer ending){
@@ -56,17 +54,8 @@ public class Vertex {
 
     public void addParent(Vertex vertex){
         if(!this.parents.containsKey(vertex.getId())) {
-            if(this.parent == null) this.setParent(vertex);
             this.parents.put(vertex.getId(), vertex);
         }
-    }
-
-    public void setParent(Vertex vertex){
-        this.parent = vertex;
-    }
-
-    public Vertex getParent(){
-        return this.parent;
     }
 
     public boolean hasParent(Vertex vertex){
@@ -77,6 +66,45 @@ public class Vertex {
         return this.parents.containsKey(vertexId);
     }
 
+    public boolean parentsIsEmpty(){
+        return this.parents.isEmpty();
+    }
+
+    public boolean friendsIsEmpty(){
+        return this.friends.isEmpty();
+    }
+
+    public boolean childrenIsEmpty(){
+        return this.children.isEmpty();
+    }
+
+    public void shiftByOneRank(){
+        this.rank++;
+        this.parents = this.friends;
+        this.friends = this.children;
+        this.children = new HashMap<>();
+    }
+
+    public void shiftByTwoRanks(){
+        this.rank += 2;
+        this.parents = this.children;
+        this.friends = new HashMap<>();
+        this.children = new HashMap<>();
+    }
+
+    public void setUnreachable(){
+        this.rank = -1;
+        this.cleanNeighbours();
+    }
+
+    public ArrayList<Vertex> getNeighbours(){
+        ArrayList<Vertex> neighbours = new ArrayList<>();
+        neighbours.addAll(this.parents.values());
+        neighbours.addAll(this.friends.values());
+        neighbours.addAll(this.children.values());
+        return neighbours;
+    }
+
     public void addChildren(Vertex vertex){
         if(!this.children.containsKey(vertex.getId()))
             this.children.put(vertex.getId(), vertex);
@@ -85,6 +113,16 @@ public class Vertex {
     public void addFriend(Vertex vertex){
         if(!this.friends.containsKey(vertex.getId()))
             this.friends.put(vertex.getId(), vertex);
+    }
+
+    public void deleteEdge(Vertex v){
+        if(adjacencyList.containsKey(v.getId()))
+            this.adjacencyList.remove(v.getId());
+        else throw new IllegalArgumentException("Edge doesn't exists");
+
+        this.parents.remove(v.getId());
+        this.friends.remove(v.getId());
+        this.children.remove(v.getId());
     }
 
     public void cleanNeighbours(){

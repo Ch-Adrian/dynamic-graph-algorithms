@@ -73,6 +73,8 @@ public abstract class Graph {
         if(!this.vertices.containsKey(w.getId()))
             throw new Exception(String.format("Vertex %d doesn't exists.", w.getId()));
 
+        v.deleteEdge(w);
+        w.deleteEdge(v);
 
     }
 
