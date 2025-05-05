@@ -33,6 +33,12 @@
             <version>5.2.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>pl.edu.agh.cs</groupId>
+            <artifactId>dynamic-connectivity-full</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>

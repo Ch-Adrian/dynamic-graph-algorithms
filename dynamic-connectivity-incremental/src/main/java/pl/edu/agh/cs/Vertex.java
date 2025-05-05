@@ -15,38 +15,7 @@ public class Vertex {
         this.id = id;
         this.adjacencyList = new HashMap<>();
         this.rank = 0;
-        this.idSet= id;
-    }
-
-    public void addDirectedEdge(Vertex endVertex){
-        this.adjacencyList.put(endVertex.getId(), endVertex);
-        Vertex end = endVertex.findRoot();
-        Vertex begin  = this.findRoot();
-
-        if(!end.equals(begin)){
-            Integer rankEnd = end.getRank();
-            Integer rankBegin = begin.getRank();
-            if(rankEnd < rankBegin){
-                end.setIdSet(begin.getIdSet());
-            } else if(rankEnd > rankBegin){
-                begin.setIdSet(end.getIdSet());
-            } else {
-                begin.setRank(begin.getRank() + 1);
-                end.setIdSet(begin.getIdSet());
-            }
-
-        }
-
-    }
-
-    public Vertex findRoot(){
-        Vertex parent = this;
-        Integer pointerId = this.idSet;
-        while(!pointerId.equals(this.id)) {
-            parent = parent.adjacencyList.get(pointerId);
-            pointerId = parent.getIdSet();
-        }
-        return parent;
+        this.idSet = id;
     }
 
     public Integer getId() {
@@ -67,6 +36,10 @@ public class Vertex {
 
     public void setRank(Integer newRank){
         this.rank = newRank;
+    }
+
+    public void addEdgeTo(Vertex endVertex){
+        this.adjacencyList.put(endVertex.getId(), endVertex);
     }
 
     @Override

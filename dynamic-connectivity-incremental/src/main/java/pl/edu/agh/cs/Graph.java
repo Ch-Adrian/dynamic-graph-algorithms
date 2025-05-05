@@ -1,6 +1,5 @@
 package pl.edu.agh.cs;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,8 +31,8 @@ public class Graph {
         if(!this.vertices.containsKey(vertexTo.getId()))
             this.vertices.put(vertexTo.getId(), vertexTo);
 
-        vertexFrom.addDirectedEdge(vertexTo);
-        vertexTo.addDirectedEdge(vertexFrom);
+        this.addDirectedEdge(vertexFrom, vertexTo);
+        this.addDirectedEdge(vertexTo, vertexFrom);
     }
 
     public void addNonDirectedEdge(int idVertexFrom, int idVertexTo){
@@ -48,23 +47,44 @@ public class Graph {
         this.addNonDirectedEdge(vertexFrom, vertexTo);
     }
 
+    public void addDirectedEdge(Vertex beginVertex, Vertex endVertex){
+        beginVertex.addEdgeTo(endVertex);
+        Vertex end = this.findRoot(endVertex);
+        Vertex begin  = this.findRoot(beginVertex);
+
+        if(!end.equals(begin)){
+            Integer rankEnd = end.getRank();
+            Integer rankBegin = begin.getRank();
+            if(rankEnd < rankBegin){
+                end.setIdSet(begin.getIdSet());
+            } else if(rankEnd > rankBegin){
+                begin.setIdSet(end.getIdSet());
+            } else {
+                begin.setRank(begin.getRank() + 1);
+                end.setIdSet(begin.getIdSet());
+            }
+        }
+    }
+
+    public Vertex findRoot(Vertex parent){
+        while(!parent.getIdSet().equals(parent.getId())) {
+            parent = this.vertices.get(parent.getIdSet());
+        }
+        return parent;
+    }
 
     public boolean isConnected(int idVertexFrom, int idVertexTo){
         Integer rootFrom;
         Integer rootTo;
         if(this.vertices.containsKey(idVertexFrom))
-            rootFrom = this.vertices.get(idVertexFrom).findRoot().getIdSet();
+            rootFrom = this.findRoot(this.vertices.get(idVertexFrom)).getIdSet();
         else throw new RuntimeException(String.format("Vertex %d does not exist", idVertexFrom));
         if(this.vertices.containsKey(idVertexTo))
-            rootTo = this.vertices.get(idVertexTo).findRoot().getIdSet();
+            rootTo = this.findRoot(this.vertices.get(idVertexTo)).getIdSet();
         else throw new RuntimeException(String.format("Vertex %d does not exist", idVertexTo));
 
         return rootTo.equals(rootFrom);
 
     }
-
-
-
-
 
 }
