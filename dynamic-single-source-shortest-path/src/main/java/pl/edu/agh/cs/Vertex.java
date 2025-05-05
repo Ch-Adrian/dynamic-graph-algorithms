@@ -10,6 +10,7 @@ public class Vertex {
     private Map<Integer, Vertex> parents;
     private Map<Integer, Vertex> friends;
     private Map<Integer, Vertex> children;
+    private boolean visited = false;
 
     public Vertex(Integer id) {
         this.id = id;
@@ -17,6 +18,14 @@ public class Vertex {
         this.rank = -1;
         this.cleanNeighbours();
     }
+
+    public void visit(){
+        this.visited = true;
+    }
+
+    public boolean isVisited(){ return this.visited; }
+
+    public void resetVisited(){ this.visited = false; }
 
     public void addDirectedEdge(Edge edge, Integer ending){
         if(!adjacencyList.containsKey(ending))
@@ -66,6 +75,14 @@ public class Vertex {
         return this.parents.containsKey(vertexId);
     }
 
+    public boolean hasChild(Vertex vertex){
+        return this.hasChild(vertex.getId());
+    }
+
+    public boolean hasChild(Integer vertexId){
+        return this.children.containsKey(vertexId);
+    }
+
     public boolean parentsIsEmpty(){
         return this.parents.isEmpty();
     }
@@ -80,16 +97,29 @@ public class Vertex {
 
     public void shiftByOneRank(){
         this.rank++;
+        for(Vertex p: this.parents.values()) p.children.remove(this.getId()); //p.removeFromEverywhere(this);
+        for(Vertex f: this.friends.values()) f.friends.remove(this.getId()); //f.removeFromEverywhere(this);
+        for(Vertex c: this.children.values()) c.parents.remove(this.getId()); //c.removeFromEverywhere(this);
+
         this.parents = this.friends;
         this.friends = this.children;
         this.children = new HashMap<>();
+
+        for(Vertex p: this.parents.values()) p.children.put(this.getId(), this);
+        for(Vertex f: this.friends.values()) f.friends.put(this.getId(), this);
     }
 
     public void shiftByTwoRanks(){
         this.rank += 2;
+        for(Vertex p: this.parents.values()) p.children.remove(this.getId()); //p.removeFromEverywhere(this);
+        for(Vertex f: this.friends.values()) f.friends.remove(this.getId()); //f.removeFromEverywhere(this);
+        for(Vertex c: this.children.values()) c.parents.remove(this.getId()); //c.removeFromEverywhere(this);
+
         this.parents = this.children;
         this.friends = new HashMap<>();
         this.children = new HashMap<>();
+
+        for(Vertex p: this.parents.values()) p.children.put(this.getId(), this);
     }
 
     public void setUnreachable(){
@@ -133,5 +163,13 @@ public class Vertex {
         this.children = new HashMap<>();
         this.friends = new HashMap<>();
     }
+
+    private void removeFromEverywhere(Vertex v){
+        this.children.remove(v.getId());
+        this.parents.remove(v.getId());
+        this.friends.remove(v.getId());
+    }
+
+
 
 }

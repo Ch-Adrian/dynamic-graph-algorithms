@@ -65,15 +65,18 @@ public class EvenShiloachTree extends Graph {
     }
 
     private void updateRank(Vertex v){
-
+        System.out.println("Update rank for vertex " + v.getId());
         Queue<Vertex> updateQ = new ArrayDeque<>();
         updateQ.add(v);
 
         while(!updateQ.isEmpty()) {
             v = updateQ.poll();
+            System.out.println("Next vertex " + v.getId());
 
             if (!v.equals(this.source) && !v.isUnreachable()) {
+                System.out.println("is reachable");
                 if (v.parentsIsEmpty()) {
+                    System.out.println("parents is empty");
                     if (!v.friendsIsEmpty()) {
                         v.shiftByOneRank();
                     } else if (!v.childrenIsEmpty()) {
@@ -83,7 +86,12 @@ public class EvenShiloachTree extends Graph {
                     if (v.getRank().equals(this.vertices.size()))
                         v.setUnreachable();
 
-                    updateQ.addAll(v.getNeighbours());
+                    for(Vertex n: v.getNeighbours()){
+                        System.out.println("Add neighbour " + n.getId());
+                        updateQ.add(n);
+                    }
+
+//                    updateQ.addAll(v.getNeighbours());
                 }
             }
 
@@ -96,28 +104,32 @@ public class EvenShiloachTree extends Graph {
 
         if(this.source == null){
             this.source = this.vertices.values().iterator().next();
+            System.out.println("Source: " + this.source);
         }
 
         this.queue = new ArrayDeque<>();
         for(Vertex v: this.vertices.values()){
             v.cleanNeighbours();
+            v.resetVisited();
         }
         this.bfsSearch(this.source);
     }
 
     private void bfsSearch(Vertex vertex){
-        this.queue.add(new Pair<>(vertex, 0));
         vertex.setRank(0);
+        this.queue.add(new Pair<>(vertex, 0));
 
         while(!this.queue.isEmpty()){
             Pair<Vertex, Integer> current = this.queue.remove();
             Vertex currentVertex = current.getFirst();
+            currentVertex.visit();
             Integer distance = current.getSecond();
 
             for(Edge edge: currentVertex.getAdjacencyEdges()){
                 try {
                     Vertex ending = edge.getEnding(currentVertex);
-                    if(!ending.hasParent(currentVertex)) {
+
+                    if(!ending.hasChild(currentVertex)) {
                         if(ending.getRank().equals(currentVertex.getRank())){
                             ending.addFriend(currentVertex);
                             currentVertex.addFriend(ending);
@@ -125,8 +137,10 @@ public class EvenShiloachTree extends Graph {
                         else {
                             ending.addParent(currentVertex);
                             currentVertex.addChildren(ending);
-                            ending.setRank(distance + 1);
-                            this.queue.add(new Pair<>(ending, distance + 1));
+                            if(!ending.isVisited()) {
+                                ending.setRank(distance + 1);
+                                this.queue.add(new Pair<>(ending, distance + 1));
+                            }
                         }
                     }
                 }
