@@ -2,6 +2,7 @@ package pl.edu.agh.cs;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.Queue;
 
 public class EvenShiloachTree extends Graph {
 
@@ -64,17 +65,28 @@ public class EvenShiloachTree extends Graph {
     }
 
     private void updateRank(Vertex v){
-        if(!v.equals(this.source)){
-            if(v.parentsIsEmpty()){
-                if(!v.friendsIsEmpty()){
-                    v.shiftByOneRank();
-                } else if(!v.childrenIsEmpty()){
-                    v.shiftByTwoRanks();
-                } else v.setUnreachable();
-                for(Vertex neighbour: v.getNeighbours()){
-                    this.updateRank(neighbour);
+
+        Queue<Vertex> updateQ = new ArrayDeque<>();
+        updateQ.add(v);
+
+        while(!updateQ.isEmpty()) {
+            v = updateQ.poll();
+
+            if (!v.equals(this.source) && !v.isUnreachable()) {
+                if (v.parentsIsEmpty()) {
+                    if (!v.friendsIsEmpty()) {
+                        v.shiftByOneRank();
+                    } else if (!v.childrenIsEmpty()) {
+                        v.shiftByTwoRanks();
+                    } else v.setUnreachable();
+
+                    if (v.getRank().equals(this.vertices.size()))
+                        v.setUnreachable();
+
+                    updateQ.addAll(v.getNeighbours());
                 }
             }
+
         }
     }
 

@@ -94,7 +94,10 @@ public class Vertex {
 
     public void setUnreachable(){
         this.rank = -1;
-        this.cleanNeighbours();
+    }
+
+    public boolean isUnreachable(){
+        return this.rank.equals(-1);
     }
 
     public ArrayList<Vertex> getNeighbours(){
