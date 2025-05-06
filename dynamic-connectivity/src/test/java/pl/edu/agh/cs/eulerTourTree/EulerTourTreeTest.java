@@ -1,29 +1,23 @@
 package pl.edu.agh.cs.eulerTourTree;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pl.edu.agh.cs.common.Pair;
 import pl.edu.agh.cs.eulerTourTree.splay.Node;
+import pl.edu.agh.cs.eulerTourTree.splay.SplayTree;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static pl.edu.agh.cs.eulerTourTree.EulerTourTree.dfs;
 
 public class EulerTourTreeTest {
 
-
-    public static void dfs(Node n){
-        System.out.println("dfs: "+n.key);
-        if(n.left != null){
-            System.out.println("Go left: ");
-            dfs(n.left);
-        }
-        if(n.right != null) {
-            System.out.println("Go right: ");
-            dfs(n.right);
-        }
-        System.out.println("back");
+    @BeforeEach
+    void setUp() {
+        EulerTourTree.resetKeyToNodes();
     }
 
     @Test
@@ -117,6 +111,31 @@ public class EulerTourTreeTest {
         assertEquals(new Pair<>(3,2), splayRoot.left.left.right.right.right.right.key);
         assertEquals(new Pair<>(1,0), splayRoot.left.left.left.left.left.left.right.key);
         assertEquals(Integer.valueOf(1), treeLeft.getRoot());
+
+    }
+
+    @Test
+    public void testCutTree(){
+        EulerTourTree tree = new EulerTourTree();
+        tree.addEdge(0, 1);
+        tree.addEdge(0, 2);
+        tree.addEdge(1, 3);
+        tree.addEdge(1, 4);
+        tree.addEdge(2, 5);
+        tree.addEdge(2, 6);
+
+        Pair<EulerTourTree, EulerTourTree> halves = tree.cut(0,2);
+
+        Node splayRootLeft = SplayTree.getRootNode(halves.getFirst().getSplayRoot());
+        Node splayRootRight = SplayTree.getRootNode(halves.getSecond().getSplayRoot());
+
+        assertEquals(new Pair<>(0,0), splayRootLeft.key);
+        assertEquals(new Pair<>(0,1), splayRootLeft.right.left.key);
+        assertEquals(new Pair<>(0,0), splayRootLeft.right.right.right.key);
+        assertEquals(new Pair<>(4,1), splayRootLeft.right.left.right.right.right.right.right.right.right.right.key);
+
+//        dfs(splayRootRight);
+
 
     }
 
