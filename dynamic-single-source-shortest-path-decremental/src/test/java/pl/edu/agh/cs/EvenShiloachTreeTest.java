@@ -56,9 +56,9 @@ public class EvenShiloachTreeTest {
             System.out.println("Error: " + e.getMessage());
         }
 
-        for(Vertex v: evenShiloachTree.vertices.values()){
-            System.out.println(String.format("Vertex %d has rank: %d", v.getId(), v.getRank()));
-        }
+//        for(Vertex v: evenShiloachTree.vertices.values()){
+//            System.out.println(String.format("Vertex %d has rank: %d", v.getId(), v.getRank()));
+//        }
 
         assertEquals(Integer.valueOf(0), evenShiloachTree.vertices.get(0).getRank());
         assertEquals(Integer.valueOf(1), evenShiloachTree.vertices.get(1).getRank());

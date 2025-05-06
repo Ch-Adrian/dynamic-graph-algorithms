@@ -5,6 +5,7 @@ import pl.edu.agh.cs.common.Pair;
 public class SplayTree {
 
     private static void updateSize(Node treeNode){
+        if(treeNode == null) return;
         int size = 0;
         if(treeNode.left != null) size += treeNode.left.sizeOfTree;
         if(treeNode.right != null) size += treeNode.right.sizeOfTree;
@@ -12,6 +13,7 @@ public class SplayTree {
     }
 
     public static void rightRotate(Node node){
+        if(node == null) return;
         if(node.parent == null) return;
         Node parent = node.parent;
         Node grandParent = parent.parent;
@@ -104,8 +106,10 @@ public class SplayTree {
     }
 
     public static Node detachNodeFromTree(Node treeNode){
+//        System.out.println("detachNodeFromTree");
         if(treeNode == null || treeNode.parent == null) return treeNode;
         if(treeNode.parent.left == treeNode){
+//            System.out.println("it works!");
             treeNode.parent.left = null;
         } else {
             treeNode.parent.right = null;
@@ -127,12 +131,17 @@ public class SplayTree {
     }
 
     public static Node join(Node leftTree, Node rightTree){
-        Node leftMostOfLeftTree = SplayTree.lastNode(leftTree);
-        SplayTree.splay(leftMostOfLeftTree);
-        assert(leftMostOfLeftTree.right == null);
-        leftMostOfLeftTree.right = SplayTree.getRootNode(rightTree);
-        updateSize(leftMostOfLeftTree);
-        return leftMostOfLeftTree;
+        if(rightTree == null && leftTree != null) return leftTree;
+        if(rightTree != null && leftTree == null) return rightTree;
+        if(rightTree == null && leftTree == null) return null;
+        Node rightMostOfLeftTree = SplayTree.lastNode(leftTree);
+//        System.out.println("righMost: "+rightMostOfLeftTree.key);
+        SplayTree.splay(rightMostOfLeftTree);
+        assert(rightMostOfLeftTree.right == null);
+        rightMostOfLeftTree.right = SplayTree.getRootNode(rightTree);
+        rightMostOfLeftTree.right.parent = rightMostOfLeftTree;
+        updateSize(rightMostOfLeftTree);
+        return rightMostOfLeftTree;
     }
 
     public static Node getRootNode(Node treeNode){
@@ -181,6 +190,7 @@ public class SplayTree {
     }
 
     public static void removeNode(Node treeNode){
+        if(treeNode == null) return;
         Node parent = treeNode.parent;
 
         if(treeNode.left == null && treeNode.right == null){
@@ -208,9 +218,10 @@ public class SplayTree {
                     updateSize(parent);
                     parent = parent.parent;
                 }
+                treeNode.left.parent = parent;
                 treeNode.parent = null;
-            }
-            treeNode.left.parent = parent;
+            } else treeNode.left.parent = null;
+            treeNode.left = null;
         } else if(treeNode.left == null){
             if(parent != null) {
                 if (parent.right == treeNode) {
@@ -218,13 +229,14 @@ public class SplayTree {
                 } else {
                     parent.left = treeNode.right;
                 }
+                treeNode.right.parent = parent;
                 while(parent != null){
                     updateSize(parent);
                     parent = parent.parent;
                 }
                 treeNode.parent = null;
-            }
-            treeNode.right.parent = parent;
+            } else treeNode.right.parent = null;
+            treeNode.right = null;
         } else {
             Node pred = SplayTree.predecessor(treeNode);
             if(pred.right == null) {
@@ -243,9 +255,10 @@ public class SplayTree {
                     updateSize(parent);
                     parent = parent.parent;
                 }
+                treeNode.left.parent = parent;
                 treeNode.parent = null;
-            }
-            treeNode.left.parent = parent;
+            } else treeNode.left.parent = null;
+            treeNode.left = null;
         }
     }
 

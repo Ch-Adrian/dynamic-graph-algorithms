@@ -26,7 +26,7 @@ public class DynamicConnectivity {
     }
 
     public void addEdge(int from, int to) throws Exception {
-        Tree treeFrom = this.forests.get(0).getTree(from);
+        Tree treeFrom = this.forests.getFirst().getTree(from);
         Tree treeTo = this.forests.get(0).getTree(to);
 
         if(treeFrom == treeTo && treeFrom != null) {
@@ -43,7 +43,7 @@ public class DynamicConnectivity {
     }
 
     public void deleteEdge(int from, int to) throws Exception {
-        boolean nonTreeEdgeFound = this.forests.get(0).checkIfNonTreeEdgeExists(from, to);
+        boolean nonTreeEdgeFound = this.forests.getFirst().checkIfNonTreeEdgeExists(from, to);
         if(nonTreeEdgeFound) {
             for(Forest forest : forests) {
                 forest.deleteNonTreeEdge(from, to);
@@ -61,6 +61,9 @@ public class DynamicConnectivity {
         }
     }
 
+    public boolean isConnected(Integer v, Integer w){
+        return this.forests.getFirst().isConnected(v, w);
+    }
 
 
 }

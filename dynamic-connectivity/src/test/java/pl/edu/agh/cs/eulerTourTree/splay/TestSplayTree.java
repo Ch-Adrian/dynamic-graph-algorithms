@@ -150,6 +150,33 @@ public class TestSplayTree {
     }
 
     @Test
+    public void testSplay2(){
+        Node node = new Node(new Pair<>(0,0));
+        node.right = new Node(new Pair<>(0,1));
+        node.right.right = new Node(new Pair<>(1,1));
+        node.right.right.right = new Node(new Pair<>(1,0));
+        node.right.right.right.right = new Node(new Pair<>(0,0));
+        node.right.right.right.right.right = new Node(new Pair<>(0,2));
+        node.right.right.right.right.right.right = new Node(new Pair<>(2,2));
+        node.right.right.right.right.right.right.right = new Node(new Pair<>(2,0));
+        node.right.right.right.right.right.right.right.right = new Node(new Pair<>(0,0));
+
+        Node n1 = node;
+        Node n2 = node.right;
+        while(n2 != null){
+            n2.parent = n1;
+            n1 = n2;
+            n2 = n2.right;
+        }
+
+        SplayTree.splay(node.right.right);
+
+//        dfsNode(SplayTree.getRootNode(node));
+        assertEquals(new Pair<>(1,1), SplayTree.getRootNode(node).key);
+
+    }
+
+    @Test
     public void testDetach(){
         SplayTree.splay(root1.right.right.right.right.right.right.right);
         SplayTree.splay(root1.right.right.right.right);
@@ -195,7 +222,7 @@ public class TestSplayTree {
         Node root = SplayTree.getRootNode(root1);
         SplayTree.removeNode(root1);
         assertEquals(new Pair<>(1,2), root.left.key);
-        assertEquals(new Pair<>(3,3), root1.right.parent.key);
+        assertEquals(new Pair<>(3,3), root.right.parent.key);
     }
 
     @Test

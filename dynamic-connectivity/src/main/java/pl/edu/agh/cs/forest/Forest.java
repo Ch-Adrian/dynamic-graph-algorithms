@@ -177,4 +177,8 @@ public class Forest {
         }
         return false;
     }
+
+    public boolean isConnected(Integer v, Integer w){
+        return this.vertexIdToTkey.get(v).equals(this.vertexIdToTkey.get(w));
+    }
 }

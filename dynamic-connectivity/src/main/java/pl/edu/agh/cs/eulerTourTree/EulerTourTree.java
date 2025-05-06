@@ -23,21 +23,40 @@ public class EulerTourTree {
         this.splayRoot = SplayTree.getRootNode(treeNode);
     }
 
+    void setKeyToNodes(Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes){
+        this.keyToNodes = keyToNodes;
+    }
+
+    public static void dfs(Node n){
+        System.out.println("dfs: "+n.key);
+        if(n.left != null){
+            System.out.println("Go left: ");
+            dfs(n.left);
+        }
+        if(n.right != null) {
+            System.out.println("Go right: ");
+            dfs(n.right);
+        }
+        System.out.println("back");
+    }
+
     public Node reRoot(Integer vertex){
         Node newRoot = keyToNodes.get(new Pair<>(vertex, vertex)).getFirst();
+
         if(Objects.equals(newRoot.key.getFirst(), newRoot.key.getSecond()) &&
-                Objects.equals(newRoot.key.getFirst(), vertex)){
+                Objects.equals(newRoot.key.getFirst(), vertex) &&
+                SplayTree.firstNode(this.getSplayRoot()).equals(newRoot)){
             return newRoot;
         }
 
-        SplayTree.splay(newRoot);
-        Node leftSubTree = SplayTree.detachNodeFromTree(newRoot.left);
-        Node firstSubTree = SplayTree.firstNode(leftSubTree);
-        SplayTree.removeNode(firstSubTree);
 
+        SplayTree.splay(newRoot);
+        Node firstSubTree = SplayTree.firstNode(newRoot);
+        SplayTree.removeNode(firstSubTree);
+        Node leftSubTree = SplayTree.detachNodeFromTree(newRoot.left);
         SplayTree.join(newRoot, leftSubTree);
         SplayTree.join(newRoot, new Node(newRoot.key));
-
+        this.setSplayRoot(newRoot);
         return SplayTree.getRootNode(newRoot);
     }
 
@@ -120,7 +139,7 @@ public class EulerTourTree {
             keyToNodes.get(new Pair<>(v,u)).add(SplayTree.insertToRight(this.splayRoot, new Pair<>(u,v)));
             keyToNodes.get(new Pair<>(u,u)).add(SplayTree.insertToRight(this.splayRoot, new Pair<>(v,v)));
         } else {
-            throw new Error("Illegal operation. Only one vertex must be present in a tree.");
+            throw new Error("Illegal operation. At most one vertex must be present in a tree.");
         }
     }
 

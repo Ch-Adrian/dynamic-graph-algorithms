@@ -2,6 +2,8 @@ package pl.edu.agh.cs.eulerTourTree.splay;
 
 import pl.edu.agh.cs.common.Pair;
 
+import java.util.Objects;
+
 public class Node {
 
     public Pair<Integer, Integer> key;
@@ -20,5 +22,17 @@ public class Node {
         return "Node{" +
                 "key=" + key +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Node node)) return false;
+        return Objects.equals(key, node.key);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(key);
     }
 }

@@ -65,18 +65,18 @@ public class EvenShiloachTree extends Graph {
     }
 
     private void updateRank(Vertex v){
-        System.out.println("Update rank for vertex " + v.getId());
+//        System.out.println("Update rank for vertex " + v.getId());
         Queue<Vertex> updateQ = new ArrayDeque<>();
         updateQ.add(v);
 
         while(!updateQ.isEmpty()) {
             v = updateQ.poll();
-            System.out.println("Next vertex " + v.getId());
+//            System.out.println("Next vertex " + v.getId());
 
             if (!v.equals(this.source) && !v.isUnreachable()) {
-                System.out.println("is reachable");
+//                System.out.println("is reachable");
                 if (v.parentsIsEmpty()) {
-                    System.out.println("parents is empty");
+//                    System.out.println("parents is empty");
                     if (!v.friendsIsEmpty()) {
                         v.shiftByOneRank();
                     } else if (!v.childrenIsEmpty()) {
@@ -87,7 +87,7 @@ public class EvenShiloachTree extends Graph {
                         v.setUnreachable();
 
                     for(Vertex n: v.getNeighbours()){
-                        System.out.println("Add neighbour " + n.getId());
+//                        System.out.println("Add neighbour " + n.getId());
                         updateQ.add(n);
                     }
 
@@ -104,7 +104,7 @@ public class EvenShiloachTree extends Graph {
 
         if(this.source == null){
             this.source = this.vertices.values().iterator().next();
-            System.out.println("Source: " + this.source);
+//            System.out.println("Source: " + this.source);
         }
 
         this.queue = new ArrayDeque<>();
