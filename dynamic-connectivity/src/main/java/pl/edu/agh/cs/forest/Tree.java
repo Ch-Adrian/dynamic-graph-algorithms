@@ -28,7 +28,7 @@ public class Tree {
     }
 
     public void linkTwoTreesWithEdge(int internalVertexId, int externalVertexId, Tree externalTree){
-        eulerTourTree.link(internalVertexId, externalVertexId, externalTree.eulerTourTree.getSplayRoot());
+        eulerTourTree.link(internalVertexId, externalVertexId, externalTree.eulerTourTree);
     }
 
     public void addTreeEdge(int u, int v){

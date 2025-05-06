@@ -27,7 +27,7 @@ public class EulerTourTreeTest {
     }
 
     @Test
-    public void testReroot1(){
+    public void testReroot(){
         EulerTourTree tree = new EulerTourTree();
         Node node = new Node(new Pair<>(0,0));
         node.right = new Node(new Pair<>(0,1));
@@ -98,4 +98,26 @@ public class EulerTourTreeTest {
         tree.reRoot(1);
         assertEquals(Integer.valueOf(1), tree.getRoot());
     }
+
+    @Test
+    public void testLink(){
+        EulerTourTree treeLeft = new EulerTourTree();
+        treeLeft.addEdge(0,1);
+
+        EulerTourTree treeRight = new EulerTourTree();
+        treeRight.addEdge(2,3);
+
+        treeLeft.link(1, 2, treeRight);
+
+        Node splayRoot = treeLeft.getSplayRoot();
+        assertEquals(new Pair<>(2,1), splayRoot.key);
+        assertEquals(new Pair<>(1,1), splayRoot.right.key);
+        assertEquals(new Pair<>(2,2), splayRoot.left.key);
+        assertEquals(new Pair<>(2,2), splayRoot.left.left.right.key);
+        assertEquals(new Pair<>(3,2), splayRoot.left.left.right.right.right.right.key);
+        assertEquals(new Pair<>(1,0), splayRoot.left.left.left.left.left.left.right.key);
+        assertEquals(Integer.valueOf(1), treeLeft.getRoot());
+
+    }
+
 }

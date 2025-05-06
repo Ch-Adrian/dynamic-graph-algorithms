@@ -41,6 +41,8 @@ public class SplayTree {
     }
 
     public static void leftRotate(Node node){
+        if(node == null) return;
+        if(node.parent == null) return;
         Node parent = node.parent;
         Node grandParent = parent.parent;
 
@@ -106,10 +108,8 @@ public class SplayTree {
     }
 
     public static Node detachNodeFromTree(Node treeNode){
-//        System.out.println("detachNodeFromTree");
         if(treeNode == null || treeNode.parent == null) return treeNode;
         if(treeNode.parent.left == treeNode){
-//            System.out.println("it works!");
             treeNode.parent.left = null;
         } else {
             treeNode.parent.right = null;
@@ -134,13 +134,15 @@ public class SplayTree {
         if(rightTree == null && leftTree != null) return leftTree;
         if(rightTree != null && leftTree == null) return rightTree;
         if(rightTree == null && leftTree == null) return null;
+
         Node rightMostOfLeftTree = SplayTree.lastNode(leftTree);
-//        System.out.println("righMost: "+rightMostOfLeftTree.key);
         SplayTree.splay(rightMostOfLeftTree);
         assert(rightMostOfLeftTree.right == null);
+
         rightMostOfLeftTree.right = SplayTree.getRootNode(rightTree);
         rightMostOfLeftTree.right.parent = rightMostOfLeftTree;
         updateSize(rightMostOfLeftTree);
+
         return rightMostOfLeftTree;
     }
 
@@ -263,6 +265,7 @@ public class SplayTree {
     }
 
     public static int getSizeOfTree(Node treeNode){
+        if(treeNode == null) return 0;
         return SplayTree.getRootNode(treeNode).sizeOfTree;
     }
 }
