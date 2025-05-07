@@ -96,31 +96,58 @@ public class EulerTourTree {
         Node edgeVU = EulerTourTree.keyToNodes.get(new Pair<>(v, u)).getFirst();
 
         Pair<Node, Node> roots = SplayTree.split(edgeUV);
-
         Node J;
         Node K;
         Node L;
-        if(SplayTree.getRootNode(roots.getFirst()) == SplayTree.getRootNode(edgeVU)) {
+
+        if(SplayTree.getRootNode(roots.getFirst()).equals(SplayTree.getRootNode(edgeUV))) {
+//            System.out.println("first");
+            roots.setFirst(SplayTree.removeNode(edgeUV));
+        } else {
+//            System.out.println("second");
+            roots.setSecond(SplayTree.removeNode(edgeUV));
+        }
+        EulerTourTree.keyToNodes.get(new Pair<>(u, v)).remove(edgeUV);
+
+        if(SplayTree.getRootNode(roots.getFirst()).equals(SplayTree.getRootNode(edgeVU))) {
             Pair<Node, Node> trees2 = SplayTree.split(edgeVU);
-            dfs(trees2.getSecond());
+//            dfs(trees2.getSecond());
             J = trees2.getFirst();
             K = trees2.getSecond();
-            L = roots.getFirst();
+            L = roots.getSecond();
+            if(SplayTree.getRootNode(J).equals(SplayTree.getRootNode(edgeVU))) {
+                J = SplayTree.removeNode(edgeVU);
+            } else {
+                K = SplayTree.removeNode(edgeVU);
+            }
         } else {
             Pair<Node, Node> trees2 = SplayTree.split(edgeVU);
             J = roots.getFirst();
             K = trees2.getFirst();
             L = trees2.getSecond();
+            if(SplayTree.getRootNode(K).equals(SplayTree.getRootNode(edgeVU))) {
+                K = SplayTree.removeNode(edgeVU);
+            } else {
+                L = SplayTree.removeNode(edgeVU);
+            }
         }
+        EulerTourTree.keyToNodes.get(new Pair<>(v, u)).remove(edgeVU);
 
-        SplayTree.removeNode(edgeUV);
-        SplayTree.removeNode(edgeVU);
-        EulerTourTree.keyToNodes.remove(new Pair<>(u, v));
-        EulerTourTree.keyToNodes.remove(new Pair<>(v, u));
+//        System.out.println(SplayTree.getRootNode(J).sizeOfTree);
+//        System.out.println(SplayTree.getRootNode(K).sizeOfTree);
+//        System.out.println(SplayTree.getRootNode(L).sizeOfTree);
+//        dfs(J);
+//        dfs(K);
+//        dfs(L);
 
-        SplayTree.removeNode(SplayTree.lastNode(J));
+        J = SplayTree.removeNode(SplayTree.lastNode(J));
         Node joined = SplayTree.join(J, L);
         this.splayRoot = SplayTree.getRootNode(K);
+
+//        dfs(K);
+//        dfs(J);
+//        dfs(K);
+//        dfs(joined);
 
         return new Pair<>(new EulerTourTree(K), new EulerTourTree(joined));
     }
