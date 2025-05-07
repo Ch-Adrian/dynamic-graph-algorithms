@@ -91,7 +91,7 @@ public class EulerTourTree {
 
     }
 
-    public Pair<EulerTourTree, EulerTourTree> cut(Integer u, Integer v) {
+    public EulerTourTree cut(Integer u, Integer v) {
         Node edgeUV = EulerTourTree.keyToNodes.get(new Pair<>(u, v)).getFirst();
         Node edgeVU = EulerTourTree.keyToNodes.get(new Pair<>(v, u)).getFirst();
 
@@ -134,66 +134,59 @@ public class EulerTourTree {
         Node joined = SplayTree.join(J, L);
         this.splayRoot = SplayTree.getRootNode(K);
 
-        return new Pair<>(new EulerTourTree(K), new EulerTourTree(joined));
+        if(SplayTree.getRootNode(K).equals(SplayTree.getRootNode(this.splayRoot))){
+            this.setSplayRoot(K);
+            return new EulerTourTree(joined);
+        } else {
+            this.setSplayRoot(joined);
+            return new EulerTourTree(K);
+        }
+
     }
 
     public void addEdge(int u, int v){
         if(this.splayRoot == null){
             this.splayRoot = new Node(new Pair<>(u,u));
             EulerTourTree.keyToNodes.put(new Pair<>(u,u), new LinkedHashSet<>());
-            EulerTourTree.keyToNodes.put(new Pair<>(v,u), new LinkedHashSet<>());
-            EulerTourTree.keyToNodes.put(new Pair<>(u,v), new LinkedHashSet<>());
             EulerTourTree.keyToNodes.put(new Pair<>(v,v), new LinkedHashSet<>());
 
             EulerTourTree.keyToNodes.get(new Pair<>(u,u)).add(this.splayRoot);
-            EulerTourTree.keyToNodes.get(new Pair<>(u,v)).add(SplayTree.insertToRight(this.splayRoot, new Pair<>(u,v)));
-            EulerTourTree.keyToNodes.get(new Pair<>(v,v)).add(SplayTree.insertToRight(this.splayRoot, new Pair<>(v,v)));
-            EulerTourTree.keyToNodes.get(new Pair<>(v,u)).add(SplayTree.insertToRight(this.splayRoot, new Pair<>(v,u)));
-            EulerTourTree.keyToNodes.get(new Pair<>(u,u)).add(SplayTree.insertToRight(this.splayRoot, new Pair<>(u,u)));
+            insertEdgeToETT(u, v);
             return;
         }
         if(EulerTourTree.keyToNodes.containsKey(new Pair<>(u, u)) &&
                 !EulerTourTree.keyToNodes.containsKey(new Pair<>(v,v))){
-            EulerTourTree.keyToNodes.put(new Pair<>(v,u), new LinkedHashSet<>());
-            EulerTourTree.keyToNodes.put(new Pair<>(u,v), new LinkedHashSet<>());
             EulerTourTree.keyToNodes.put(new Pair<>(v,v), new LinkedHashSet<>());
 
             this.reRoot(u);
-            EulerTourTree.keyToNodes.get(new Pair<>(u,v)).add(SplayTree.insertToRight(this.splayRoot, new Pair<>(u,v)));
-            EulerTourTree.keyToNodes.get(new Pair<>(v,v)).add(SplayTree.insertToRight(this.splayRoot, new Pair<>(v,v)));
-            EulerTourTree.keyToNodes.get(new Pair<>(v,u)).add(SplayTree.insertToRight(this.splayRoot, new Pair<>(v,u)));
-            EulerTourTree.keyToNodes.get(new Pair<>(u,u)).add(SplayTree.insertToRight(this.splayRoot, new Pair<>(u,u)));
+            insertEdgeToETT(u, v);
         } else if(EulerTourTree.keyToNodes.containsKey(new Pair<>(v,v)) &&
                 !EulerTourTree.keyToNodes.containsKey(new Pair<>(u,u))){
-            EulerTourTree.keyToNodes.put(new Pair<>(v,u), new LinkedHashSet<>());
-            EulerTourTree.keyToNodes.put(new Pair<>(u,v), new LinkedHashSet<>());
             EulerTourTree.keyToNodes.put(new Pair<>(u,u), new LinkedHashSet<>());
 
             this.reRoot(v);
-            EulerTourTree.keyToNodes.get(new Pair<>(u,v)).add(SplayTree.insertToRight(this.splayRoot, new Pair<>(v,u)));
-            EulerTourTree.keyToNodes.get(new Pair<>(v,v)).add(SplayTree.insertToRight(this.splayRoot, new Pair<>(u,u)));
-            EulerTourTree.keyToNodes.get(new Pair<>(v,u)).add(SplayTree.insertToRight(this.splayRoot, new Pair<>(u,v)));
-            EulerTourTree.keyToNodes.get(new Pair<>(u,u)).add(SplayTree.insertToRight(this.splayRoot, new Pair<>(v,v)));
+            insertEdgeToETT(u,v);
         } else {
             throw new Error("Illegal operation. At most one vertex must be present in a tree.");
         }
+    }
+
+    private void insertEdgeToETT(int u, int v) {
+        EulerTourTree.keyToNodes.put(new Pair<>(v,u), new LinkedHashSet<>());
+        EulerTourTree.keyToNodes.put(new Pair<>(u,v), new LinkedHashSet<>());
+
+        EulerTourTree.keyToNodes.get(new Pair<>(u,v)).add(SplayTree.insertToRight(this.splayRoot, new Pair<>(u,v)));
+        EulerTourTree.keyToNodes.get(new Pair<>(v,v)).add(SplayTree.insertToRight(this.splayRoot, new Pair<>(v,v)));
+        EulerTourTree.keyToNodes.get(new Pair<>(v,u)).add(SplayTree.insertToRight(this.splayRoot, new Pair<>(v,u)));
+        EulerTourTree.keyToNodes.get(new Pair<>(u,u)).add(SplayTree.insertToRight(this.splayRoot, new Pair<>(u,u)));
     }
 
     public Node deleteEdge(int u, int v){
         if(this.splayRoot == null){return null;}
         if(EulerTourTree.keyToNodes.containsKey(new Pair<>(u,v)) &&
                 EulerTourTree.keyToNodes.containsKey(new Pair<>(v,u))){
-            Pair<EulerTourTree, EulerTourTree> trees = this.cut(u, v);
-            if(EulerTourTree.keyToNodes.get(new Pair<>(u,u)).size() <= 1){
-                EulerTourTree.keyToNodes.remove(new Pair<>(u,u));
-                return null;
-            }
-            else if(EulerTourTree.keyToNodes.get(new Pair<>(v,v)).size() <= 1){
-                EulerTourTree.keyToNodes.remove(new Pair<>(v,v));
-                return null;
-            } else {
-                return trees.getSecond().getSplayRoot();
-            }
+            EulerTourTree secondTree = this.cut(u, v);
+            return secondTree.getSplayRoot();
         } else {
             throw new Error(String.format("Edge {%d, %d}doesn't exists!", u, v));
         }
