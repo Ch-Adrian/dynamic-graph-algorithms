@@ -128,7 +128,7 @@ public class EulerTourTreeTest {
 
         Node splayRootLeft = SplayTree.getRootNode(halves.getFirst().getSplayRoot());
         Node splayRootRight = SplayTree.getRootNode(halves.getSecond().getSplayRoot());
-//        dfs(splayRootRight);
+
         assertEquals(new Pair<>(0,0), splayRootLeft.key);
         assertEquals(new Pair<>(0,1), splayRootLeft.right.left.key);
         assertEquals(new Pair<>(0,0), splayRootLeft.right.right.right.key);
@@ -141,7 +141,6 @@ public class EulerTourTreeTest {
         assertEquals(new Pair<>(2,2), splayRootRight.right.right.right.right.right.right.right.right.key);
         assertEquals(9, splayRootRight.sizeOfTree);
 
-//        dfs(splayRootRight);
     }
 
     @Test
