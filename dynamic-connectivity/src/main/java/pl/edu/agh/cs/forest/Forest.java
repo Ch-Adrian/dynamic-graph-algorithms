@@ -10,30 +10,24 @@ public class Forest {
 
     private Map<Integer, LinkedHashSet<Integer>> nonTreeEdges;
     private Map<Integer, Node> vertexToNode;
-//    private Map<Integer, Integer> vertexIdToTkey;
-//    private Map<Integer, Tree> tkeyToTree;
+    private Map<Node, Tree> nodeToTree;
     private int level = -1;
-//    private int treeCounter = 0;
     private DynamicConnectivity dynamicConnectivity;
     private Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes;
 
     public Forest(int level, DynamicConnectivity dcAlgo) {
-//        this.vertexIdToTkey = new HashMap<>();
         this.nonTreeEdges = new HashMap<>();
-//        this.tkeyToTree = new HashMap<>();
+        this.nodeToTree = new HashMap<>();
         this.keyToNodes = new HashMap<>();
         this.vertexToNode = new HashMap<>();
         this.level = level;
         this.dynamicConnectivity = dcAlgo;
     }
 
-    private Integer createNewTree(Node treeNode){
-        Tree t = new Tree(treeCounter, treeNode, keyToNodes);
-//        this.tkeyToTree.put(treeCounter, t);
+    private void createNewTree(Node treeNode){
+        Tree t = new Tree(treeNode, keyToNodes);
         this.vertexToNode.put(treeNode.key.getFirst(), treeNode);
         this.vertexToNode.put(treeNode.key.getSecond(), treeNode);
-        treeCounter++;
-        return treeCounter-1;
     }
 
     public void createNewTree(int u, int v){

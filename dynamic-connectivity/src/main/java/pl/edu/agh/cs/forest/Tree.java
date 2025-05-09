@@ -8,22 +8,13 @@ import java.util.*;
 
 public class Tree {
 
-    private Integer Tkey;
+    private Node someNode;
     private EulerTourTree eulerTourTree;
 
-    public Tree(Integer key, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes) {
-        this.Tkey = key;
-        this.eulerTourTree = new EulerTourTree(keyToNodes);
-    }
-
-    public Tree(Integer key, Node treeNode, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes) {
-        this.Tkey = key;
+    public Tree(Node treeNode, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes) {
+        this.someNode = treeNode;
         this.eulerTourTree = new EulerTourTree(keyToNodes);
         this.eulerTourTree.setSplayRoot(treeNode);
-    }
-
-    public Integer getTkey() {
-        return Tkey;
     }
 
     public void linkTwoTreesWithEdge(int internalVertexId, int externalVertexId, Tree externalTree){
