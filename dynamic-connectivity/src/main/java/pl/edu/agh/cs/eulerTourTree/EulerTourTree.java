@@ -36,8 +36,6 @@ public class EulerTourTree {
             this.keyToNodes.put(key, new LinkedHashSet<>());
         }
         this.keyToNodes.get(key).add(n);
-        if(key.equals(new Pair<>(4,4)))
-            System.out.println("Added node(XD): " + n);
         return n;
     }
 
@@ -56,48 +54,14 @@ public class EulerTourTree {
 
     public Node reRoot(Integer vertex){
         Node newRoot = this.keyToNodes.get(new Pair<>(vertex, vertex)).getFirst();
-        if(vertex.equals(4)) {
-            for (Node n : this.keyToNodes.get(new Pair<>(vertex, vertex))) {
-                System.out.println("Node: " + n);
-                if(n.parent != null)
-                    System.out.println("Parent: "+n.parent.key);
-                if(n.left != null)
-                    System.out.println("Left: "+n.left.key);
-                if(n.right != null)
-                    System.out.println("Right: "+n.right.key);
-            }
-
-            this.show();
-            this.dfsCheckParent(this.getSplayRoot());
-
-            for(LinkedHashSet<Node> nodes: this.keyToNodes.values()) {
-                for(Node n: nodes) {
-                    System.out.println(n.key+" reference: "+n);
-                    if(n.parent != null) System.out.println("Parent: "+n.parent.key);
-                }
-            }
-        }
-
-        if(vertex.equals(4)) System.out.println(newRoot);
 
         if(Objects.equals(newRoot.key.getFirst(), newRoot.key.getSecond()) &&
                 Objects.equals(newRoot.key.getFirst(), vertex) &&
                 SplayTree.firstNode(this.getSplayRoot()).equals(newRoot)){
-            if(vertex.equals(4)) System.out.println("Fast return");
                 return newRoot;
         }
-        if(vertex.equals(4)) {
-            System.out.println("before splay2:");
-            if(newRoot.parent != null)
-                System.out.println("Parent: "+newRoot.parent.key);
-            if(newRoot.left != null)
-                System.out.println("Left: "+newRoot.left.key);
-            if(newRoot.right != null)
-                System.out.println("Right: "+newRoot.right.key);
-        }
+
         SplayTree.splay(newRoot);
-        if(vertex.equals(4)) System.out.println("After splay:");
-        if(vertex.equals(4)) this.show();
         Node firstNode = SplayTree.firstNode(newRoot);
         SplayTree.removeNode(firstNode);
         this.keyToNodes.get(firstNode.key).remove(firstNode);
@@ -190,7 +154,6 @@ public class EulerTourTree {
     public void addEdge(int u, int v){
         if(this.splayRoot == null){
             this.splayRoot = new Node(new Pair<>(u,u));
-            System.out.println("Vertex U:"+u+" reference: "+this.splayRoot);
             this.keyToNodes.put(new Pair<>(u,u), new LinkedHashSet<>());
             this.keyToNodes.put(new Pair<>(v,v), new LinkedHashSet<>());
 
@@ -200,26 +163,10 @@ public class EulerTourTree {
         }
         if(this.keyToNodes.containsKey(new Pair<>(u, u)) &&
                 !this.keyToNodes.containsKey(new Pair<>(v,v))){
-            if(u == 4 && v == 8) System.out.println("add tree edge: "+u+", "+v);
             this.keyToNodes.put(new Pair<>(v,v), new LinkedHashSet<>());
-//            if(u == 4 && v == 8) System.out.println("Before reroot:");
-//            if(u == 4 && v == 8) this.show();
-//            if(u == 4 && v == 8) System.out.println("Check before reroot:");
-//            if(u == 4 && v == 8) this.dfsCheckParent(this.getSplayRoot());
+
             this.reRoot(u);
-            if(u == 2){
-                for(LinkedHashSet<Node> nodes: this.keyToNodes.values()) {
-                    for(Node n: nodes) {
-                        System.out.println(n.key+" reference: "+n);
-                        if(n.parent != null) System.out.println("Parent: "+n.parent.key);
-                    }
-                }
-            }
-            if(u == 4 && v == 8) System.out.println("After reroot:");
-            if(u == 4 && v == 8) this.show();
             insertEdgeToETT(u, v);
-            if(u == 4 && v == 8) System.out.println("After insertion:");
-            if(u == 4 && v == 8) this.show();
         } else if(this.keyToNodes.containsKey(new Pair<>(v,v)) &&
                 !this.keyToNodes.containsKey(new Pair<>(u,u))){
             this.keyToNodes.put(new Pair<>(u,u), new LinkedHashSet<>());
@@ -271,23 +218,13 @@ public class EulerTourTree {
     }
 
     public Set<Pair<Integer, Integer>> getEdges(){
-        System.out.println("Get edges");
         Set<Pair<Integer, Integer>> listOfEdges = new HashSet<>();
-//        for(Pair<Integer, Integer> edge: this.keyToNodes.keySet()){
-//            if(edge.getFirst() != edge.getSecond()){
-//                listOfEdges.add(edge);
-//            }
-//        }
         this.dfsEdges(this.getSplayRoot(), listOfEdges);
         return listOfEdges;
     }
 
     public Set<Integer> getVertices(){
-        System.out.println("Get vertices");
         Set<Integer> listOfVertices = new HashSet<>();
-//        for(Pair<Integer, Integer> edge: this.keyToNodes.keySet()){
-//            listOfVertices.add(edge.getFirst());
-//        }
         this.dfsVertices(this.getSplayRoot(), listOfVertices);
         return listOfVertices;
     }
