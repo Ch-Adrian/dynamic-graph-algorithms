@@ -88,7 +88,7 @@ public class EulerTourTree {
         SplayTree.join(rootInternal, this.addNode(new Pair<>(internal, external)));
         SplayTree.join(rootInternal, rootExternal);
         SplayTree.join(rootInternal, this.addNode(new Pair<>(external, internal)));
-        if(internal == 4) System.out.println("I have found CD");
+
         SplayTree.join(rootInternal, this.addNode(new Pair<>(internal, internal)));
         this.setSplayRoot(this.getSplayRoot());
 
@@ -97,6 +97,7 @@ public class EulerTourTree {
     public EulerTourTree cut(Integer u, Integer v) {
         Node edgeUV = this.keyToNodes.get(new Pair<>(u, v)).getFirst();
         Node edgeVU = this.keyToNodes.get(new Pair<>(v, u)).getFirst();
+        this.show();
 
         Pair<Node, Node> roots = SplayTree.split(edgeUV);
         Node J;
@@ -136,10 +137,6 @@ public class EulerTourTree {
         J = SplayTree.removeNode(SplayTree.lastNode(J));
         Node joined = SplayTree.join(J, L);
         this.setSplayRoot(this.getSplayRoot());
-
-        System.out.println("K: "+SplayTree.getRootNode(K));
-        System.out.println("Joined: "+SplayTree.getRootNode(joined));
-        System.out.println("Splay: "+SplayTree.getRootNode(this.splayRoot));
 
         if(SplayTree.getRootNode(K).equals(SplayTree.getRootNode(this.splayRoot))){
             this.setSplayRoot(K);

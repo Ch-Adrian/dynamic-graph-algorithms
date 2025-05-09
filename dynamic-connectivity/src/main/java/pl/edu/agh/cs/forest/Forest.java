@@ -9,28 +9,29 @@ import java.util.*;
 public class Forest {
 
     private Map<Integer, LinkedHashSet<Integer>> nonTreeEdges;
-    private Map<Integer, Integer> vertexIdToTkey;
-    private Map<Integer, Tree> tkeyToTree;
-    private ArrayList<Tree> trees;
-    private int level;
-    private int treeCounter = 0;
+    private Map<Integer, Node> vertexToNode;
+//    private Map<Integer, Integer> vertexIdToTkey;
+//    private Map<Integer, Tree> tkeyToTree;
+    private int level = -1;
+//    private int treeCounter = 0;
     private DynamicConnectivity dynamicConnectivity;
     private Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes;
 
     public Forest(int level, DynamicConnectivity dcAlgo) {
-        this.vertexIdToTkey = new HashMap<>();
+//        this.vertexIdToTkey = new HashMap<>();
         this.nonTreeEdges = new HashMap<>();
-        this.tkeyToTree = new HashMap<>();
+//        this.tkeyToTree = new HashMap<>();
         this.keyToNodes = new HashMap<>();
-        this.trees = new ArrayList<>();
+        this.vertexToNode = new HashMap<>();
         this.level = level;
         this.dynamicConnectivity = dcAlgo;
     }
 
     private Integer createNewTree(Node treeNode){
         Tree t = new Tree(treeCounter, treeNode, keyToNodes);
-        this.trees.add(t);
-        this.tkeyToTree.put(treeCounter, t);
+//        this.tkeyToTree.put(treeCounter, t);
+        this.vertexToNode.put(treeNode.key.getFirst(), treeNode);
+        this.vertexToNode.put(treeNode.key.getSecond(), treeNode);
         treeCounter++;
         return treeCounter-1;
     }
@@ -38,24 +39,66 @@ public class Forest {
     public void createNewTree(int u, int v){
         Tree t = new Tree(treeCounter, keyToNodes);
         t.addTreeEdge(u, v);
-        this.trees.add(t);
         this.vertexIdToTkey.put(u, treeCounter);
         this.vertexIdToTkey.put(v, treeCounter);
         this.tkeyToTree.put(treeCounter, t);
         treeCounter++;
     }
 
+    private void showTkeyToTree(){
+        System.out.println("Tkey To Tree: ");
+        for(Integer tkey : this.tkeyToTree.keySet()){
+            System.out.printf("tkey: %d tree: %s%n", tkey, this.tkeyToTree.get(tkey));
+        }
+    }
+
+    private void showVertexIdToTkey(){
+        System.out.println("Vertex Id To Tkey: ");
+        for(Integer vertexId : this.vertexIdToTkey.keySet()){
+            System.out.printf("vertexId: %d tkey: %d%n", vertexId, this.vertexIdToTkey.get(vertexId));
+        }
+    }
+
+    private void showNonTreeEdges(){
+        System.out.println("Non tree edges: ");
+        for(Integer u : this.nonTreeEdges.keySet()){
+            System.out.printf("Begin: %d%n", u);
+            for(Integer v : this.nonTreeEdges.get(u)){
+                System.out.printf("/tend: %d%n", v);
+            }
+        }
+    }
+
+    private void showkeyToNodes(){
+        System.out.println("Key To Node: ");
+        for(Pair<Integer, Integer> key: this.keyToNodes.keySet()){
+            System.out.printf("For key: %s%n", key);
+            for(Node node : this.keyToNodes.get(key)){
+                System.out.printf("/tNode: %s%n", node);
+            }
+        }
+    }
+
     public void addTreeEdge(int u, int v) throws Exception {
+        System.out.printf("AddTreeEdge %d, %d%n", u, v);
         Integer tkeyU = vertexIdToTkey.get(u);
         Integer tkeyV = vertexIdToTkey.get(v);
+
         if(tkeyU != null && tkeyV != null){
             if(Objects.equals(tkeyU, tkeyV)){
                 throw new Exception("This edge should be a non tree edge!");
             } else {
+                System.out.println("link two trees!:"+tkeyU+" "+tkeyV);
+                this.tkeyToTree.get(tkeyU).show();
                 tkeyToTree.get(tkeyU).linkTwoTreesWithEdge(u, v, tkeyToTree.get(tkeyV));
+//                this.showTkeyToTree();
+//                this.showVertexIdToTkey();
+//                this.tkeyToTree.get(tkeyU).show();
                 for(Integer treeVertex: this.tkeyToTree.get(tkeyU).getVertices()){
+                    System.out.println(tkeyU+" "+treeVertex);
                     this.vertexIdToTkey.put(treeVertex, tkeyU); //TODO: to optimize
                 }
+
             }
         } else if(tkeyU != null){
             tkeyToTree.get(tkeyU).addTreeEdge(u, v);
@@ -94,7 +137,7 @@ public class Forest {
         return tkeyToTree.get(vertexIdToTkey.get(u));
     }
 
-    public int getAmtOfTrees(){ return this.trees.size(); }
+    public int getAmtOfTrees(){ return this.tkeyToTree.values().size(); }
 
     public void deleteTreeEdge(int u, int v) {
         if(!this.checkIfTreeEdgeExists(u, v)) return;
@@ -103,9 +146,7 @@ public class Forest {
 
         if(tkeyU != null && tkeyV != null){
             if(Objects.equals(tkeyU, tkeyV)){
-                trees.get(0).show();
                 Node newTree = tkeyToTree.get(tkeyU).deleteEdge(u, v);
-                trees.get(0).show();
 
                 Integer t = this.createNewTree(newTree);
                 for(Integer treeVertex: this.tkeyToTree.get(t).getVertices()){
@@ -197,6 +238,8 @@ public class Forest {
     }
 
     public boolean isConnected(Integer v, Integer w){
+        this.showTkeyToTree();
+        this.showVertexIdToTkey();
         return this.vertexIdToTkey.get(v).equals(this.vertexIdToTkey.get(w));
     }
 }

@@ -220,7 +220,7 @@ public class TestSplayTree {
         SplayTree.splay(root1.right.right.right.right.right.right.right);
         SplayTree.splay(root1.right.right.right.right);
         Node root = SplayTree.getRootNode(root1);
-        SplayTree.removeNode(root1);
+        root = SplayTree.removeNode(root1);
         assertEquals(new Pair<>(1,2), root.left.key);
         assertEquals(new Pair<>(3,3), root.right.parent.key);
     }

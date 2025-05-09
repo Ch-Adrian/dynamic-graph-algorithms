@@ -172,7 +172,7 @@ public class EulerTourTreeTest {
 
         tree.reRoot(4);
         assertEquals(Integer.valueOf(4), tree.getRoot());
-        tree.show();
+//        tree.show();
 
     }
 
@@ -189,16 +189,16 @@ public class EulerTourTreeTest {
 
         tree.setSplayRoot(tree.getSplayRoot());
 
-        tree.show();
-
-        for(LinkedHashSet<Node> nodes: keyToNodes.values()) {
-            for(Node n: nodes) {
-                System.out.println(n.key+" reference: "+n);
-                if(n.parent != null) System.out.println("Parent: "+n.parent.key);
-            }
-        }
+//        tree.show();
+//
+//        for(LinkedHashSet<Node> nodes: keyToNodes.values()) {
+//            for(Node n: nodes) {
+//                System.out.println(n.key+" reference: "+n);
+//                if(n.parent != null) System.out.println("Parent: "+n.parent.key);
+//            }
+//        }
         assertEquals(Integer.valueOf(2), tree.getRoot());
-        assertEquals(new Node(new Pair<>(0,2)), tree.getSplayRoot());
+        assertEquals(new Pair<>(0,2), tree.getSplayRoot().key);
         tree.reRoot(0);
 
         assertEquals(Integer.valueOf(0), tree.getRoot());

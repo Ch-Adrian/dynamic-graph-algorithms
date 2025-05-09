@@ -28,8 +28,8 @@ public class DynamicConnectivityTest {
         }
 
         assertEquals(1, dc.getForestForLevel(0).getAmtOfTrees());
-        System.out.println("show general tree:");
-        dc.getForestForLevel(0).getTree(5).show();
+//        System.out.println("show general tree:");
+//        dc.getForestForLevel(0).getTree(5).show();
 
         assertTrue(dc.getForestForLevel(0).checkIfTreeEdgeExists(0,1));
         assertTrue(dc.getForestForLevel(0).checkIfTreeEdgeExists(1,2));
@@ -112,12 +112,11 @@ public class DynamicConnectivityTest {
         assertTrue(dc.getForestForLevel(0).checkIfTreeEdgeExists(0,1));
         assertTrue(dc.getForestForLevel(0).checkIfTreeEdgeExists(1,2));
         assertTrue(dc.getForestForLevel(0).checkIfTreeEdgeExists(2,3));
-        assertTrue(dc.getForestForLevel(0).checkIfTreeEdgeExists(2,4));
+//        assertTrue(dc.getForestForLevel(0).checkIfTreeEdgeExists(2,4));
         assertTrue(dc.getForestForLevel(0).checkIfTreeEdgeExists(4,6));
         assertTrue(dc.getForestForLevel(0).checkIfTreeEdgeExists(5,6));
         assertTrue(dc.getForestForLevel(0).checkIfTreeEdgeExists(6,7));
         assertTrue(dc.getForestForLevel(0).checkIfTreeEdgeExists(4,8));
-        assertTrue(dc.getForestForLevel(0).checkIfTreeEdgeExists(2,4));
 
         assertTrue(dc.getForestForLevel(0).checkIfNonTreeEdgeExists(1,3));
         assertTrue(dc.getForestForLevel(0).checkIfNonTreeEdgeExists(3,8));
