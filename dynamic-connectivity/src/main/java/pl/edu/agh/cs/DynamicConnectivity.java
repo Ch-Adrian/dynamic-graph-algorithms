@@ -26,6 +26,7 @@ public class DynamicConnectivity {
     }
 
     public void addEdge(int from, int to) throws Exception {
+        if(from == 4 && to == 8) System.out.println("Adding edge " + from + " to " + to);
         Tree treeFrom = this.forests.getFirst().getTree(from);
         Tree treeTo = this.forests.get(0).getTree(to);
 
@@ -43,9 +44,11 @@ public class DynamicConnectivity {
     }
 
     public void deleteEdge(int from, int to) throws Exception {
+        System.out.println("Deleting edge " + from + " to " + to);
         boolean nonTreeEdgeFound = this.forests.getFirst().checkIfNonTreeEdgeExists(from, to);
         if(nonTreeEdgeFound) {
             for(Forest forest : forests) {
+                System.out.println("deleting non tree edge " + from + " to " + to);
                 forest.deleteNonTreeEdge(from, to);
             }
         } else {
@@ -53,6 +56,8 @@ public class DynamicConnectivity {
             for(Forest forest : forests) {
                 if(forest.checkIfTreeEdgeExists(from, to)) {
                     highestLvl++;
+                    System.out.println("highestLvL: "+highestLvl);
+                    System.out.println("deleting tree edge " + from + " to " + to);
                     forest.deleteTreeEdge(from, to);
                 }
             }

@@ -6,6 +6,8 @@ import java.util.Objects;
 
 public class Node {
 
+    public static long nodeCounter = 0;
+    private long uniqueKey= 0;
     public Pair<Integer, Integer> key;
     public Node left;
     public Node right;
@@ -13,9 +15,12 @@ public class Node {
     public int sizeOfTree;
 
     public Node(Pair<Integer, Integer> key) {
+        this.uniqueKey = nodeCounter++;
         this.key = key;
         this.sizeOfTree = 1;
     }
+
+    public long getUniqueKey(){ return this.uniqueKey; }
 
     @Override
     public String toString() {

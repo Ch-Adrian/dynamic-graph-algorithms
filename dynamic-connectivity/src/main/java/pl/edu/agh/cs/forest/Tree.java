@@ -4,22 +4,21 @@ import pl.edu.agh.cs.common.Pair;
 import pl.edu.agh.cs.eulerTourTree.EulerTourTree;
 import pl.edu.agh.cs.eulerTourTree.splay.Node;
 
-import java.util.ArrayList;
-import java.util.Set;
+import java.util.*;
 
 public class Tree {
 
     private Integer Tkey;
     private EulerTourTree eulerTourTree;
 
-    public Tree(Integer key) {
+    public Tree(Integer key, Map<Pair<Integer, Integer>, ArrayList<Node>> keyToNodes) {
         this.Tkey = key;
-        this.eulerTourTree = new EulerTourTree();
+        this.eulerTourTree = new EulerTourTree(keyToNodes);
     }
 
-    public Tree(Integer key, Node treeNode) {
+    public Tree(Integer key, Node treeNode, Map<Pair<Integer, Integer>, ArrayList<Node>> keyToNodes) {
         this.Tkey = key;
-        this.eulerTourTree = new EulerTourTree();
+        this.eulerTourTree = new EulerTourTree(keyToNodes);
         this.eulerTourTree.setSplayRoot(treeNode);
     }
 
@@ -44,7 +43,7 @@ public class Tree {
         return this.eulerTourTree.deleteEdge(u, v);
     }
 
-    public ArrayList<Pair<Integer, Integer>> getEdges(){
+    public Set<Pair<Integer, Integer>> getEdges(){
         return eulerTourTree.getEdges();
     }
 
@@ -54,6 +53,10 @@ public class Tree {
 
     public Integer getSize() {
         return eulerTourTree.getSizeOfTree();
+    }
+
+    public void show(){
+        this.eulerTourTree.show();
     }
 
 
