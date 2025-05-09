@@ -27,7 +27,7 @@ public class Tree {
     }
 
     public Integer getRoot(){
-        return eulerTourTree.getRoot();
+        return eulerTourTree.getEulerTourRoot();
     }
 
     public Node deleteEdge(int u, int v){

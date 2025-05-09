@@ -6,13 +6,11 @@ import pl.edu.agh.cs.common.Pair;
 import pl.edu.agh.cs.eulerTourTree.splay.Node;
 import pl.edu.agh.cs.eulerTourTree.splay.SplayTree;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static pl.edu.agh.cs.eulerTourTree.EulerTourTree.dfs;
 
 public class EulerTourTreeTest {
 
@@ -70,10 +68,10 @@ public class EulerTourTreeTest {
         tree.setSplayRoot(node);
 
         tree.reRoot(1);
-        assertEquals(Integer.valueOf(1), tree.getRoot());
+        assertEquals(Integer.valueOf(1), tree.getEulerTourRoot());
 
         tree.reRoot(2);
-        assertEquals(Integer.valueOf(2), tree.getRoot());
+        assertEquals(Integer.valueOf(2), tree.getEulerTourRoot());
     }
 
     @Test
@@ -171,7 +169,7 @@ public class EulerTourTreeTest {
         tree.setSplayRoot(node);
 
         tree.reRoot(4);
-        assertEquals(Integer.valueOf(4), tree.getRoot());
+        assertEquals(Integer.valueOf(4), tree.getEulerTourRoot());
 //        tree.show();
 
     }
@@ -197,14 +195,14 @@ public class EulerTourTreeTest {
 //                if(n.parent != null) System.out.println("Parent: "+n.parent.key);
 //            }
 //        }
-        assertEquals(Integer.valueOf(2), tree.getRoot());
+        assertEquals(Integer.valueOf(2), tree.getEulerTourRoot());
         assertEquals(new Pair<>(0,2), tree.getSplayRoot().key);
         tree.reRoot(0);
 
-        assertEquals(Integer.valueOf(0), tree.getRoot());
+        assertEquals(Integer.valueOf(0), tree.getEulerTourRoot());
 
         tree.reRoot(1);
-        assertEquals(Integer.valueOf(1), tree.getRoot());
+        assertEquals(Integer.valueOf(1), tree.getEulerTourRoot());
     }
 
     @Test
@@ -225,7 +223,7 @@ public class EulerTourTreeTest {
         assertEquals(new Pair<>(2,2), splayRoot.left.left.right.key);
         assertEquals(new Pair<>(3,2), splayRoot.left.left.right.right.right.right.key);
         assertEquals(new Pair<>(1,0), splayRoot.left.left.left.left.left.left.right.key);
-        assertEquals(Integer.valueOf(1), treeLeft.getRoot());
+        assertEquals(Integer.valueOf(1), treeLeft.getEulerTourRoot());
 
     }
 

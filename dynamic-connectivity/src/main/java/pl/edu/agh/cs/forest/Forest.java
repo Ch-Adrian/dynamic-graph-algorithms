@@ -2,7 +2,9 @@ package pl.edu.agh.cs.forest;
 
 import pl.edu.agh.cs.DynamicConnectivity;
 import pl.edu.agh.cs.common.Pair;
+import pl.edu.agh.cs.eulerTourTree.EulerTourTree;
 import pl.edu.agh.cs.eulerTourTree.splay.Node;
+import pl.edu.agh.cs.eulerTourTree.splay.SplayTree;
 
 import java.util.*;
 
@@ -10,14 +12,12 @@ public class Forest {
 
     private Map<Integer, LinkedHashSet<Integer>> nonTreeEdges;
     private Map<Integer, Node> vertexToNode;
-    private Map<Node, Tree> nodeToTree;
     private int level = -1;
     private DynamicConnectivity dynamicConnectivity;
     private Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes;
 
     public Forest(int level, DynamicConnectivity dcAlgo) {
         this.nonTreeEdges = new HashMap<>();
-        this.nodeToTree = new HashMap<>();
         this.keyToNodes = new HashMap<>();
         this.vertexToNode = new HashMap<>();
         this.level = level;
@@ -25,31 +25,21 @@ public class Forest {
     }
 
     private void createNewTree(Node treeNode){
-        Tree t = new Tree(treeNode, keyToNodes);
         this.vertexToNode.put(treeNode.key.getFirst(), treeNode);
         this.vertexToNode.put(treeNode.key.getSecond(), treeNode);
     }
 
     public void createNewTree(int u, int v){
-        Tree t = new Tree(treeCounter, keyToNodes);
-        t.addTreeEdge(u, v);
-        this.vertexIdToTkey.put(u, treeCounter);
-        this.vertexIdToTkey.put(v, treeCounter);
-        this.tkeyToTree.put(treeCounter, t);
-        treeCounter++;
+        EulerTourTree.addEdge(null, u, v, keyToNodes);
+        this.vertexToNode.put(u, keyToNodes.get(new Pair<>(u,u)).getFirst());
+        this.vertexToNode.put(v, keyToNodes.get(new Pair<>(v,v)).getFirst());
     }
 
-    private void showTkeyToTree(){
-        System.out.println("Tkey To Tree: ");
-        for(Integer tkey : this.tkeyToTree.keySet()){
-            System.out.printf("tkey: %d tree: %s%n", tkey, this.tkeyToTree.get(tkey));
-        }
-    }
 
-    private void showVertexIdToTkey(){
+    private void showVertexIdToNode(){
         System.out.println("Vertex Id To Tkey: ");
-        for(Integer vertexId : this.vertexIdToTkey.keySet()){
-            System.out.printf("vertexId: %d tkey: %d%n", vertexId, this.vertexIdToTkey.get(vertexId));
+        for(Integer vertexId : this.vertexToNode.keySet()){
+            System.out.printf("vertexId: %d node: %s%n", vertexId, this.vertexToNode.get(vertexId));
         }
     }
 
@@ -73,33 +63,18 @@ public class Forest {
         }
     }
 
-    public void addTreeEdge(int u, int v) throws Exception {
-        System.out.printf("AddTreeEdge %d, %d%n", u, v);
-        Integer tkeyU = vertexIdToTkey.get(u);
-        Integer tkeyV = vertexIdToTkey.get(v);
+    public void addTreeEdge(int u, int v) {
+        Node nodeU = SplayTree.getRootNode(this.vertexToNode.get(u));
+        Node nodeV = SplayTree.getRootNode(this.vertexToNode.get(v));
 
-        if(tkeyU != null && tkeyV != null){
-            if(Objects.equals(tkeyU, tkeyV)){
-                throw new Exception("This edge should be a non tree edge!");
-            } else {
-                System.out.println("link two trees!:"+tkeyU+" "+tkeyV);
-                this.tkeyToTree.get(tkeyU).show();
-                tkeyToTree.get(tkeyU).linkTwoTreesWithEdge(u, v, tkeyToTree.get(tkeyV));
-//                this.showTkeyToTree();
-//                this.showVertexIdToTkey();
-//                this.tkeyToTree.get(tkeyU).show();
-                for(Integer treeVertex: this.tkeyToTree.get(tkeyU).getVertices()){
-                    System.out.println(tkeyU+" "+treeVertex);
-                    this.vertexIdToTkey.put(treeVertex, tkeyU); //TODO: to optimize
-                }
-
-            }
-        } else if(tkeyU != null){
-            tkeyToTree.get(tkeyU).addTreeEdge(u, v);
-            vertexIdToTkey.put(v, tkeyU);
-        } else if(tkeyV != null){
-            tkeyToTree.get(tkeyV).addTreeEdge(v, u);
-            vertexIdToTkey.put(u, tkeyV);
+        if(nodeU != null && nodeV != null){
+            EulerTourTree.link(u, v, keyToNodes);
+        } else if(nodeU != null){
+            EulerTourTree.addEdge(nodeU, u, v, keyToNodes);
+            this.vertexToNode.put(v, nodeU);
+        } else if(nodeV != null){
+            EulerTourTree.addEdge(nodeV, u, v, keyToNodes);
+            this.vertexToNode.put(u, nodeV);
         } else {
             this.createNewTree(u, v);
         }
@@ -127,71 +102,54 @@ public class Forest {
         return this.nonTreeEdges.get(u);
     }
 
-    public Tree getTree(int u) {
-        return tkeyToTree.get(vertexIdToTkey.get(u));
-    }
-
-    public int getAmtOfTrees(){ return this.tkeyToTree.values().size(); }
-
     public void deleteTreeEdge(int u, int v) {
         if(!this.checkIfTreeEdgeExists(u, v)) return;
-        Integer tkeyU = vertexIdToTkey.get(u);
-        Integer tkeyV = vertexIdToTkey.get(v);
+        Node nodeU = SplayTree.getRootNode(this.vertexToNode.get(u));
+        Node nodeV = SplayTree.getRootNode(this.vertexToNode.get(v));
 
-        if(tkeyU != null && tkeyV != null){
-            if(Objects.equals(tkeyU, tkeyV)){
-                Node newTree = tkeyToTree.get(tkeyU).deleteEdge(u, v);
-
-                Integer t = this.createNewTree(newTree);
-                for(Integer treeVertex: this.tkeyToTree.get(t).getVertices()){
-                    this.vertexIdToTkey.put(treeVertex, t); //TODO: to optimize
-                }
-
-            } else {
-                if(Objects.equals(tkeyToTree.get(tkeyU).getRoot(), tkeyToTree.get(tkeyV).getRoot())){
-                    Node newTree = tkeyToTree.get(tkeyU).deleteEdge(u, v);
-                    Integer t = this.createNewTree(newTree);
-                    for(Integer treeVertex: this.tkeyToTree.get(t).getVertices()){
-                        this.vertexIdToTkey.put(treeVertex, t); //TODO: to optimize
-                    }
+        if(nodeU != null && nodeV != null){
+            if(nodeU.equals(nodeV)){
+                Pair<Node, Node> trees = EulerTourTree.deleteEdge(nodeU, u,v, keyToNodes);
+                assert trees != null;
+                if(SplayTree.getRootNode(trees.getFirst()).equals(SplayTree.getRootNode(nodeU))){
+                    this.vertexToNode.put(u, trees.getFirst());
+                    this.vertexToNode.put(v, trees.getSecond());
                 } else {
-                    throw new Error("Cannot be situation that edge connects two different trees!");
+                    this.vertexToNode.put(v, trees.getFirst());
+                    this.vertexToNode.put(u, trees.getSecond());
                 }
+            } else {
+                throw new Error("Cannot be situation that edge connects two different trees!");
             }
         }
     }
 
-    public void findReplacementEdge(int v, int w, int level) throws Exception {
-        Tree Tv = this.tkeyToTree.get(vertexIdToTkey.get(v));
-        Tree Tw = this.tkeyToTree.get(vertexIdToTkey.get(w));
-        Tree Tmin;
-        Integer V;
-        if(Tv == null){
+    public void findReplacementEdge(int v, int w, int level) {
+        Node nodeV = SplayTree.getRootNode(this.vertexToNode.get(v));
+        Node nodeW = SplayTree.getRootNode(this.vertexToNode.get(w));
+        Node Tmin;
+        if(nodeV == null){
             Tmin = null;
-            V = v;
         }
-        else if(Tw == null){
+        else if(nodeW == null){
             Tmin = null;
-            V = w;
         }
-        else if(Tv.getSize() > Tw.getSize()){
-            Tmin = Tw;
-            V = w;
+        else if(SplayTree.getSizeOfTree(nodeV) > SplayTree.getSizeOfTree(nodeW)){
+            Tmin = nodeW;
         } else {
-            Tmin = Tv;
-            V = v;
+            Tmin = nodeV;
         }
 
         if(Tmin != null){
-            for(Pair<Integer, Integer> edge: Tmin.getEdges()){
+            for(Pair<Integer, Integer> edge: EulerTourTree.getEdges(Tmin)){
                 this.dynamicConnectivity.getForestForLevel(level+1).addTreeEdge(edge.getFirst(), edge.getSecond());
             }
             boolean nonTreeEdgeFound = false;
             Pair<Integer, Integer> nonTreeEdge = null;
 
-            for(Integer vertex: Tmin.getVertices()){
+            for(Integer vertex: EulerTourTree.getVertices(Tmin)){
                 for(Integer nonTreeEdgeEnd: this.dynamicConnectivity.getForestForLevel(level).getNonTreeEdges(vertex)){
-                    if(this.getTree(nonTreeEdgeEnd) != Tmin){
+                    if(!SplayTree.getRootNode(this.vertexToNode.get(nonTreeEdgeEnd)).equals(SplayTree.getRootNode(Tmin))){
                         nonTreeEdgeFound = true;
                         nonTreeEdge = new Pair<>(vertex, nonTreeEdgeEnd);
                         for(int lvl= 0; lvl < dynamicConnectivity.getAmtOfLevels(); lvl++){
@@ -215,25 +173,23 @@ public class Forest {
     }
 
     public boolean checkIfNonTreeEdgeExists(int u, int v){
-        if(this.nonTreeEdges.containsKey(u)){
-            if(this.nonTreeEdges.get(u).contains(v))
-                return true;
-        }
+        if(this.nonTreeEdges.containsKey(u))
+            return this.nonTreeEdges.get(u).contains(v);
         return false;
     }
 
-    public boolean checkIfTreeEdgeExists(int u, int v){
-        Integer tkeyU = vertexIdToTkey.get(u);
-        Integer tkeyV = vertexIdToTkey.get(v);
-        if(tkeyU != null && Objects.equals(tkeyV, tkeyU)){
+    public boolean checkIfTreeEdgeExists(int v, int u){
+        Node nodeU = SplayTree.getRootNode(this.vertexToNode.get(u));
+        Node nodeV = SplayTree.getRootNode(this.vertexToNode.get(v));
+        if(nodeU != null && Objects.equals(nodeU, nodeV)){
             return true;
         }
         return false;
     }
 
-    public boolean isConnected(Integer v, Integer w){
-        this.showTkeyToTree();
-        this.showVertexIdToTkey();
-        return this.vertexIdToTkey.get(v).equals(this.vertexIdToTkey.get(w));
+    public boolean isConnected(Integer u, Integer v){
+        Node nodeU = SplayTree.getRootNode(this.vertexToNode.get(u));
+        Node nodeV = SplayTree.getRootNode(this.vertexToNode.get(v));
+        return Objects.equals(nodeU, nodeV);
     }
 }
