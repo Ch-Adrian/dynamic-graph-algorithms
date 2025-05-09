@@ -24,6 +24,10 @@ public class Forest {
         this.dynamicConnectivity = dcAlgo;
     }
 
+    public Node getRepresentativeTreeNode(int u){
+        return SplayTree.getRootNode(vertexToNode.get(u));
+    }
+
     private void createNewTree(Node treeNode){
         this.vertexToNode.put(treeNode.key.getFirst(), treeNode);
         this.vertexToNode.put(treeNode.key.getSecond(), treeNode);

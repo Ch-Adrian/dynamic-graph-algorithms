@@ -1,7 +1,7 @@
 package pl.edu.agh.cs;
 
+import pl.edu.agh.cs.eulerTourTree.splay.Node;
 import pl.edu.agh.cs.forest.Forest;
-import pl.edu.agh.cs.forest.Tree;
 
 import java.util.ArrayList;
 
@@ -26,19 +26,13 @@ public class DynamicConnectivity {
     }
 
     public void addEdge(int from, int to) throws Exception {
-        Tree treeFrom = this.forests.getFirst().getTree(from);
-        Tree treeTo = this.forests.get(0).getTree(to);
+        Node treeFrom = this.forests.getFirst().getRepresentativeTreeNode(from);
+        Node treeTo = this.forests.getFirst().getRepresentativeTreeNode(to);
 
-        if(treeFrom == treeTo && treeFrom != null) {
-            this.forests.get(0).addNonTreeEdge(from, to);
-        } else if(treeFrom == null && treeTo != null) {
-            this.forests.get(0).addTreeEdge(from, to);
-        } else if(treeFrom != null && treeTo == null) {
-            this.forests.get(0).addTreeEdge(from, to);
-        } else if(treeFrom != null && treeTo != null) {
-            this.forests.get(0).addTreeEdge(from, to);
+        if(treeFrom.equals(treeTo) && treeFrom != null) {
+            this.forests.getFirst().addNonTreeEdge(from, to);
         } else {
-            this.forests.get(0).createNewTree(from, to);
+            this.forests.getFirst().addTreeEdge(from, to);
         }
     }
 
