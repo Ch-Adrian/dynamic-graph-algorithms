@@ -28,13 +28,27 @@ public class Forest {
         return SplayTree.getRootNode(vertexToNode.get(u));
     }
 
+    public static boolean checkIfVertexHasNodeInTheTree(int v, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes){
+        if(keyToNodes.containsKey(new Pair<>(v,v)))
+            return !keyToNodes.get(new Pair<>(v,v)).isEmpty();
+        return false;
+    }
+
     private void createNewTree(Node treeNode){
         this.vertexToNode.put(treeNode.key.getFirst(), treeNode);
         this.vertexToNode.put(treeNode.key.getSecond(), treeNode);
     }
 
-    public void createNewTree(int u, int v){
-        EulerTourTree.addEdge(null, u, v, keyToNodes);
+    public void createNewTree(int u, int v) {
+        if(this.checkIfTreeEdgeExists(u, v)) return;
+        try {
+            EulerTourTree.createNewEulerTourTree(u, v, keyToNodes);
+        } catch (Exception e){
+            if(Forest.checkIfVertexHasNodeInTheTree(u, keyToNodes))
+                EulerTourTree.addEdge(this.vertexToNode.get(u), u, v, keyToNodes);
+            else if(Forest.checkIfVertexHasNodeInTheTree(v, keyToNodes))
+                EulerTourTree.addEdge(this.vertexToNode.get(v), v, u, keyToNodes);
+        }
         this.vertexToNode.put(u, keyToNodes.get(new Pair<>(u,u)).getFirst());
         this.vertexToNode.put(v, keyToNodes.get(new Pair<>(v,v)).getFirst());
     }

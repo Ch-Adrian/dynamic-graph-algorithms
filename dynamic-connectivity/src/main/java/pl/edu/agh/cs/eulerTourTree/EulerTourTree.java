@@ -7,6 +7,19 @@ import pl.edu.agh.cs.eulerTourTree.splay.SplayTree;
 import java.util.*;
 
 public class EulerTourTree {
+
+    public static Node createNewEulerTourTree(int u, int v, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes) throws Exception {
+        if(!keyToNodes.get(new Pair<>(u,u)).isEmpty() || !keyToNodes.get(new Pair<>(v,v)).isEmpty())
+            throw new Exception("At least one vertex is present in the tree.");
+        Node splayRoot = new Node(new Pair<>(u,u));
+        keyToNodes.put(new Pair<>(u,u), new LinkedHashSet<>());
+        keyToNodes.put(new Pair<>(v,v), new LinkedHashSet<>());
+
+        keyToNodes.get(new Pair<>(u,u)).add(splayRoot);
+        insertEdgeToETT(splayRoot, u, v, keyToNodes);
+        return splayRoot;
+    }
+
     public static Node addNode(Pair<Integer, Integer> key, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes){
         Node n = new Node(key);
         if(!keyToNodes.containsKey(key)) {
@@ -71,40 +84,25 @@ public class EulerTourTree {
     public static Pair<Node,Node> cut(Integer u, Integer v, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes) {
         Node edgeUV = keyToNodes.get(new Pair<>(u, v)).getFirst();
         Node edgeVU = keyToNodes.get(new Pair<>(v, u)).getFirst();
-//        this.show();
 
         Pair<Node, Node> roots = SplayTree.split(edgeUV);
         Node J;
         Node K;
         Node L;
 
-        if(SplayTree.getRootNode(roots.getFirst()).equals(SplayTree.getRootNode(edgeUV))) {
-            roots.setFirst(SplayTree.removeNode(edgeUV));
-        } else {
-            roots.setSecond(SplayTree.removeNode(edgeUV));
-        }
+        roots.setFirst(SplayTree.removeNode(edgeUV));
         keyToNodes.get(new Pair<>(u, v)).remove(edgeUV);
 
         if(SplayTree.getRootNode(roots.getFirst()).equals(SplayTree.getRootNode(edgeVU))) {
             Pair<Node, Node> trees2 = SplayTree.split(edgeVU);
-            J = trees2.getFirst();
+            J = SplayTree.removeNode(edgeVU);
             K = trees2.getSecond();
             L = roots.getSecond();
-            if(SplayTree.getRootNode(J).equals(SplayTree.getRootNode(edgeVU))) {
-                J = SplayTree.removeNode(edgeVU);
-            } else {
-                K = SplayTree.removeNode(edgeVU);
-            }
         } else {
             Pair<Node, Node> trees2 = SplayTree.split(edgeVU);
             J = roots.getFirst();
-            K = trees2.getFirst();
+            K = SplayTree.removeNode(edgeVU);
             L = trees2.getSecond();
-            if(SplayTree.getRootNode(K).equals(SplayTree.getRootNode(edgeVU))) {
-                K = SplayTree.removeNode(edgeVU);
-            } else {
-                L = SplayTree.removeNode(edgeVU);
-            }
         }
         keyToNodes.get(new Pair<>(v, u)).remove(edgeVU);
 
@@ -116,15 +114,6 @@ public class EulerTourTree {
 
     public static void addEdge(Node treeNode, int u, int v, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes){
         Node splayRoot = SplayTree.getRootNode(treeNode);
-        if(splayRoot == null){
-            splayRoot = new Node(new Pair<>(u,u));
-            keyToNodes.put(new Pair<>(u,u), new LinkedHashSet<>());
-            keyToNodes.put(new Pair<>(v,v), new LinkedHashSet<>());
-
-            keyToNodes.get(new Pair<>(u,u)).add(splayRoot);
-            insertEdgeToETT(splayRoot, u, v, keyToNodes);
-            return;
-        }
         if(keyToNodes.containsKey(new Pair<>(u, u)) &&
                 !keyToNodes.containsKey(new Pair<>(v,v))){
             keyToNodes.put(new Pair<>(v,v), new LinkedHashSet<>());

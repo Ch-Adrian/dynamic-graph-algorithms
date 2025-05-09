@@ -33,7 +33,6 @@ public class EulerTourTreeTest {
     @Test
     public void testReroot(){
         Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes = new HashMap<>();
-        EulerTourTree tree = new EulerTourTree(keyToNodes);
         Node node = new Node(new Pair<>(0,0));
         node.right = new Node(new Pair<>(0,1));
         node.right.right = new Node(new Pair<>(1,1));
@@ -64,20 +63,16 @@ public class EulerTourTreeTest {
         keyToNodes.get(new Pair<>(2,0)).add(node.right.right.right.right.right.right.right);
         keyToNodes.get(new Pair<>(0,0)).add(node.right.right.right.right.right.right.right.right);
 
-        tree.setKeyToNodes(keyToNodes);
-        tree.setSplayRoot(node);
+        EulerTourTree.reRoot(node, 1, keyToNodes);
+        assertEquals(Integer.valueOf(1), EulerTourTree.getEulerTourRoot(node));
 
-        tree.reRoot(1);
-        assertEquals(Integer.valueOf(1), tree.getEulerTourRoot());
-
-        tree.reRoot(2);
-        assertEquals(Integer.valueOf(2), tree.getEulerTourRoot());
+        EulerTourTree.reRoot(node, 2, keyToNodes);
+        assertEquals(Integer.valueOf(2), EulerTourTree.getEulerTourRoot(node));
     }
 
     @Test
     public void testReroot2(){
         Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes = new HashMap<>();
-        EulerTourTree tree = new EulerTourTree(keyToNodes);
         Node node = new Node(new Pair<>(4,6));
         node.right = new Node(new Pair<>(6,6));
         node.right.right = new Node(new Pair<>(6,5));
@@ -165,11 +160,8 @@ public class EulerTourTreeTest {
         keyToNodes.get(new Pair<>(6,6)).add(node.left.left);
         keyToNodes.get(new Pair<>(6,4)).add(node.left.left.right);
 
-        tree.setKeyToNodes(keyToNodes);
-        tree.setSplayRoot(node);
-
-        tree.reRoot(4);
-        assertEquals(Integer.valueOf(4), tree.getEulerTourRoot());
+        EulerTourTree.reRoot(node, 4, keyToNodes);
+        assertEquals(Integer.valueOf(4), EulerTourTree.getEulerTourRoot(node));
 //        tree.show();
 
     }
@@ -177,15 +169,14 @@ public class EulerTourTreeTest {
     @Test
     public void testAddEdge(){
         Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes = new HashMap<>();
-        EulerTourTree tree = new EulerTourTree(keyToNodes);
-        tree.addEdge(0, 1);
+        EulerTourTree.addEdge(null,0, 1, keyToNodes);
         tree.addEdge(0, 2);
         tree.addEdge(1, 3);
         tree.addEdge(1, 4);
         tree.addEdge(2, 5);
         tree.addEdge(2, 6);
 
-        tree.setSplayRoot(tree.getSplayRoot());
+        EulerTourTree.setSplayRoot(tree.getSplayRoot());
 
 //        tree.show();
 //
