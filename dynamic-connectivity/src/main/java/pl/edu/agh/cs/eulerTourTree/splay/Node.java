@@ -33,11 +33,13 @@ public class Node {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Node node)) return false;
-        return Objects.equals(key, node.key);
+        return uniqueKey == node.uniqueKey && Objects.equals(key, node.key);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(key);
+        return Objects.hash(uniqueKey, key);
     }
+
+
 }

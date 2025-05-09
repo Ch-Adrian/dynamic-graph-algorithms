@@ -15,7 +15,7 @@ public class Forest {
     private int level;
     private int treeCounter = 0;
     private DynamicConnectivity dynamicConnectivity;
-    private Map<Pair<Integer, Integer>, ArrayList<Node>> keyToNodes;
+    private Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes;
 
     public Forest(int level, DynamicConnectivity dcAlgo) {
         this.vertexIdToTkey = new HashMap<>();
@@ -52,9 +52,7 @@ public class Forest {
             if(Objects.equals(tkeyU, tkeyV)){
                 throw new Exception("This edge should be a non tree edge!");
             } else {
-                if(u == 4 && v == 8) System.out.println("Check if edge 4-8 exists2: "+this.checkIfTreeEdgeExists(4, 8));
                 tkeyToTree.get(tkeyU).linkTwoTreesWithEdge(u, v, tkeyToTree.get(tkeyV));
-                if(u == 4 && v == 8) System.out.println("Check if edge 4-8 exists:3.5 "+this.checkIfTreeEdgeExists(4, 8));
                 for(Integer treeVertex: this.tkeyToTree.get(tkeyU).getVertices()){
                     if(u == 4 && v == 8) System.out.println("TreeVertex: "+treeVertex);
                     this.vertexIdToTkey.put(treeVertex, tkeyU); //TODO: to optimize
@@ -203,10 +201,9 @@ public class Forest {
                         System.out.println("Found nonTreeEdge that connects two trees.");
                         nonTreeEdgeFound = true;
                         nonTreeEdge = new Pair<>(vertex, nonTreeEdgeEnd);
+                        System.out.println("Non tree Edge: "+nonTreeEdge);
                         for(int lvl= 0; lvl < dynamicConnectivity.getAmtOfLevels(); lvl++){
-                            assert(this.checkIfTreeEdgeExists(4,8));
                             dynamicConnectivity.getForestForLevel(lvl).deleteNonTreeEdge(vertex, nonTreeEdgeEnd);
-                            assert(this.checkIfTreeEdgeExists(4,8));
                         }
                         break;
                     } else {
@@ -217,13 +214,10 @@ public class Forest {
             }
             assert(this.checkIfTreeEdgeExists(4,8));
             if(nonTreeEdgeFound){
-                System.out.println("Non tree edge has been found! on lvl: "+level);
-                assert(this.checkIfTreeEdgeExists(4,8));
                 for(int lvl= 0; lvl <= level; lvl++){
                     System.out.println("!!!!!!!!!!!!!!!!: "+nonTreeEdge);
                     dynamicConnectivity.getForestForLevel(lvl).addTreeEdge(nonTreeEdge.getFirst(), nonTreeEdge.getSecond());
                 }
-                assert(this.checkIfTreeEdgeExists(4,8));
             } else {
                 this.findReplacementEdge(v, w, level-1);
             }

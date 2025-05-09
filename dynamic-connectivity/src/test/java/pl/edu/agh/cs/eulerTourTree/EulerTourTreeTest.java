@@ -34,7 +34,7 @@ public class EulerTourTreeTest {
 
     @Test
     public void testReroot(){
-        Map<Pair<Integer, Integer>, ArrayList<Node>> keyToNodes = new HashMap<>();
+        Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes = new HashMap<>();
         EulerTourTree tree = new EulerTourTree(keyToNodes);
         Node node = new Node(new Pair<>(0,0));
         node.right = new Node(new Pair<>(0,1));
@@ -48,13 +48,13 @@ public class EulerTourTreeTest {
 
         dfsSetParent(node);
 
-        keyToNodes.put(new Pair<>(0,0), new ArrayList<>());
-        keyToNodes.put(new Pair<>(0,1), new ArrayList<>());
-        keyToNodes.put(new Pair<>(1,1), new ArrayList<>());
-        keyToNodes.put(new Pair<>(1,0), new ArrayList<>());
-        keyToNodes.put(new Pair<>(0,2), new ArrayList<>());
-        keyToNodes.put(new Pair<>(2,2), new ArrayList<>());
-        keyToNodes.put(new Pair<>(2,0), new ArrayList<>());
+        keyToNodes.put(new Pair<>(0,0), new LinkedHashSet<>());
+        keyToNodes.put(new Pair<>(0,1), new LinkedHashSet<>());
+        keyToNodes.put(new Pair<>(1,1), new LinkedHashSet<>());
+        keyToNodes.put(new Pair<>(1,0), new LinkedHashSet<>());
+        keyToNodes.put(new Pair<>(0,2), new LinkedHashSet<>());
+        keyToNodes.put(new Pair<>(2,2), new LinkedHashSet<>());
+        keyToNodes.put(new Pair<>(2,0), new LinkedHashSet<>());
 
         keyToNodes.get(new Pair<>(0,0)).add(node);
         keyToNodes.get(new Pair<>(0,1)).add(node.right);
@@ -78,7 +78,7 @@ public class EulerTourTreeTest {
 
     @Test
     public void testReroot2(){
-        Map<Pair<Integer, Integer>, ArrayList<Node>> keyToNodes = new HashMap<>();
+        Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes = new HashMap<>();
         EulerTourTree tree = new EulerTourTree(keyToNodes);
         Node node = new Node(new Pair<>(4,6));
         node.right = new Node(new Pair<>(6,6));
@@ -114,28 +114,28 @@ public class EulerTourTreeTest {
 
         dfsSetParent(node);
 
-        keyToNodes.put(new Pair<>(0,0), new ArrayList<>());
-        keyToNodes.put(new Pair<>(0,1), new ArrayList<>());
-        keyToNodes.put(new Pair<>(1,1), new ArrayList<>());
-        keyToNodes.put(new Pair<>(1,0), new ArrayList<>());
-        keyToNodes.put(new Pair<>(1,2), new ArrayList<>());
-        keyToNodes.put(new Pair<>(2,1), new ArrayList<>());
-        keyToNodes.put(new Pair<>(2,2), new ArrayList<>());
-        keyToNodes.put(new Pair<>(2,3), new ArrayList<>());
-        keyToNodes.put(new Pair<>(3,2), new ArrayList<>());
-        keyToNodes.put(new Pair<>(3,3), new ArrayList<>());
-        keyToNodes.put(new Pair<>(2,4), new ArrayList<>());
-        keyToNodes.put(new Pair<>(4,2), new ArrayList<>());
-        keyToNodes.put(new Pair<>(4,4), new ArrayList<>());
-        keyToNodes.put(new Pair<>(4,6), new ArrayList<>());
-        keyToNodes.put(new Pair<>(6,4), new ArrayList<>());
-        keyToNodes.put(new Pair<>(6,6), new ArrayList<>());
-        keyToNodes.put(new Pair<>(6,5), new ArrayList<>());
-        keyToNodes.put(new Pair<>(5,6), new ArrayList<>());
-        keyToNodes.put(new Pair<>(5,5), new ArrayList<>());
-        keyToNodes.put(new Pair<>(6,7), new ArrayList<>());
-        keyToNodes.put(new Pair<>(7,6), new ArrayList<>());
-        keyToNodes.put(new Pair<>(7,7), new ArrayList<>());
+        keyToNodes.put(new Pair<>(0,0), new LinkedHashSet<>());
+        keyToNodes.put(new Pair<>(0,1), new LinkedHashSet<>());
+        keyToNodes.put(new Pair<>(1,1), new LinkedHashSet<>());
+        keyToNodes.put(new Pair<>(1,0), new LinkedHashSet<>());
+        keyToNodes.put(new Pair<>(1,2), new LinkedHashSet<>());
+        keyToNodes.put(new Pair<>(2,1), new LinkedHashSet<>());
+        keyToNodes.put(new Pair<>(2,2), new LinkedHashSet<>());
+        keyToNodes.put(new Pair<>(2,3), new LinkedHashSet<>());
+        keyToNodes.put(new Pair<>(3,2), new LinkedHashSet<>());
+        keyToNodes.put(new Pair<>(3,3), new LinkedHashSet<>());
+        keyToNodes.put(new Pair<>(2,4), new LinkedHashSet<>());
+        keyToNodes.put(new Pair<>(4,2), new LinkedHashSet<>());
+        keyToNodes.put(new Pair<>(4,4), new LinkedHashSet<>());
+        keyToNodes.put(new Pair<>(4,6), new LinkedHashSet<>());
+        keyToNodes.put(new Pair<>(6,4), new LinkedHashSet<>());
+        keyToNodes.put(new Pair<>(6,6), new LinkedHashSet<>());
+        keyToNodes.put(new Pair<>(6,5), new LinkedHashSet<>());
+        keyToNodes.put(new Pair<>(5,6), new LinkedHashSet<>());
+        keyToNodes.put(new Pair<>(5,5), new LinkedHashSet<>());
+        keyToNodes.put(new Pair<>(6,7), new LinkedHashSet<>());
+        keyToNodes.put(new Pair<>(7,6), new LinkedHashSet<>());
+        keyToNodes.put(new Pair<>(7,7), new LinkedHashSet<>());
 
         keyToNodes.get(new Pair<>(4,6)).add(node);
         keyToNodes.get(new Pair<>(6,6)).add(node.right);
@@ -178,20 +178,20 @@ public class EulerTourTreeTest {
 
     @Test
     public void testAddEdge(){
-        Map<Pair<Integer, Integer>, ArrayList<Node>> keyToNodes = new HashMap<>();
+        Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes = new HashMap<>();
         EulerTourTree tree = new EulerTourTree(keyToNodes);
         tree.addEdge(0, 1);
         tree.addEdge(0, 2);
         tree.addEdge(1, 3);
-//        tree.addEdge(1, 4);
-//        tree.addEdge(2, 5);
-//        tree.addEdge(2, 6);
+        tree.addEdge(1, 4);
+        tree.addEdge(2, 5);
+        tree.addEdge(2, 6);
 
         tree.setSplayRoot(tree.getSplayRoot());
 
         tree.show();
 
-        for(ArrayList<Node> nodes: keyToNodes.values()) {
+        for(LinkedHashSet<Node> nodes: keyToNodes.values()) {
             for(Node n: nodes) {
                 System.out.println(n.key+" reference: "+n);
                 if(n.parent != null) System.out.println("Parent: "+n.parent.key);
@@ -209,7 +209,7 @@ public class EulerTourTreeTest {
 
     @Test
     public void testLink(){
-        Map<Pair<Integer, Integer>, ArrayList<Node>> keyToNodes = new HashMap<>();
+        Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes = new HashMap<>();
         EulerTourTree treeLeft = new EulerTourTree(keyToNodes);
         treeLeft.addEdge(0,1);
 
@@ -231,7 +231,7 @@ public class EulerTourTreeTest {
 
     @Test
     public void testCutTree(){
-        Map<Pair<Integer, Integer>, ArrayList<Node>> keyToNodes = new HashMap<>();
+        Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes = new HashMap<>();
         EulerTourTree tree = new EulerTourTree(keyToNodes);
         tree.addEdge(0, 1);
         tree.addEdge(0, 2);
@@ -261,7 +261,7 @@ public class EulerTourTreeTest {
 
     @Test
     public void testCutTree1(){
-        Map<Pair<Integer, Integer>, ArrayList<Node>> keyToNodes = new HashMap<>();
+        Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes = new HashMap<>();
         EulerTourTree tree = new EulerTourTree(keyToNodes);
         tree.addEdge(0, 1);
         EulerTourTree secondTree = tree.cut(0,1);

@@ -56,7 +56,7 @@ public class DynamicConnectivityTest {
         assertTrue(dc.isConnected(0, 5));
 
 //        assertEquals(1, dc.getForestForLevel(0).getAmtOfTrees());
-//        assertEquals(1, dc.getForestForLevel(1).getAmtOfTrees());
+        assertEquals(1, dc.getForestForLevel(1).getAmtOfTrees());
 
         assertTrue(dc.getForestForLevel(0).checkIfTreeEdgeExists(0,5));
         assertTrue(dc.getForestForLevel(0).checkIfTreeEdgeExists(0,1));

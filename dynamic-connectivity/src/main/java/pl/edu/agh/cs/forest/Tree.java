@@ -11,12 +11,12 @@ public class Tree {
     private Integer Tkey;
     private EulerTourTree eulerTourTree;
 
-    public Tree(Integer key, Map<Pair<Integer, Integer>, ArrayList<Node>> keyToNodes) {
+    public Tree(Integer key, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes) {
         this.Tkey = key;
         this.eulerTourTree = new EulerTourTree(keyToNodes);
     }
 
-    public Tree(Integer key, Node treeNode, Map<Pair<Integer, Integer>, ArrayList<Node>> keyToNodes) {
+    public Tree(Integer key, Node treeNode, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes) {
         this.Tkey = key;
         this.eulerTourTree = new EulerTourTree(keyToNodes);
         this.eulerTourTree.setSplayRoot(treeNode);

@@ -1,7 +1,6 @@
 package pl.edu.agh.cs.eulerTourTree;
 
 import pl.edu.agh.cs.common.Pair;
-import pl.edu.agh.cs.common.UniqueNode;
 import pl.edu.agh.cs.eulerTourTree.splay.Node;
 import pl.edu.agh.cs.eulerTourTree.splay.SplayTree;
 
@@ -10,10 +9,10 @@ import java.util.*;
 public class EulerTourTree {
 
     private Node splayRoot;
-    private Map<Pair<Integer, Integer>, LinkedHashSet<UniqueNode>> keyToNodes;
+    private Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes;
 
-    public EulerTourTree(Map<Pair<Integer, Integer>, LinkedHashSet<UniqueNode>> keyToNodes) { this.keyToNodes = keyToNodes; }
-    public EulerTourTree(Node splayRoot, Map<Pair<Integer, Integer>, LinkedHashSet<UniqueNode>> keyToNodes) { this.splayRoot = splayRoot; this.keyToNodes = keyToNodes; }
+    public EulerTourTree(Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes) { this.keyToNodes = keyToNodes; }
+    public EulerTourTree(Node splayRoot, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes) { this.splayRoot = splayRoot; this.keyToNodes = keyToNodes; }
 
     public Node getSplayRoot(){
         return splayRoot;
@@ -27,7 +26,7 @@ public class EulerTourTree {
         this.keyToNodes.clear();
     }
 
-    void setKeyToNodes(Map<Pair<Integer, Integer>, ArrayList<Node>> keyToNodes){
+    void setKeyToNodes(Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes){
         this.keyToNodes = keyToNodes;
     }
 
@@ -56,9 +55,9 @@ public class EulerTourTree {
     }
 
     public Node reRoot(Integer vertex){
-        Node newRoot = this.keyToNodes.get(new Pair<>(vertex, vertex)).getFirst().getNode();
+        Node newRoot = this.keyToNodes.get(new Pair<>(vertex, vertex)).getFirst();
         if(vertex.equals(4)) {
-            for (UniqueNode n : this.keyToNodes.get(new Pair<>(vertex, vertex))) {
+            for (Node n : this.keyToNodes.get(new Pair<>(vertex, vertex))) {
                 System.out.println("Node: " + n);
                 if(n.parent != null)
                     System.out.println("Parent: "+n.parent.key);
@@ -71,7 +70,7 @@ public class EulerTourTree {
             this.show();
             this.dfsCheckParent(this.getSplayRoot());
 
-            for(ArrayList<Node> nodes: this.keyToNodes.values()) {
+            for(LinkedHashSet<Node> nodes: this.keyToNodes.values()) {
                 for(Node n: nodes) {
                     System.out.println(n.key+" reference: "+n);
                     if(n.parent != null) System.out.println("Parent: "+n.parent.key);
@@ -192,8 +191,8 @@ public class EulerTourTree {
         if(this.splayRoot == null){
             this.splayRoot = new Node(new Pair<>(u,u));
             System.out.println("Vertex U:"+u+" reference: "+this.splayRoot);
-            this.keyToNodes.put(new Pair<>(u,u), new ArrayList<>());
-            this.keyToNodes.put(new Pair<>(v,v), new ArrayList<>());
+            this.keyToNodes.put(new Pair<>(u,u), new LinkedHashSet<>());
+            this.keyToNodes.put(new Pair<>(v,v), new LinkedHashSet<>());
 
             this.keyToNodes.get(new Pair<>(u,u)).add(this.splayRoot);
             insertEdgeToETT(u, v);
@@ -202,14 +201,14 @@ public class EulerTourTree {
         if(this.keyToNodes.containsKey(new Pair<>(u, u)) &&
                 !this.keyToNodes.containsKey(new Pair<>(v,v))){
             if(u == 4 && v == 8) System.out.println("add tree edge: "+u+", "+v);
-            this.keyToNodes.put(new Pair<>(v,v), new ArrayList<>());
+            this.keyToNodes.put(new Pair<>(v,v), new LinkedHashSet<>());
 //            if(u == 4 && v == 8) System.out.println("Before reroot:");
 //            if(u == 4 && v == 8) this.show();
 //            if(u == 4 && v == 8) System.out.println("Check before reroot:");
 //            if(u == 4 && v == 8) this.dfsCheckParent(this.getSplayRoot());
             this.reRoot(u);
             if(u == 2){
-                for(ArrayList<Node> nodes: this.keyToNodes.values()) {
+                for(LinkedHashSet<Node> nodes: this.keyToNodes.values()) {
                     for(Node n: nodes) {
                         System.out.println(n.key+" reference: "+n);
                         if(n.parent != null) System.out.println("Parent: "+n.parent.key);
@@ -223,7 +222,7 @@ public class EulerTourTree {
             if(u == 4 && v == 8) this.show();
         } else if(this.keyToNodes.containsKey(new Pair<>(v,v)) &&
                 !this.keyToNodes.containsKey(new Pair<>(u,u))){
-            this.keyToNodes.put(new Pair<>(u,u), new ArrayList<>());
+            this.keyToNodes.put(new Pair<>(u,u), new LinkedHashSet<>());
 
             this.reRoot(v);
             insertEdgeToETT(u,v);
@@ -247,8 +246,8 @@ public class EulerTourTree {
     }
 
     private void insertEdgeToETT(int u, int v) {
-        this.keyToNodes.put(new Pair<>(v,u), new ArrayList<>());
-        this.keyToNodes.put(new Pair<>(u,v), new ArrayList<>());
+        this.keyToNodes.put(new Pair<>(v,u), new LinkedHashSet<>());
+        this.keyToNodes.put(new Pair<>(u,v), new LinkedHashSet<>());
 
         this.keyToNodes.get(new Pair<>(u,v)).add(SplayTree.insertToRight(this.splayRoot, new Pair<>(u,v)));
         this.keyToNodes.get(new Pair<>(v,v)).add(SplayTree.insertToRight(this.splayRoot, new Pair<>(v,v)));
