@@ -4,6 +4,7 @@ import pl.edu.agh.cs.eulerTourTree.splay.Node;
 import pl.edu.agh.cs.forest.Forest;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class DynamicConnectivity {
 
@@ -25,11 +26,11 @@ public class DynamicConnectivity {
         return amtOfLevels;
     }
 
-    public void addEdge(int from, int to) throws Exception {
+    public void addEdge(int from, int to) {
         Node treeFrom = this.forests.getFirst().getRepresentativeTreeNode(from);
         Node treeTo = this.forests.getFirst().getRepresentativeTreeNode(to);
 
-        if(Object.equals(treeFrom, treeTo) && treeFrom != null) {
+        if(Objects.equals(treeFrom, treeTo) && treeFrom != null) {
             this.forests.getFirst().addNonTreeEdge(from, to);
         } else {
             this.forests.getFirst().addTreeEdge(from, to);

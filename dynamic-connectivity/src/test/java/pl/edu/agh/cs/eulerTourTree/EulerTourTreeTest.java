@@ -176,13 +176,13 @@ public class EulerTourTreeTest {
             EulerTourTree.addEdge(treeNode, 2, 5, keyToNodes);
             EulerTourTree.addEdge(treeNode, 2, 6, keyToNodes);
 
-            assertEquals(Integer.valueOf(2), EulerTourTree.getEulerTourRoot(treeNode));
-            assertEquals(new Pair<>(0,2), SplayTree.getRootNode(treeNode).key);
+            assertEquals(Integer.valueOf(0), EulerTourTree.getEulerTourRoot(treeNode));
+            assertEquals(new Pair<>(0,0), SplayTree.getRootNode(treeNode).key);
 
-            EulerTourTree.reRoot(treeNode, 0, keyToNodes);
+            treeNode = EulerTourTree.reRoot(treeNode, 0, keyToNodes);
             assertEquals(Integer.valueOf(0), EulerTourTree.getEulerTourRoot(treeNode));
 
-            EulerTourTree.reRoot(treeNode, 1, keyToNodes);
+            treeNode = EulerTourTree.reRoot(treeNode, 1, keyToNodes);
             assertEquals(Integer.valueOf(1), EulerTourTree.getEulerTourRoot(treeNode));
 
         } catch (Exception e){
@@ -236,7 +236,7 @@ public class EulerTourTreeTest {
             Node splayRootRight = SplayTree.getRootNode(trees.getFirst());
             Node splayRootLeft = SplayTree.getRootNode(trees.getSecond());
 
-            assertEquals(new Pair<>(0,0), splayRootLeft.key);
+            assertEquals(new Pair<>(2,2), splayRootLeft.key);
             assertEquals(new Pair<>(0,1), splayRootLeft.right.left.key);
             assertEquals(new Pair<>(0,0), splayRootLeft.right.right.right.key);
             assertEquals(new Pair<>(4,1), splayRootLeft.right.left.right.right.right.right.right.right.right.right.key);

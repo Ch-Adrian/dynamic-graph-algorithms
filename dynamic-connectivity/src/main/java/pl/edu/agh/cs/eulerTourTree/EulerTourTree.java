@@ -3,14 +3,13 @@ package pl.edu.agh.cs.eulerTourTree;
 import pl.edu.agh.cs.common.Pair;
 import pl.edu.agh.cs.eulerTourTree.splay.Node;
 import pl.edu.agh.cs.eulerTourTree.splay.SplayTree;
+import pl.edu.agh.cs.forest.Forest;
 
 import java.util.*;
 
 public class EulerTourTree {
 
-    public static Node createNewEulerTourTree(int u, int v, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes) throws Exception {
-        if(!keyToNodes.get(new Pair<>(u,u)).isEmpty() || !keyToNodes.get(new Pair<>(v,v)).isEmpty())
-            throw new Exception("At least one vertex is present in the tree.");
+    public static Node createNewEulerTourTree(int u, int v, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes) {
         Node splayRoot = new Node(new Pair<>(u,u));
         keyToNodes.put(new Pair<>(u,u), new LinkedHashSet<>());
         keyToNodes.put(new Pair<>(v,v), new LinkedHashSet<>());
@@ -45,9 +44,9 @@ public class EulerTourTree {
     public static Node reRoot(Node treeNode, Integer vertex, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes){
         Node newRoot = keyToNodes.get(new Pair<>(vertex, vertex)).getFirst();
 
-        if(Objects.equals(newRoot.key.getFirst(), newRoot.key.getSecond()) &&
+        if(treeNode != null && Objects.equals(newRoot.key.getFirst(), newRoot.key.getSecond()) &&
                 Objects.equals(newRoot.key.getFirst(), vertex) &&
-                SplayTree.firstNode(SplayTree.getRootNode(treeNode)).equals(newRoot)){
+                Objects.equals(SplayTree.firstNode(SplayTree.getRootNode(treeNode)), newRoot)){
                 return newRoot;
         }
 
@@ -112,20 +111,27 @@ public class EulerTourTree {
         return new Pair<>(K, joined);
     }
 
-    public static void addEdge(Node treeNode, int u, int v, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes){
-        Node splayRoot = SplayTree.getRootNode(treeNode);
-        if(keyToNodes.containsKey(new Pair<>(u, u)) &&
+    public static Node addEdge(Node treeNodeRepresentativeOfU, Integer u, Integer v, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes){
+        Node splayRoot = SplayTree.getRootNode(treeNodeRepresentativeOfU);
+//        keyToNodes.put(new Pair<>(ending, ending), new LinkedHashSet<>());
+//        splayRoot = reRoot(splayRoot, u, keyToNodes);
+//        insertEdgeToETT(splayRoot, u, ending, keyToNodes);
+//        return splayRoot;
+
+        if(keyToNodes.containsKey(new Pair<>(u, u)) &&// fix it to check if list is empty
                 !keyToNodes.containsKey(new Pair<>(v,v))){
             keyToNodes.put(new Pair<>(v,v), new LinkedHashSet<>());
 
             splayRoot = reRoot(splayRoot, u, keyToNodes);
             insertEdgeToETT(splayRoot, u, v, keyToNodes);
+            return splayRoot;
         } else if(keyToNodes.containsKey(new Pair<>(v,v)) &&
                 !keyToNodes.containsKey(new Pair<>(u,u))){
             keyToNodes.put(new Pair<>(u,u), new LinkedHashSet<>());
 
             splayRoot = reRoot(splayRoot, v, keyToNodes);
             insertEdgeToETT(splayRoot, u,v, keyToNodes);
+            return splayRoot;
         } else {
             throw new Error("Illegal operation. At most one vertex must be present in a tree.");
         }

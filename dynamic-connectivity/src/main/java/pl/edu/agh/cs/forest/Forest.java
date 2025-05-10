@@ -11,7 +11,6 @@ import java.util.*;
 public class Forest {
 
     private Map<Integer, LinkedHashSet<Integer>> nonTreeEdges;
-    private Map<Integer, Node> vertexToNode;
     private int level = -1;
     private DynamicConnectivity dynamicConnectivity;
     private Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes;
@@ -19,13 +18,17 @@ public class Forest {
     public Forest(int level, DynamicConnectivity dcAlgo) {
         this.nonTreeEdges = new HashMap<>();
         this.keyToNodes = new HashMap<>();
-        this.vertexToNode = new HashMap<>();
         this.level = level;
         this.dynamicConnectivity = dcAlgo;
     }
 
+    public Map<Integer, LinkedHashSet<Integer>> getNonTreeEdges(){ return nonTreeEdges; }
+    public Map<Pair<Integer, Integer>, LinkedHashSet<Node>> getKeyToNodes() { return keyToNodes; }
+
     public Node getRepresentativeTreeNode(int u){
-        return SplayTree.getRootNode(vertexToNode.get(u));
+        if(checkIfVertexHasNodeInTheTree(u, keyToNodes))
+            return SplayTree.getRootNode(keyToNodes.get(new Pair<>(u,u)).getFirst());
+        else return null;
     }
 
     public static boolean checkIfVertexHasNodeInTheTree(int v, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes){
@@ -34,31 +37,11 @@ public class Forest {
         return false;
     }
 
-    private void createNewTree(Node treeNode){
-        this.vertexToNode.put(treeNode.key.getFirst(), treeNode);
-        this.vertexToNode.put(treeNode.key.getSecond(), treeNode);
-    }
-
-    public void createNewTree(int u, int v) {
-        if(this.checkIfTreeEdgeExists(u, v)) return;
-        try {
-            EulerTourTree.createNewEulerTourTree(u, v, keyToNodes);
-        } catch (Exception e){
-            if(Forest.checkIfVertexHasNodeInTheTree(u, keyToNodes))
-                EulerTourTree.addEdge(this.vertexToNode.get(u), u, v, keyToNodes);
-            else if(Forest.checkIfVertexHasNodeInTheTree(v, keyToNodes))
-                EulerTourTree.addEdge(this.vertexToNode.get(v), v, u, keyToNodes);
-        }
-        this.vertexToNode.put(u, keyToNodes.get(new Pair<>(u,u)).getFirst());
-        this.vertexToNode.put(v, keyToNodes.get(new Pair<>(v,v)).getFirst());
-    }
-
-
-    private void showVertexIdToNode(){
-        System.out.println("Vertex Id To Tkey: ");
-        for(Integer vertexId : this.vertexToNode.keySet()){
-            System.out.printf("vertexId: %d node: %s%n", vertexId, this.vertexToNode.get(vertexId));
-        }
+    public void createNewTree(Integer u, Integer v) {
+//        if(this.checkIfTreeEdgeExists(u, v)) return;
+//        if(Forest.checkIfVertexHasNodeInTheTree(u, keyToNodes) || Forest.checkIfVertexHasNodeInTheTree(v, keyToNodes))
+//            throw new Exception("At least one vertex is present in the tree.");
+        EulerTourTree.createNewEulerTourTree(u, v, keyToNodes);
     }
 
     private void showNonTreeEdges(){
@@ -82,17 +65,15 @@ public class Forest {
     }
 
     public void addTreeEdge(int u, int v) {
-        Node nodeU = SplayTree.getRootNode(this.vertexToNode.get(u));
-        Node nodeV = SplayTree.getRootNode(this.vertexToNode.get(v));
+        Node nodeU = getRepresentativeTreeNode(u);
+        Node nodeV = getRepresentativeTreeNode(v);
 
         if(nodeU != null && nodeV != null){
             EulerTourTree.link(u, v, keyToNodes);
         } else if(nodeU != null){
-            EulerTourTree.addEdge(nodeU, u, v, keyToNodes);
-            this.vertexToNode.put(v, nodeU);
+            nodeU = EulerTourTree.addEdge(nodeU, u, v, keyToNodes);
         } else if(nodeV != null){
-            EulerTourTree.addEdge(nodeV, u, v, keyToNodes);
-            this.vertexToNode.put(u, nodeV);
+            nodeV = EulerTourTree.addEdge(nodeV, v, u, keyToNodes);
         } else {
             this.createNewTree(u, v);
         }
@@ -122,20 +103,12 @@ public class Forest {
 
     public void deleteTreeEdge(int u, int v) {
         if(!this.checkIfTreeEdgeExists(u, v)) return;
-        Node nodeU = SplayTree.getRootNode(this.vertexToNode.get(u));
-        Node nodeV = SplayTree.getRootNode(this.vertexToNode.get(v));
+        Node nodeU = getRepresentativeTreeNode(u);
+        Node nodeV = getRepresentativeTreeNode(v);
 
         if(nodeU != null && nodeV != null){
-            if(nodeU.equals(nodeV)){
-                Pair<Node, Node> trees = EulerTourTree.deleteEdge(nodeU, u,v, keyToNodes);
-                assert trees != null;
-                if(SplayTree.getRootNode(trees.getFirst()).equals(SplayTree.getRootNode(nodeU))){
-                    this.vertexToNode.put(u, trees.getFirst());
-                    this.vertexToNode.put(v, trees.getSecond());
-                } else {
-                    this.vertexToNode.put(v, trees.getFirst());
-                    this.vertexToNode.put(u, trees.getSecond());
-                }
+            if(Objects.equals(nodeU, nodeV)){
+                Pair<Node, Node> trees = EulerTourTree.deleteEdge(nodeU, u, v, keyToNodes);
             } else {
                 throw new Error("Cannot be situation that edge connects two different trees!");
             }
@@ -143,8 +116,8 @@ public class Forest {
     }
 
     public void findReplacementEdge(int v, int w, int level) {
-        Node nodeV = SplayTree.getRootNode(this.vertexToNode.get(v));
-        Node nodeW = SplayTree.getRootNode(this.vertexToNode.get(w));
+        Node nodeV = getRepresentativeTreeNode(v);
+        Node nodeW = getRepresentativeTreeNode(w);
         Node Tmin;
         if(nodeV == null){
             Tmin = null;
@@ -167,7 +140,7 @@ public class Forest {
 
             for(Integer vertex: EulerTourTree.getVertices(Tmin)){
                 for(Integer nonTreeEdgeEnd: this.dynamicConnectivity.getForestForLevel(level).getNonTreeEdges(vertex)){
-                    if(!SplayTree.getRootNode(this.vertexToNode.get(nonTreeEdgeEnd)).equals(SplayTree.getRootNode(Tmin))){
+                    if(!getRepresentativeTreeNode(nonTreeEdgeEnd).equals(SplayTree.getRootNode(Tmin))){
                         nonTreeEdgeFound = true;
                         nonTreeEdge = new Pair<>(vertex, nonTreeEdgeEnd);
                         for(int lvl= 0; lvl < dynamicConnectivity.getAmtOfLevels(); lvl++){
@@ -197,8 +170,8 @@ public class Forest {
     }
 
     public boolean checkIfTreeEdgeExists(int v, int u){
-        Node nodeU = SplayTree.getRootNode(this.vertexToNode.get(u));
-        Node nodeV = SplayTree.getRootNode(this.vertexToNode.get(v));
+        Node nodeU = getRepresentativeTreeNode(u);
+        Node nodeV = getRepresentativeTreeNode(v);
         if(nodeU != null && Objects.equals(nodeU, nodeV)){
             return true;
         }
@@ -206,8 +179,17 @@ public class Forest {
     }
 
     public boolean isConnected(Integer u, Integer v){
-        Node nodeU = SplayTree.getRootNode(this.vertexToNode.get(u));
-        Node nodeV = SplayTree.getRootNode(this.vertexToNode.get(v));
-        return Objects.equals(nodeU, nodeV);
+        Node nodeU = getRepresentativeTreeNode(u);
+        Node nodeV = getRepresentativeTreeNode(v);
+        return Objects.equals(nodeU, nodeV) && nodeU != null;
     }
+
+    public Integer getAmtOfTrees(){
+        Set<Node> trees = new HashSet<>();
+        for(Pair<Integer, Integer> p: keyToNodes.keySet()){
+            trees.add(getRepresentativeTreeNode(p.getFirst()));
+        }
+        return trees.size();
+    }
+
 }
