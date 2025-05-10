@@ -29,7 +29,7 @@ public class DynamicConnectivity {
         Node treeFrom = this.forests.getFirst().getRepresentativeTreeNode(from);
         Node treeTo = this.forests.getFirst().getRepresentativeTreeNode(to);
 
-        if(treeFrom.equals(treeTo) && treeFrom != null) {
+        if(Object.equals(treeFrom, treeTo) && treeFrom != null) {
             this.forests.getFirst().addNonTreeEdge(from, to);
         } else {
             this.forests.getFirst().addTreeEdge(from, to);

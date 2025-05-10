@@ -2,6 +2,8 @@ package pl.edu.agh.cs.eulerTourTree.splay;
 
 import pl.edu.agh.cs.common.Pair;
 
+import java.util.Optional;
+
 public class SplayTree {
 
     private static void updateSize(Node treeNode){

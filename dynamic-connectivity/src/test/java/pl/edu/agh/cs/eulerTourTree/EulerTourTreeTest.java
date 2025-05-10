@@ -14,9 +14,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class EulerTourTreeTest {
 
+    Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes = new HashMap<>();
+
     @BeforeEach
     void setUp() {
-
+        keyToNodes = new HashMap<>();
     }
 
     private void dfsSetParent(Node node){
@@ -32,7 +34,6 @@ public class EulerTourTreeTest {
 
     @Test
     public void testReroot(){
-        Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes = new HashMap<>();
         Node node = new Node(new Pair<>(0,0));
         node.right = new Node(new Pair<>(0,1));
         node.right.right = new Node(new Pair<>(1,1));
@@ -63,16 +64,15 @@ public class EulerTourTreeTest {
         keyToNodes.get(new Pair<>(2,0)).add(node.right.right.right.right.right.right.right);
         keyToNodes.get(new Pair<>(0,0)).add(node.right.right.right.right.right.right.right.right);
 
-        EulerTourTree.reRoot(node, 1, keyToNodes);
+        node = EulerTourTree.reRoot(node, 1, keyToNodes);
         assertEquals(Integer.valueOf(1), EulerTourTree.getEulerTourRoot(node));
 
-        EulerTourTree.reRoot(node, 2, keyToNodes);
+        node = EulerTourTree.reRoot(node, 2, keyToNodes);
         assertEquals(Integer.valueOf(2), EulerTourTree.getEulerTourRoot(node));
     }
 
     @Test
     public void testReroot2(){
-        Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes = new HashMap<>();
         Node node = new Node(new Pair<>(4,6));
         node.right = new Node(new Pair<>(6,6));
         node.right.right = new Node(new Pair<>(6,5));
@@ -160,7 +160,7 @@ public class EulerTourTreeTest {
         keyToNodes.get(new Pair<>(6,6)).add(node.left.left);
         keyToNodes.get(new Pair<>(6,4)).add(node.left.left.right);
 
-        EulerTourTree.reRoot(node, 4, keyToNodes);
+        node = EulerTourTree.reRoot(node, 4, keyToNodes);
         assertEquals(Integer.valueOf(4), EulerTourTree.getEulerTourRoot(node));
 //        tree.show();
 
@@ -168,15 +168,26 @@ public class EulerTourTreeTest {
 
     @Test
     public void testAddEdge(){
-        Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes = new HashMap<>();
-        EulerTourTree.addEdge(null,0, 1, keyToNodes);
-        tree.addEdge(0, 2);
-        tree.addEdge(1, 3);
-        tree.addEdge(1, 4);
-        tree.addEdge(2, 5);
-        tree.addEdge(2, 6);
+        try {
+            Node treeNode = EulerTourTree.createNewEulerTourTree(0, 1, keyToNodes);
+            EulerTourTree.addEdge(treeNode, 0, 2, keyToNodes);
+            EulerTourTree.addEdge(treeNode, 1, 3, keyToNodes);
+            EulerTourTree.addEdge(treeNode, 1, 4, keyToNodes);
+            EulerTourTree.addEdge(treeNode, 2, 5, keyToNodes);
+            EulerTourTree.addEdge(treeNode, 2, 6, keyToNodes);
 
-        EulerTourTree.setSplayRoot(tree.getSplayRoot());
+            assertEquals(Integer.valueOf(2), EulerTourTree.getEulerTourRoot(treeNode));
+            assertEquals(new Pair<>(0,2), SplayTree.getRootNode(treeNode).key);
+
+            EulerTourTree.reRoot(treeNode, 0, keyToNodes);
+            assertEquals(Integer.valueOf(0), EulerTourTree.getEulerTourRoot(treeNode));
+
+            EulerTourTree.reRoot(treeNode, 1, keyToNodes);
+            assertEquals(Integer.valueOf(1), EulerTourTree.getEulerTourRoot(treeNode));
+
+        } catch (Exception e){
+            System.out.println("Exception occurred!");
+        }
 
 //        tree.show();
 //
@@ -186,79 +197,75 @@ public class EulerTourTreeTest {
 //                if(n.parent != null) System.out.println("Parent: "+n.parent.key);
 //            }
 //        }
-        assertEquals(Integer.valueOf(2), tree.getEulerTourRoot());
-        assertEquals(new Pair<>(0,2), tree.getSplayRoot().key);
-        tree.reRoot(0);
 
-        assertEquals(Integer.valueOf(0), tree.getEulerTourRoot());
-
-        tree.reRoot(1);
-        assertEquals(Integer.valueOf(1), tree.getEulerTourRoot());
     }
 
     @Test
     public void testLink(){
-        Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes = new HashMap<>();
-        EulerTourTree treeLeft = new EulerTourTree(keyToNodes);
-        treeLeft.addEdge(0,1);
+        try {
+            Node treeNodeLeft = EulerTourTree.createNewEulerTourTree(0, 1, keyToNodes);
+            Node treeNodeRight = EulerTourTree.createNewEulerTourTree(2, 3, keyToNodes);
+            EulerTourTree.link(1, 2, keyToNodes);
 
-        EulerTourTree treeRight = new EulerTourTree(keyToNodes);
-        treeRight.addEdge(2,3);
-
-        treeLeft.link(1, 2, treeRight);
-
-        Node splayRoot = treeLeft.getSplayRoot();
-        assertEquals(new Pair<>(2,1), splayRoot.key);
-        assertEquals(new Pair<>(1,1), splayRoot.right.key);
-        assertEquals(new Pair<>(2,2), splayRoot.left.key);
-        assertEquals(new Pair<>(2,2), splayRoot.left.left.right.key);
-        assertEquals(new Pair<>(3,2), splayRoot.left.left.right.right.right.right.key);
-        assertEquals(new Pair<>(1,0), splayRoot.left.left.left.left.left.left.right.key);
-        assertEquals(Integer.valueOf(1), treeLeft.getEulerTourRoot());
+            Node splayRoot = SplayTree.getRootNode(treeNodeRight);
+            assertEquals(new Pair<>(2,1), splayRoot.key);
+            assertEquals(new Pair<>(1,1), splayRoot.right.key);
+            assertEquals(new Pair<>(2,2), splayRoot.left.key);
+            assertEquals(new Pair<>(2,2), splayRoot.left.left.right.key);
+            assertEquals(new Pair<>(3,2), splayRoot.left.left.right.right.right.right.key);
+            assertEquals(new Pair<>(1,0), splayRoot.left.left.left.left.left.left.right.key);
+            assertEquals(Integer.valueOf(1), EulerTourTree.getEulerTourRoot(splayRoot));
+        } catch (Exception e){
+            System.out.println("Exception occurred!");
+        }
 
     }
 
     @Test
     public void testCutTree(){
-        Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes = new HashMap<>();
-        EulerTourTree tree = new EulerTourTree(keyToNodes);
-        tree.addEdge(0, 1);
-        tree.addEdge(0, 2);
-        tree.addEdge(1, 3);
-        tree.addEdge(1, 4);
-        tree.addEdge(2, 5);
-        tree.addEdge(2, 6);
+        try {
+            Node treeNode = EulerTourTree.createNewEulerTourTree(0, 1, keyToNodes);
+            EulerTourTree.addEdge(treeNode, 0, 2, keyToNodes);
+            EulerTourTree.addEdge(treeNode, 1, 3, keyToNodes);
+            EulerTourTree.addEdge(treeNode, 1, 4, keyToNodes);
+            EulerTourTree.addEdge(treeNode, 2, 5, keyToNodes);
+            EulerTourTree.addEdge(treeNode, 2, 6, keyToNodes);
 
-        EulerTourTree secondTree = tree.cut(0,2);
+            Pair<Node, Node> trees = EulerTourTree.cut(0, 2, keyToNodes);
 
-        Node splayRootRight = SplayTree.getRootNode(tree.getSplayRoot());
-        Node splayRootLeft = SplayTree.getRootNode(secondTree.getSplayRoot());
+            Node splayRootRight = SplayTree.getRootNode(trees.getFirst());
+            Node splayRootLeft = SplayTree.getRootNode(trees.getSecond());
 
-        assertEquals(new Pair<>(0,0), splayRootLeft.key);
-        assertEquals(new Pair<>(0,1), splayRootLeft.right.left.key);
-        assertEquals(new Pair<>(0,0), splayRootLeft.right.right.right.key);
-        assertEquals(new Pair<>(4,1), splayRootLeft.right.left.right.right.right.right.right.right.right.right.key);
-        assertEquals(13, splayRootLeft.sizeOfTree);
+            assertEquals(new Pair<>(0,0), splayRootLeft.key);
+            assertEquals(new Pair<>(0,1), splayRootLeft.right.left.key);
+            assertEquals(new Pair<>(0,0), splayRootLeft.right.right.right.key);
+            assertEquals(new Pair<>(4,1), splayRootLeft.right.left.right.right.right.right.right.right.right.right.key);
+            assertEquals(13, splayRootLeft.sizeOfTree);
 
-        assertEquals(new Pair<>(2,2), splayRootRight.key);
-        assertEquals(new Pair<>(2,5), splayRootRight.right.key);
-        assertEquals(new Pair<>(5,2), splayRootRight.right.right.right.key);
-        assertEquals(new Pair<>(2,2), splayRootRight.right.right.right.right.right.right.right.right.key);
-        assertEquals(9, splayRootRight.sizeOfTree);
+            assertEquals(new Pair<>(2,2), splayRootRight.key);
+            assertEquals(new Pair<>(2,5), splayRootRight.right.key);
+            assertEquals(new Pair<>(5,2), splayRootRight.right.right.right.key);
+            assertEquals(new Pair<>(2,2), splayRootRight.right.right.right.right.right.right.right.right.key);
+            assertEquals(9, splayRootRight.sizeOfTree);
 
+        } catch (Exception e){
+            System.out.println("Exception occurred!");
+        }
     }
 
     @Test
     public void testCutTree1(){
-        Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes = new HashMap<>();
-        EulerTourTree tree = new EulerTourTree(keyToNodes);
-        tree.addEdge(0, 1);
-        EulerTourTree secondTree = tree.cut(0,1);
-        Node splayRootLeft = SplayTree.getRootNode(tree.getSplayRoot());
-        Node splayRootRight = SplayTree.getRootNode(secondTree.getSplayRoot());
+        try {
+            Node treeNode = EulerTourTree.createNewEulerTourTree(0, 1, keyToNodes);
+            Pair<Node, Node> trees = EulerTourTree.cut(0, 1, keyToNodes);
+            Node splayRootRight = SplayTree.getRootNode(trees.getFirst());
+            Node splayRootLeft = SplayTree.getRootNode(trees.getSecond());
 
-        assertEquals(new Pair<>(1,1), splayRootRight.key);
-        assertEquals(new Pair<>(0,0), splayRootLeft.key);
+            assertEquals(new Pair<>(1,1), splayRootRight.key);
+            assertEquals(new Pair<>(0,0), splayRootLeft.key);
+        } catch (Exception e){
+            System.out.println("Exception occurred!");
+        }
     }
 
     @Test

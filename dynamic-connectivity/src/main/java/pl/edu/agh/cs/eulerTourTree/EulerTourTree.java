@@ -71,8 +71,8 @@ public class EulerTourTree {
         Node rootInternal = getFirstNode(internal, keyToNodes);
         Node rootExternal = getFirstNode(external, keyToNodes);
 
-        reRoot(rootInternal, internal, keyToNodes);
-        reRoot(rootExternal, external, keyToNodes);
+        rootInternal = reRoot(rootInternal, internal, keyToNodes);
+        rootExternal = reRoot(rootExternal, external, keyToNodes);
 
         SplayTree.join(rootInternal, addNode(new Pair<>(internal, external), keyToNodes));
         SplayTree.join(rootInternal, rootExternal);
@@ -118,13 +118,13 @@ public class EulerTourTree {
                 !keyToNodes.containsKey(new Pair<>(v,v))){
             keyToNodes.put(new Pair<>(v,v), new LinkedHashSet<>());
 
-            reRoot(splayRoot, u, keyToNodes);
+            splayRoot = reRoot(splayRoot, u, keyToNodes);
             insertEdgeToETT(splayRoot, u, v, keyToNodes);
         } else if(keyToNodes.containsKey(new Pair<>(v,v)) &&
                 !keyToNodes.containsKey(new Pair<>(u,u))){
             keyToNodes.put(new Pair<>(u,u), new LinkedHashSet<>());
 
-            reRoot(splayRoot, v, keyToNodes);
+            splayRoot = reRoot(splayRoot, v, keyToNodes);
             insertEdgeToETT(splayRoot, u,v, keyToNodes);
         } else {
             throw new Error("Illegal operation. At most one vertex must be present in a tree.");
