@@ -3,7 +3,6 @@ package pl.edu.agh.cs.eulerTourTree;
 import pl.edu.agh.cs.common.Pair;
 import pl.edu.agh.cs.eulerTourTree.splay.Node;
 import pl.edu.agh.cs.eulerTourTree.splay.SplayTree;
-import pl.edu.agh.cs.forest.Forest;
 
 import java.util.*;
 
@@ -111,30 +110,13 @@ public class EulerTourTree {
         return new Pair<>(K, joined);
     }
 
-    public static Node addEdge(Node treeNodeRepresentativeOfU, Integer u, Integer v, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes){
-        Node splayRoot = SplayTree.getRootNode(treeNodeRepresentativeOfU);
-//        keyToNodes.put(new Pair<>(ending, ending), new LinkedHashSet<>());
-//        splayRoot = reRoot(splayRoot, u, keyToNodes);
-//        insertEdgeToETT(splayRoot, u, ending, keyToNodes);
-//        return splayRoot;
-
-        if(keyToNodes.containsKey(new Pair<>(u, u)) &&// fix it to check if list is empty
-                !keyToNodes.containsKey(new Pair<>(v,v))){
-            keyToNodes.put(new Pair<>(v,v), new LinkedHashSet<>());
-
-            splayRoot = reRoot(splayRoot, u, keyToNodes);
-            insertEdgeToETT(splayRoot, u, v, keyToNodes);
-            return splayRoot;
-        } else if(keyToNodes.containsKey(new Pair<>(v,v)) &&
-                !keyToNodes.containsKey(new Pair<>(u,u))){
-            keyToNodes.put(new Pair<>(u,u), new LinkedHashSet<>());
-
-            splayRoot = reRoot(splayRoot, v, keyToNodes);
-            insertEdgeToETT(splayRoot, u,v, keyToNodes);
-            return splayRoot;
-        } else {
-            throw new Error("Illegal operation. At most one vertex must be present in a tree.");
-        }
+    public static Node addEdgeToNonExistingVertex(Node treeNodeRepresentative, Integer treeVertex, Integer nonExistingVertex, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes){
+        Node splayRoot = SplayTree.getRootNode(treeNodeRepresentative);
+        if(!keyToNodes.containsKey(new Pair<>(nonExistingVertex, nonExistingVertex)))
+            keyToNodes.put(new Pair<>(nonExistingVertex, nonExistingVertex), new LinkedHashSet<>());
+        splayRoot = reRoot(splayRoot, treeVertex, keyToNodes);
+        insertEdgeToETT(splayRoot, treeVertex, nonExistingVertex, keyToNodes);
+        return splayRoot;
     }
 
     private static void dfsCheckParent(Node node){
@@ -151,26 +133,27 @@ public class EulerTourTree {
         }
     }
 
-    private static void insertEdgeToETT(Node treeNode, int u, int v, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes) {
+    private static void insertEdgeToETT(Node treeNode, Integer splayVertex, Integer nonExistingVertex, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes) {
         Node splayRoot = SplayTree.getRootNode(treeNode);
-        keyToNodes.put(new Pair<>(v,u), new LinkedHashSet<>());
-        keyToNodes.put(new Pair<>(u,v), new LinkedHashSet<>());
+        keyToNodes.put(new Pair<>(nonExistingVertex, splayVertex), new LinkedHashSet<>());
+        keyToNodes.put(new Pair<>(splayVertex, nonExistingVertex), new LinkedHashSet<>());
 
-        keyToNodes.get(new Pair<>(u,v)).add(SplayTree.insertToRight(splayRoot, new Pair<>(u,v)));
-        keyToNodes.get(new Pair<>(v,v)).add(SplayTree.insertToRight(splayRoot, new Pair<>(v,v)));
-        keyToNodes.get(new Pair<>(v,u)).add(SplayTree.insertToRight(splayRoot, new Pair<>(v,u)));
-        keyToNodes.get(new Pair<>(u,u)).add(SplayTree.insertToRight(splayRoot, new Pair<>(u,u)));
+        keyToNodes.get(new Pair<>(splayVertex, nonExistingVertex))
+                .add(SplayTree.insertToRight(splayRoot, new Pair<>(splayVertex, nonExistingVertex)));
+        keyToNodes.get(new Pair<>(nonExistingVertex, nonExistingVertex))
+                .add(SplayTree.insertToRight(splayRoot, new Pair<>(nonExistingVertex, nonExistingVertex)));
+        keyToNodes.get(new Pair<>(nonExistingVertex, splayVertex))
+                .add(SplayTree.insertToRight(splayRoot, new Pair<>(nonExistingVertex, splayVertex)));
+        keyToNodes.get(new Pair<>(splayVertex, splayVertex))
+                .add(SplayTree.insertToRight(splayRoot, new Pair<>(splayVertex, splayVertex)));
     }
 
-    public static Pair<Node, Node> deleteEdge(Node treeNode, int u, int v, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes){
+    public static void deleteEdge(Node treeNode, Integer u, Integer v, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes){
         Node splayRoot = SplayTree.getRootNode(treeNode);
-        if(splayRoot == null) { return null; }
+        if(splayRoot == null) { return; }
         if(keyToNodes.containsKey(new Pair<>(u,v)) &&
                 keyToNodes.containsKey(new Pair<>(v,u))){
             Pair<Node, Node> trees = cut(u, v, keyToNodes);
-            return trees;
-        } else {
-            throw new Error(String.format("Edge {%d, %d}doesn't exists!", u, v));
         }
     }
 

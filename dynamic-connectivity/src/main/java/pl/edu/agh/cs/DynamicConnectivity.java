@@ -9,24 +9,20 @@ import java.util.Objects;
 public class DynamicConnectivity {
 
     private ArrayList<Forest> forests = new ArrayList<>();
-    private int amtOfLevels = 1;
+    private Integer amtOfLevels = 1;
 
-    public DynamicConnectivity(int n) {
+    public DynamicConnectivity(Integer n) {
         this.amtOfLevels = (int) Math.ceil(Math.log(n));
         for (int i = 0; i <= this.amtOfLevels; i++) {
-            forests.add(new Forest(i, this));
+            forests.add(new Forest(i, forests));
         }
     }
 
-    public Forest getForestForLevel(int level) {
+    public Forest getForestForLevel(Integer level) {
         return forests.get(level);
     }
 
-    public int getAmtOfLevels(){
-        return amtOfLevels;
-    }
-
-    public void addEdge(int from, int to) {
+    public void addEdge(Integer from, Integer to) {
         Node treeFrom = this.forests.getFirst().getRepresentativeTreeNode(from);
         Node treeTo = this.forests.getFirst().getRepresentativeTreeNode(to);
 
@@ -37,7 +33,7 @@ public class DynamicConnectivity {
         }
     }
 
-    public void deleteEdge(int from, int to) throws Exception {
+    public void deleteEdge(Integer from, Integer to) throws Exception {
         boolean nonTreeEdgeFound = this.forests.getFirst().checkIfNonTreeEdgeExists(from, to);
         if(nonTreeEdgeFound) {
             for(Forest forest : forests) {
@@ -59,6 +55,5 @@ public class DynamicConnectivity {
     public boolean isConnected(Integer v, Integer w){
         return this.forests.getFirst().isConnected(v, w);
     }
-
 
 }

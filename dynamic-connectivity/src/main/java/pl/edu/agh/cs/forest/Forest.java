@@ -11,37 +11,30 @@ import java.util.*;
 public class Forest {
 
     private Map<Integer, LinkedHashSet<Integer>> nonTreeEdges;
-    private int level = -1;
-    private DynamicConnectivity dynamicConnectivity;
+    private Integer level = -1;
+    private ArrayList<Forest> hierarchicalForests = new ArrayList<>();
     private Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes;
 
-    public Forest(int level, DynamicConnectivity dcAlgo) {
+    public Forest(Integer level, ArrayList<Forest> dcAlgo) {
         this.nonTreeEdges = new HashMap<>();
         this.keyToNodes = new HashMap<>();
         this.level = level;
-        this.dynamicConnectivity = dcAlgo;
+        this.hierarchicalForests = dcAlgo;
     }
 
     public Map<Integer, LinkedHashSet<Integer>> getNonTreeEdges(){ return nonTreeEdges; }
     public Map<Pair<Integer, Integer>, LinkedHashSet<Node>> getKeyToNodes() { return keyToNodes; }
 
-    public Node getRepresentativeTreeNode(int u){
-        if(checkIfVertexHasNodeInTheTree(u, keyToNodes))
+    public Node getRepresentativeTreeNode(Integer u){
+        if(checkIfVertexHasNodeInTheTree(u))
             return SplayTree.getRootNode(keyToNodes.get(new Pair<>(u,u)).getFirst());
         else return null;
     }
 
-    public static boolean checkIfVertexHasNodeInTheTree(int v, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes){
+    public boolean checkIfVertexHasNodeInTheTree(Integer v){
         if(keyToNodes.containsKey(new Pair<>(v,v)))
             return !keyToNodes.get(new Pair<>(v,v)).isEmpty();
         return false;
-    }
-
-    public void createNewTree(Integer u, Integer v) {
-//        if(this.checkIfTreeEdgeExists(u, v)) return;
-//        if(Forest.checkIfVertexHasNodeInTheTree(u, keyToNodes) || Forest.checkIfVertexHasNodeInTheTree(v, keyToNodes))
-//            throw new Exception("At least one vertex is present in the tree.");
-        EulerTourTree.createNewEulerTourTree(u, v, keyToNodes);
     }
 
     private void showNonTreeEdges(){
@@ -64,22 +57,22 @@ public class Forest {
         }
     }
 
-    public void addTreeEdge(int u, int v) {
+    public void addTreeEdge(Integer u, Integer v) {
         Node nodeU = getRepresentativeTreeNode(u);
         Node nodeV = getRepresentativeTreeNode(v);
 
         if(nodeU != null && nodeV != null){
             EulerTourTree.link(u, v, keyToNodes);
         } else if(nodeU != null){
-            nodeU = EulerTourTree.addEdge(nodeU, u, v, keyToNodes);
+            EulerTourTree.addEdgeToNonExistingVertex(nodeU, u, v, keyToNodes);
         } else if(nodeV != null){
-            nodeV = EulerTourTree.addEdge(nodeV, v, u, keyToNodes);
+            EulerTourTree.addEdgeToNonExistingVertex(nodeV, v, u, keyToNodes);
         } else {
-            this.createNewTree(u, v);
+            EulerTourTree.createNewEulerTourTree(u, v, keyToNodes);
         }
     }
 
-    public void addNonTreeEdge(int u, int v){
+    public void addNonTreeEdge(Integer u, Integer v){
         if(!this.nonTreeEdges.containsKey(u))
             this.nonTreeEdges.put(u, new LinkedHashSet<>());
         if(!this.nonTreeEdges.containsKey(v))
@@ -88,34 +81,30 @@ public class Forest {
         this.nonTreeEdges.get(v).add(u);
     }
 
-    public void deleteNonTreeEdge(int u, int v){
+    public void deleteNonTreeEdge(Integer u, Integer v){
         if(this.nonTreeEdges.containsKey(u) && this.nonTreeEdges.containsKey(v)){
             this.nonTreeEdges.get(u).remove(v);
             this.nonTreeEdges.get(v).remove(u);
         }
     }
 
-    public LinkedHashSet<Integer> getNonTreeEdges(int u){
+    public LinkedHashSet<Integer> getNonTreeEdges(Integer u){
         if(!this.nonTreeEdges.containsKey(u))
             this.nonTreeEdges.put(u, new LinkedHashSet<>());
         return this.nonTreeEdges.get(u);
     }
 
-    public void deleteTreeEdge(int u, int v) {
+    public void deleteTreeEdge(Integer u, Integer v) {
         if(!this.checkIfTreeEdgeExists(u, v)) return;
         Node nodeU = getRepresentativeTreeNode(u);
         Node nodeV = getRepresentativeTreeNode(v);
 
-        if(nodeU != null && nodeV != null){
-            if(Objects.equals(nodeU, nodeV)){
-                Pair<Node, Node> trees = EulerTourTree.deleteEdge(nodeU, u, v, keyToNodes);
-            } else {
-                throw new Error("Cannot be situation that edge connects two different trees!");
-            }
+        if(Objects.equals(nodeU, nodeV) && nodeU != null){
+            EulerTourTree.deleteEdge(nodeU, u, v, keyToNodes);
         }
     }
 
-    public void findReplacementEdge(int v, int w, int level) {
+    public void findReplacementEdge(Integer v, Integer w, Integer level) {
         Node nodeV = getRepresentativeTreeNode(v);
         Node nodeW = getRepresentativeTreeNode(w);
         Node Tmin;
@@ -133,29 +122,29 @@ public class Forest {
 
         if(Tmin != null){
             for(Pair<Integer, Integer> edge: EulerTourTree.getEdges(Tmin)){
-                this.dynamicConnectivity.getForestForLevel(level+1).addTreeEdge(edge.getFirst(), edge.getSecond());
+                this.hierarchicalForests.get(level+1).addTreeEdge(edge.getFirst(), edge.getSecond());
             }
             boolean nonTreeEdgeFound = false;
             Pair<Integer, Integer> nonTreeEdge = null;
 
             for(Integer vertex: EulerTourTree.getVertices(Tmin)){
-                for(Integer nonTreeEdgeEnd: this.dynamicConnectivity.getForestForLevel(level).getNonTreeEdges(vertex)){
+                for(Integer nonTreeEdgeEnd: this.hierarchicalForests.get(level).getNonTreeEdges(vertex)){
                     if(!getRepresentativeTreeNode(nonTreeEdgeEnd).equals(SplayTree.getRootNode(Tmin))){
                         nonTreeEdgeFound = true;
                         nonTreeEdge = new Pair<>(vertex, nonTreeEdgeEnd);
-                        for(int lvl= 0; lvl < dynamicConnectivity.getAmtOfLevels(); lvl++){
-                            dynamicConnectivity.getForestForLevel(lvl).deleteNonTreeEdge(vertex, nonTreeEdgeEnd);
+                        for (Forest hierarchicalForest : hierarchicalForests) {
+                            hierarchicalForest.deleteNonTreeEdge(vertex, nonTreeEdgeEnd);
                         }
                         break;
                     } else {
-                        dynamicConnectivity.getForestForLevel(level+1).addNonTreeEdge(vertex, nonTreeEdgeEnd);
+                        hierarchicalForests.get(level+1).addNonTreeEdge(vertex, nonTreeEdgeEnd);
                     }
                 }
                 if(nonTreeEdgeFound) break;
             }
             if(nonTreeEdgeFound){
                 for(int lvl= 0; lvl <= level; lvl++){
-                    dynamicConnectivity.getForestForLevel(lvl).addTreeEdge(nonTreeEdge.getFirst(), nonTreeEdge.getSecond());
+                    hierarchicalForests.get(lvl).addTreeEdge(nonTreeEdge.getFirst(), nonTreeEdge.getSecond());
                 }
             } else {
                 this.findReplacementEdge(v, w, level-1);
@@ -163,13 +152,13 @@ public class Forest {
         }
     }
 
-    public boolean checkIfNonTreeEdgeExists(int u, int v){
+    public boolean checkIfNonTreeEdgeExists(Integer u, Integer v){
         if(this.nonTreeEdges.containsKey(u))
             return this.nonTreeEdges.get(u).contains(v);
         return false;
     }
 
-    public boolean checkIfTreeEdgeExists(int v, int u){
+    public boolean checkIfTreeEdgeExists(Integer v, Integer u){
         Node nodeU = getRepresentativeTreeNode(u);
         Node nodeV = getRepresentativeTreeNode(v);
         if(nodeU != null && Objects.equals(nodeU, nodeV)){

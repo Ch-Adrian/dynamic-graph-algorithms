@@ -167,14 +167,14 @@ public class EulerTourTreeTest {
     }
 
     @Test
-    public void testAddEdge(){
+    public void testAddEdgeToNonExistingVertex(){
         try {
             Node treeNode = EulerTourTree.createNewEulerTourTree(0, 1, keyToNodes);
-            EulerTourTree.addEdge(treeNode, 0, 2, keyToNodes);
-            EulerTourTree.addEdge(treeNode, 1, 3, keyToNodes);
-            EulerTourTree.addEdge(treeNode, 1, 4, keyToNodes);
-            EulerTourTree.addEdge(treeNode, 2, 5, keyToNodes);
-            EulerTourTree.addEdge(treeNode, 2, 6, keyToNodes);
+            EulerTourTree.addEdgeToNonExistingVertex(treeNode, 0, 2, keyToNodes);
+            EulerTourTree.addEdgeToNonExistingVertex(treeNode, 1, 3, keyToNodes);
+            EulerTourTree.addEdgeToNonExistingVertex(treeNode, 1, 4, keyToNodes);
+            EulerTourTree.addEdgeToNonExistingVertex(treeNode, 2, 5, keyToNodes);
+            EulerTourTree.addEdgeToNonExistingVertex(treeNode, 2, 6, keyToNodes);
 
             assertEquals(Integer.valueOf(0), EulerTourTree.getEulerTourRoot(treeNode));
             assertEquals(new Pair<>(0,0), SplayTree.getRootNode(treeNode).key);
@@ -225,11 +225,11 @@ public class EulerTourTreeTest {
     public void testCutTree(){
         try {
             Node treeNode = EulerTourTree.createNewEulerTourTree(0, 1, keyToNodes);
-            EulerTourTree.addEdge(treeNode, 0, 2, keyToNodes);
-            EulerTourTree.addEdge(treeNode, 1, 3, keyToNodes);
-            EulerTourTree.addEdge(treeNode, 1, 4, keyToNodes);
-            EulerTourTree.addEdge(treeNode, 2, 5, keyToNodes);
-            EulerTourTree.addEdge(treeNode, 2, 6, keyToNodes);
+            EulerTourTree.addEdgeToNonExistingVertex(treeNode, 0, 2, keyToNodes);
+            EulerTourTree.addEdgeToNonExistingVertex(treeNode, 1, 3, keyToNodes);
+            EulerTourTree.addEdgeToNonExistingVertex(treeNode, 1, 4, keyToNodes);
+            EulerTourTree.addEdgeToNonExistingVertex(treeNode, 2, 5, keyToNodes);
+            EulerTourTree.addEdgeToNonExistingVertex(treeNode, 2, 6, keyToNodes);
 
             Pair<Node, Node> trees = EulerTourTree.cut(0, 2, keyToNodes);
 
