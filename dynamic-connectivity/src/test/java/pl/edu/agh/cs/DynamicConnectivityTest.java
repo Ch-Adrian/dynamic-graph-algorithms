@@ -175,6 +175,7 @@ public class DynamicConnectivityTest {
         assertEquals(Integer.valueOf(1), dc.getForestForLevel(0).getAmtOfTrees());
         assertEquals(Integer.valueOf(1), dc.getForestForLevel(1).getAmtOfTrees());
 
+        assertFalse(dc.getForestForLevel(0).checkIfTreeEdgeExists(2,4));
         assertTrue(dc.getForestForLevel(0).checkIfTreeEdgeExists(0,5));
         assertTrue(dc.getForestForLevel(0).checkIfTreeEdgeExists(0,1));
         assertTrue(dc.getForestForLevel(0).checkIfTreeEdgeExists(1,2));
@@ -233,6 +234,7 @@ public class DynamicConnectivityTest {
 
         assertTrue(dc.isConnected(0, 5));
         // Forest lvl 0
+        assertFalse(dc.getForestForLevel(0).checkIfTreeEdgeExists(0,5));
         assertTrue(dc.getForestForLevel(0).checkIfTreeEdgeExists(0,1));
         assertTrue(dc.getForestForLevel(0).checkIfTreeEdgeExists(1,2));
         assertTrue(dc.getForestForLevel(0).checkIfTreeEdgeExists(2,3));
@@ -254,10 +256,48 @@ public class DynamicConnectivityTest {
     @Test
     public void testDC2() {
         DynamicConnectivity dc = new DynamicConnectivity(3);
+        Forest forest = dc.getForestForLevel(0);
+        Map<Integer, LinkedHashSet<Integer>> nonTreeEdges = forest.getNonTreeEdges();
+        Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes = forest.getKeyToNodes();
+
         try {
             dc.addEdge(0, 1);
+
+            assertTrue(nonTreeEdges.isEmpty());
+            assertEquals(4, keyToNodes.size());
+            assertEquals(2, keyToNodes.get(new Pair<>(0,0)).size());
+            assertEquals(1, keyToNodes.get(new Pair<>(0,1)).size());
+            assertEquals(1, keyToNodes.get(new Pair<>(1,0)).size());
+            assertEquals(1, keyToNodes.get(new Pair<>(1,1)).size());
+
             dc.addEdge(0, 2);
+
+            assertTrue(nonTreeEdges.isEmpty());
+            assertEquals(7, keyToNodes.size());
+            assertEquals(3, keyToNodes.get(new Pair<>(0,0)).size());
+            assertEquals(1, keyToNodes.get(new Pair<>(0,1)).size());
+            assertEquals(1, keyToNodes.get(new Pair<>(1,0)).size());
+            assertEquals(1, keyToNodes.get(new Pair<>(1,1)).size());
+            assertEquals(1, keyToNodes.get(new Pair<>(0,2)).size());
+            assertEquals(1, keyToNodes.get(new Pair<>(2,0)).size());
+            assertEquals(1, keyToNodes.get(new Pair<>(2,2)).size());
+
             dc.addEdge(1,2);
+
+            assertFalse(nonTreeEdges.isEmpty());
+            assertEquals(7, keyToNodes.size());
+            assertEquals(3, keyToNodes.get(new Pair<>(0,0)).size());
+            assertEquals(1, keyToNodes.get(new Pair<>(0,1)).size());
+            assertEquals(1, keyToNodes.get(new Pair<>(1,0)).size());
+            assertEquals(1, keyToNodes.get(new Pair<>(1,1)).size());
+            assertEquals(1, keyToNodes.get(new Pair<>(0,2)).size());
+            assertEquals(1, keyToNodes.get(new Pair<>(2,0)).size());
+            assertEquals(1, keyToNodes.get(new Pair<>(2,2)).size());
+
+            assertEquals(2, nonTreeEdges.size());
+            assertEquals(Integer.valueOf(2), nonTreeEdges.get(1).getFirst());
+            assertEquals(Integer.valueOf(1), nonTreeEdges.get(2).getFirst());
+
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
@@ -265,11 +305,21 @@ public class DynamicConnectivityTest {
         assertTrue(dc.isConnected(1, 2));
         assertFalse(dc.isConnected(1, 10));
 
+        assertTrue(dc.getForestForLevel(0).checkIfTreeEdgeExists(0,1));
+        assertTrue(dc.getForestForLevel(0).checkIfTreeEdgeExists(0,2));
+
+        assertTrue(dc.getForestForLevel(0).checkIfNonTreeEdgeExists(1,2));
+
         try {
             dc.deleteEdge(0, 1);
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
+
+        assertFalse(dc.getForestForLevel(0).checkIfTreeEdgeExists(0,1));
+        assertTrue(dc.getForestForLevel(0).checkIfTreeEdgeExists(0,2));
+        assertFalse(dc.getForestForLevel(0).checkIfNonTreeEdgeExists(1,2));
+        assertTrue(dc.getForestForLevel(0).checkIfTreeEdgeExists(1,2));
 
         assertTrue(dc.isConnected(1, 0));
 

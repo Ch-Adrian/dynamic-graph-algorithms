@@ -112,7 +112,14 @@ public class EulerTourTree {
         keyToNodes.get(lastNode.get().key).remove(lastNode.get());
 
         Optional<Node> joined;
-        joined = SplayTree.join(J.get(), L.get());
+        if(J.isPresent() && L.isPresent())
+            joined = SplayTree.join(J.get(), L.get());
+        else if(J.isPresent())
+            joined = SplayTree.join(J.get(), null);
+        else if(L.isPresent())
+            joined = SplayTree.join(null, L.get());
+        else
+            joined = Optional.empty();
 
         return new Pair<>(K, joined);
     }
