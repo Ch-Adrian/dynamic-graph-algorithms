@@ -240,13 +240,13 @@ public class EulerTourTreeTest {
             assertEquals(new Pair<>(0,1), splayRootLeft.right.left.key);
             assertEquals(new Pair<>(0,0), splayRootLeft.right.right.right.key);
             assertEquals(new Pair<>(4,1), splayRootLeft.right.left.right.right.right.right.right.right.right.right.key);
-            assertEquals(13, splayRootLeft.sizeOfTree);
+            assertEquals(Integer.valueOf(13), splayRootLeft.sizeOfTree);
 
             assertEquals(new Pair<>(2,2), splayRootRight.key);
             assertEquals(new Pair<>(2,5), splayRootRight.right.key);
             assertEquals(new Pair<>(5,2), splayRootRight.right.right.right.key);
             assertEquals(new Pair<>(2,2), splayRootRight.right.right.right.right.right.right.right.right.key);
-            assertEquals(9, splayRootRight.sizeOfTree);
+            assertEquals(Integer.valueOf(9), splayRootRight.sizeOfTree);
 
         } catch (Exception e){
             System.out.println("Exception occurred!");

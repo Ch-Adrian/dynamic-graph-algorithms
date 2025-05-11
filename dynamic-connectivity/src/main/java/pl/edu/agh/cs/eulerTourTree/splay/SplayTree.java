@@ -2,11 +2,12 @@ package pl.edu.agh.cs.eulerTourTree.splay;
 
 import pl.edu.agh.cs.common.Pair;
 
+import javax.swing.text.html.Option;
 import java.util.Optional;
 
 public class SplayTree {
 
-    private static void updateSize(Node treeNode){
+    public static void updateSize(Node treeNode){
         if(treeNode == null) return;
         int size = 0;
         if(treeNode.left != null) size += treeNode.left.sizeOfTree;
@@ -71,8 +72,8 @@ public class SplayTree {
     }
 
     public static void splay(Node node){
-
         if(node == null) return;
+
         while(node.parent != null){
             if(node.parent.parent == null){
                 if(node.parent.left == node){
@@ -109,8 +110,10 @@ public class SplayTree {
         return newNode;
     }
 
-    public static Node detachNodeFromTree(Node treeNode){
-        if(treeNode == null || treeNode.parent == null) return treeNode;
+    public static Optional<Node> detachSubTreeFromTree(Node treeNode){
+        if(treeNode == null) return Optional.empty();
+        if(treeNode.parent == null) return Optional.of(treeNode);
+
         if(treeNode.parent.left == treeNode){
             treeNode.parent.left = null;
         } else {
@@ -118,88 +121,90 @@ public class SplayTree {
         }
         updateSize(treeNode.parent);
         treeNode.parent = null;
-        return treeNode;
+        return Optional.of(treeNode);
     }
 
-    public static Pair<Node, Node> split(Node treeNode){
+    public static Pair<Optional<Node>, Optional<Node>> split(Node treeNode){
         /* Splits tree where treeNode is the last node in sequence. */
-        if(treeNode == null) return null;
+        if(treeNode == null) return new Pair<>(Optional.empty(), Optional.empty());
         Node succ = SplayTree.successor(treeNode);
-        if(succ == null) return new Pair<>(treeNode, succ);
+        if(succ == null) return new Pair<>(Optional.of(treeNode), Optional.empty());
 
         SplayTree.splay(succ);
-        Node leftSubTree = SplayTree.detachNodeFromTree(succ.left);
-        return new Pair<>(leftSubTree, succ);
+        Optional<Node> leftSubTree = SplayTree.detachSubTreeFromTree(succ.left);
+        return new Pair<>(leftSubTree, Optional.of(succ));
     }
 
-    public static Node join(Node leftTree, Node rightTree){
-        if(rightTree == null && leftTree != null) return leftTree;
-        if(rightTree != null && leftTree == null) return rightTree;
-        if(rightTree == null && leftTree == null) return null;
+    public static Optional<Node> join(Node leftTree, Node rightTree){
+        if(rightTree == null && leftTree != null) return Optional.of(leftTree);
+        if(rightTree != null && leftTree == null) return Optional.of(rightTree);
+        if(rightTree == null) return Optional.empty();
 
         Node rightMostOfLeftTree = SplayTree.lastNode(leftTree);
         SplayTree.splay(rightMostOfLeftTree);
         assert(rightMostOfLeftTree.right == null);
 
-        rightMostOfLeftTree.right = SplayTree.getRootNode(rightTree);
+        rightMostOfLeftTree.right = SplayTree.getRootNode(rightTree).get();
         rightMostOfLeftTree.right.parent = rightMostOfLeftTree;
         updateSize(rightMostOfLeftTree);
 
-        return rightMostOfLeftTree;
+        return Optional.of(rightMostOfLeftTree);
     }
 
-    public static Node getRootNode(Node treeNode){
-        if(treeNode == null) return null;
-        if(treeNode.parent == null) return treeNode;
+    public static Optional<Node> getRootNode(Node treeNode){
+        if(treeNode == null) return Optional.empty();
+        if(treeNode.parent == null) return Optional.of(treeNode);
         for(treeNode = treeNode.parent; treeNode.parent != null; treeNode = treeNode.parent);
-        return treeNode;
+        return Optional.of(treeNode);
     }
 
     public static Node predecessor(Node treeNode){
         if(treeNode == null) return null;
-        Node root = SplayTree.getRootNode(treeNode);
+        Optional<Node> root = SplayTree.getRootNode(treeNode);
         SplayTree.splay(treeNode);
         if (treeNode.left == null){
             return null;
         }
         for(treeNode = treeNode.left; treeNode.right != null; treeNode = treeNode.right);
-        SplayTree.splay(root);
+        SplayTree.splay(root.get());
         return treeNode;
     }
 
     public static Node successor(Node treeNode){
         if(treeNode == null) return null;
-        Node root = SplayTree.getRootNode(treeNode);
+        Optional<Node> root = SplayTree.getRootNode(treeNode);
         SplayTree.splay(treeNode);
         if (treeNode.right == null){
             return null;
         }
         for(treeNode = treeNode.right; treeNode.left != null; treeNode = treeNode.left);
-        SplayTree.splay(root);
+        SplayTree.splay(root.get());
         return treeNode;
     }
 
     public static Node firstNode(Node treeNode){
         if(treeNode == null) return null;
-        Node root = SplayTree.getRootNode(treeNode);
+        Optional<Node> optRoot = SplayTree.getRootNode(treeNode);
+        Node root = optRoot.get();
         for(; root.left != null; root = root.left);
         return root;
     }
 
     public static Node lastNode(Node treeNode){
         if(treeNode == null) return null;
-        Node root = SplayTree.getRootNode(treeNode);
+        Optional<Node> optRoot = SplayTree.getRootNode(treeNode);
+        Node root = optRoot.get();
         for(; root.right != null; root = root.right);
         return root;
     }
 
-    public static Node removeNode(Node treeNode){
-        if(treeNode == null) return null;
+    public static Optional<Node> removeNode(Node treeNode){
+        if(treeNode == null) return Optional.empty();
         SplayTree.splay(treeNode);
         assert (treeNode.parent == null);
         Node pred;
         if(treeNode.left == null && treeNode.right == null){
-            return null;
+            return Optional.empty();
         } else if(treeNode.left == null){
             pred = treeNode.right;
             pred.parent = null;
@@ -221,11 +226,11 @@ public class SplayTree {
         treeNode.left = null;
         treeNode.sizeOfTree = 1;
 
-        return pred;
+        return Optional.of(pred);
     }
 
     public static int getSizeOfTree(Node treeNode){
         if(treeNode == null) return 0;
-        return SplayTree.getRootNode(treeNode).sizeOfTree;
+        return SplayTree.getRootNode(treeNode).get().sizeOfTree;
     }
 }

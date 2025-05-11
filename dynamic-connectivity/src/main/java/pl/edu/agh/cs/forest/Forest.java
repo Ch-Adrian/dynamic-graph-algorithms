@@ -25,10 +25,10 @@ public class Forest {
     public Map<Integer, LinkedHashSet<Integer>> getNonTreeEdges(){ return nonTreeEdges; }
     public Map<Pair<Integer, Integer>, LinkedHashSet<Node>> getKeyToNodes() { return keyToNodes; }
 
-    public Node getRepresentativeTreeNode(Integer u){
+    public Optional<Node> getRepresentativeTreeNode(Integer u){
         if(checkIfVertexHasNodeInTheTree(u))
             return SplayTree.getRootNode(keyToNodes.get(new Pair<>(u,u)).getFirst());
-        else return null;
+        else return Optional.empty();
     }
 
     public boolean checkIfVertexHasNodeInTheTree(Integer v){
@@ -58,15 +58,15 @@ public class Forest {
     }
 
     public void addTreeEdge(Integer u, Integer v) {
-        Node nodeU = getRepresentativeTreeNode(u);
-        Node nodeV = getRepresentativeTreeNode(v);
+        Optional<Node> nodeU = getRepresentativeTreeNode(u);
+        Optional<Node> nodeV = getRepresentativeTreeNode(v);
 
-        if(nodeU != null && nodeV != null){
+        if(nodeU.isPresent() && nodeV.isPresent()){
             EulerTourTree.link(u, v, keyToNodes);
-        } else if(nodeU != null){
-            EulerTourTree.addEdgeToNonExistingVertex(nodeU, u, v, keyToNodes);
-        } else if(nodeV != null){
-            EulerTourTree.addEdgeToNonExistingVertex(nodeV, v, u, keyToNodes);
+        } else if(nodeU.isPresent()){
+            EulerTourTree.addEdgeToNonExistingVertex(nodeU.get(), u, v, keyToNodes);
+        } else if(nodeV.isPresent()){
+            EulerTourTree.addEdgeToNonExistingVertex(nodeV.get(), v, u, keyToNodes);
         } else {
             EulerTourTree.createNewEulerTourTree(u, v, keyToNodes);
         }
@@ -96,28 +96,28 @@ public class Forest {
 
     public void deleteTreeEdge(Integer u, Integer v) {
         if(!this.checkIfTreeEdgeExists(u, v)) return;
-        Node nodeU = getRepresentativeTreeNode(u);
-        Node nodeV = getRepresentativeTreeNode(v);
+        Optional<Node> nodeU = getRepresentativeTreeNode(u);
+        Optional<Node> nodeV = getRepresentativeTreeNode(v);
 
-        if(Objects.equals(nodeU, nodeV) && nodeU != null){
-            EulerTourTree.deleteEdge(nodeU, u, v, keyToNodes);
+        if(nodeU.isPresent() && nodeV.isPresent() && Objects.equals(nodeU.get(), nodeV.get())){
+            EulerTourTree.deleteEdge(nodeU.get(), u, v, keyToNodes);
         }
     }
 
     public void findReplacementEdge(Integer v, Integer w, Integer level) {
-        Node nodeV = getRepresentativeTreeNode(v);
-        Node nodeW = getRepresentativeTreeNode(w);
+        Optional<Node> nodeV = getRepresentativeTreeNode(v);
+        Optional<Node> nodeW = getRepresentativeTreeNode(w);
         Node Tmin;
-        if(nodeV == null){
+        if(nodeV.isEmpty()){
             Tmin = null;
         }
-        else if(nodeW == null){
+        else if(nodeW.isEmpty()){
             Tmin = null;
         }
-        else if(SplayTree.getSizeOfTree(nodeV) > SplayTree.getSizeOfTree(nodeW)){
-            Tmin = nodeW;
+        else if(SplayTree.getSizeOfTree(nodeV.get()) > SplayTree.getSizeOfTree(nodeW.get())){
+            Tmin = nodeW.get();
         } else {
-            Tmin = nodeV;
+            Tmin = nodeV.get();
         }
 
         if(Tmin != null){
@@ -159,24 +159,26 @@ public class Forest {
     }
 
     public boolean checkIfTreeEdgeExists(Integer v, Integer u){
-        Node nodeU = getRepresentativeTreeNode(u);
-        Node nodeV = getRepresentativeTreeNode(v);
-        if(nodeU != null && Objects.equals(nodeU, nodeV)){
-            return true;
-        }
-        return false;
+        Optional<Node> nodeU = getRepresentativeTreeNode(u);
+        Optional<Node> nodeV = getRepresentativeTreeNode(v);
+        if(this.keyToNodes.containsKey(new Pair<>(v,u)))
+            return !this.keyToNodes.get(new Pair<>(v,u)).isEmpty() &&
+                    nodeU.isPresent() &&
+                    nodeV.isPresent() &&
+                    Objects.equals(nodeU.get(), nodeV.get());
+        else return false;
     }
 
     public boolean isConnected(Integer u, Integer v){
-        Node nodeU = getRepresentativeTreeNode(u);
-        Node nodeV = getRepresentativeTreeNode(v);
-        return Objects.equals(nodeU, nodeV) && nodeU != null;
+        Optional<Node> nodeU = getRepresentativeTreeNode(u);
+        Optional<Node> nodeV = getRepresentativeTreeNode(v);
+        return nodeU.isPresent() && nodeV.isPresent() && Objects.equals(nodeU.get(), nodeV.get());
     }
 
     public Integer getAmtOfTrees(){
         Set<Node> trees = new HashSet<>();
         for(Pair<Integer, Integer> p: keyToNodes.keySet()){
-            trees.add(getRepresentativeTreeNode(p.getFirst()));
+            getRepresentativeTreeNode(p.getFirst()).ifPresent(trees::add);
         }
         return trees.size();
     }

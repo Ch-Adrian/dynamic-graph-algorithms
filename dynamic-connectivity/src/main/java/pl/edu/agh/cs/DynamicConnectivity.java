@@ -5,15 +5,15 @@ import pl.edu.agh.cs.forest.Forest;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Optional;
 
 public class DynamicConnectivity {
 
-    private ArrayList<Forest> forests = new ArrayList<>();
-    private Integer amtOfLevels = 1;
+    private final ArrayList<Forest> forests = new ArrayList<>();
 
     public DynamicConnectivity(Integer n) {
-        this.amtOfLevels = (int) Math.ceil(Math.log(n));
-        for (int i = 0; i <= this.amtOfLevels; i++) {
+        Integer amtOfLevels = Integer.valueOf((int) Math.ceil(Math.log(n)));
+        for (int i = 0; i <= amtOfLevels; i++) {
             forests.add(new Forest(i, forests));
         }
     }
@@ -23,10 +23,10 @@ public class DynamicConnectivity {
     }
 
     public void addEdge(Integer from, Integer to) {
-        Node treeFrom = this.forests.getFirst().getRepresentativeTreeNode(from);
-        Node treeTo = this.forests.getFirst().getRepresentativeTreeNode(to);
+        Optional<Node> treeFrom = this.forests.getFirst().getRepresentativeTreeNode(from);
+        Optional<Node> treeTo = this.forests.getFirst().getRepresentativeTreeNode(to);
 
-        if(Objects.equals(treeFrom, treeTo) && treeFrom != null) {
+        if(treeFrom.isPresent() && treeTo.isPresent() && Objects.equals(treeFrom, treeTo)) {
             this.forests.getFirst().addNonTreeEdge(from, to);
         } else {
             this.forests.getFirst().addTreeEdge(from, to);
@@ -55,5 +55,4 @@ public class DynamicConnectivity {
     public boolean isConnected(Integer v, Integer w){
         return this.forests.getFirst().isConnected(v, w);
     }
-
 }

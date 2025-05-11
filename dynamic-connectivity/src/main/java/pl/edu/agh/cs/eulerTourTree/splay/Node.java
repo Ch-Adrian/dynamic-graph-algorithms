@@ -12,7 +12,7 @@ public class Node {
     public Node left;
     public Node right;
     public Node parent;
-    public int sizeOfTree;
+    public Integer sizeOfTree;
 
     public Node(Pair<Integer, Integer> key) {
         this.uniqueKey = nodeCounter++;
