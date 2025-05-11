@@ -215,16 +215,16 @@ public class EulerTourTreeTest {
     public void testAddEdgeToNonExistingVertex(){
         try {
             Node treeNode = EulerTourTree.createNewEulerTourTree(0, 1, keyToNodes);
-            EulerTourTree.addEdgeToNonExistingVertex(treeNode, 0, 2, keyToNodes);
-            EulerTourTree.addEdgeToNonExistingVertex(treeNode, 1, 3, keyToNodes);
-            EulerTourTree.addEdgeToNonExistingVertex(treeNode, 1, 4, keyToNodes);
-            EulerTourTree.addEdgeToNonExistingVertex(treeNode, 2, 5, keyToNodes);
-            EulerTourTree.addEdgeToNonExistingVertex(treeNode, 2, 6, keyToNodes);
+            Optional<Node> optTreeNode = EulerTourTree.addEdgeToNonExistingVertex(treeNode, 0, 2, keyToNodes);
+            optTreeNode = EulerTourTree.addEdgeToNonExistingVertex(optTreeNode.get(), 1, 3, keyToNodes);
+            optTreeNode = EulerTourTree.addEdgeToNonExistingVertex(optTreeNode.get(), 1, 4, keyToNodes);
+            optTreeNode = EulerTourTree.addEdgeToNonExistingVertex(optTreeNode.get(), 2, 5, keyToNodes);
+            optTreeNode = EulerTourTree.addEdgeToNonExistingVertex(optTreeNode.get(), 2, 6, keyToNodes);
 
-            assertEquals(Integer.valueOf(0), EulerTourTree.getEulerTourRoot(treeNode));
-            assertEquals(new Pair<>(0,0), SplayTree.getRootNode(treeNode).get().key);
+            assertEquals(Integer.valueOf(2), EulerTourTree.getEulerTourRoot(optTreeNode.get()));
+            assertEquals(new Pair<>(0,2), SplayTree.getRootNode(optTreeNode.get()).get().key);
 
-            treeNode = EulerTourTree.reRoot(treeNode, 0, keyToNodes).get();
+            treeNode = EulerTourTree.reRoot(optTreeNode.get(), 0, keyToNodes).get();
             assertEquals(Integer.valueOf(0), EulerTourTree.getEulerTourRoot(treeNode));
 
             treeNode = EulerTourTree.reRoot(treeNode, 1, keyToNodes).get();
@@ -270,18 +270,18 @@ public class EulerTourTreeTest {
     public void testCutTree(){
         try {
             Node treeNode = EulerTourTree.createNewEulerTourTree(0, 1, keyToNodes);
-            EulerTourTree.addEdgeToNonExistingVertex(treeNode, 0, 2, keyToNodes);
-            EulerTourTree.addEdgeToNonExistingVertex(treeNode, 1, 3, keyToNodes);
-            EulerTourTree.addEdgeToNonExistingVertex(treeNode, 1, 4, keyToNodes);
-            EulerTourTree.addEdgeToNonExistingVertex(treeNode, 2, 5, keyToNodes);
-            EulerTourTree.addEdgeToNonExistingVertex(treeNode, 2, 6, keyToNodes);
+            Optional<Node> optTreeNode = EulerTourTree.addEdgeToNonExistingVertex(treeNode, 0, 2, keyToNodes);
+            optTreeNode = EulerTourTree.addEdgeToNonExistingVertex(optTreeNode.get(), 1, 3, keyToNodes);
+            optTreeNode = EulerTourTree.addEdgeToNonExistingVertex(optTreeNode.get(), 1, 4, keyToNodes);
+            optTreeNode = EulerTourTree.addEdgeToNonExistingVertex(optTreeNode.get(), 2, 5, keyToNodes);
+            optTreeNode = EulerTourTree.addEdgeToNonExistingVertex(optTreeNode.get(), 2, 6, keyToNodes);
 
             Pair<Optional<Node>, Optional<Node>> trees = EulerTourTree.cut(0, 2, keyToNodes);
 
-            Node splayRootRight = SplayTree.getRootNode(trees.getFirst().get()).get();
-            Node splayRootLeft = SplayTree.getRootNode(trees.getSecond().get()).get();
+            Node splayRootLeft = SplayTree.getRootNode(trees.getFirst().get()).get();
+            Node splayRootRight = SplayTree.getRootNode(trees.getSecond().get()).get();
 
-            assertEquals(new Pair<>(2,2), splayRootLeft.key);
+            assertEquals(new Pair<>(0,0), splayRootLeft.key);
             assertEquals(new Pair<>(0,1), splayRootLeft.right.left.key);
             assertEquals(new Pair<>(0,0), splayRootLeft.right.right.right.key);
             assertEquals(new Pair<>(4,1), splayRootLeft.right.left.right.right.right.right.right.right.right.right.key);
@@ -308,6 +308,33 @@ public class EulerTourTreeTest {
 
             assertEquals(new Pair<>(1,1), splayRootRight.key);
             assertEquals(new Pair<>(0,0), splayRootLeft.key);
+        } catch (Exception e){
+            System.out.println("Exception occurred!");
+        }
+    }
+
+    @Test
+    public void testCutTree2(){
+        try {
+            Node treeNode = EulerTourTree.createNewEulerTourTree(0, 1, keyToNodes);
+            Optional<Node> optTreeNode = EulerTourTree.addEdgeToNonExistingVertex(treeNode, 0, 2, keyToNodes);
+
+            Pair<Optional<Node>, Optional<Node>> trees = EulerTourTree.cut(0, 1, keyToNodes);
+
+            Node splayRootLeft = SplayTree.getRootNode(trees.getFirst().get()).get();
+            Node splayRootRight = SplayTree.getRootNode(trees.getSecond().get()).get();
+
+            assertEquals(new Pair<>(0,0), splayRootRight.key);
+            assertEquals(Integer.valueOf(5), splayRootRight.sizeOfTree);
+            assertEquals(new Pair<>(1,1), splayRootLeft.key);
+            assertEquals(Integer.valueOf(1), splayRootLeft.sizeOfTree);
+            assertEquals(7, keyToNodes.size());
+            assertEquals(1, keyToNodes.get(new Pair<>(1,1)).size());
+            assertEquals(2, keyToNodes.get(new Pair<>(0,0)).size());
+            assertEquals(1, keyToNodes.get(new Pair<>(0,2)).size());
+            assertEquals(1, keyToNodes.get(new Pair<>(2,2)).size());
+            assertEquals(1, keyToNodes.get(new Pair<>(2,0)).size());
+
         } catch (Exception e){
             System.out.println("Exception occurred!");
         }

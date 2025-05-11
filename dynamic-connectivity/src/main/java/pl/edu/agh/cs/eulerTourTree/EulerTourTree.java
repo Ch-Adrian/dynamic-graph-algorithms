@@ -95,12 +95,13 @@ public class EulerTourTree {
         roots.setFirst(SplayTree.removeNode(edgeUV));
         keyToNodes.get(new Pair<>(u, v)).remove(edgeUV);
 
-        Pair<Optional<Node>, Optional<Node>> trees2 = SplayTree.split(edgeVU);
         if(SplayTree.getRootNode(roots.getFirst().get()).equals(SplayTree.getRootNode(edgeVU))) {
+            Pair<Optional<Node>, Optional<Node>> trees2 = SplayTree.split(edgeVU);
             J = SplayTree.removeNode(edgeVU);
             K = trees2.getSecond();
             L = roots.getSecond();
         } else {
+            Pair<Optional<Node>, Optional<Node>> trees2 = SplayTree.split(edgeVU);
             J = roots.getFirst();
             K = SplayTree.removeNode(edgeVU);
             L = trees2.getSecond();
@@ -124,7 +125,7 @@ public class EulerTourTree {
         return new Pair<>(K, joined);
     }
 
-    public static void addEdgeToNonExistingVertex(Node treeNodeRepresentative, Integer treeVertex, Integer nonExistingVertex, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes){
+    public static Optional<Node> addEdgeToNonExistingVertex(Node treeNodeRepresentative, Integer treeVertex, Integer nonExistingVertex, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes){
         Optional<Node> optSplayRoot = SplayTree.getRootNode(treeNodeRepresentative);
         if(!keyToNodes.containsKey(new Pair<>(nonExistingVertex, nonExistingVertex)))
             keyToNodes.put(new Pair<>(nonExistingVertex, nonExistingVertex), new LinkedHashSet<>());
@@ -133,6 +134,7 @@ public class EulerTourTree {
             optSplayRoot = reRoot(optSplayRoot.get(), treeVertex, keyToNodes);
             optSplayRoot.ifPresent(node -> insertEdgeToETT(node, treeVertex, nonExistingVertex, keyToNodes));
         }
+        return  optSplayRoot;
     }
 
     private static void dfsCheckParent(Node node){
