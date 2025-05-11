@@ -50,7 +50,7 @@ public class EulerTourTree {
         }
 
         SplayTree.splay(newRoot);
-        Node firstNode = SplayTree.firstNode(newRoot);
+        Node firstNode = SplayTree.firstNode(newRoot).get();
         SplayTree.removeNode(firstNode);
         keyToNodes.get(firstNode.key).remove(firstNode);
 
@@ -88,36 +88,28 @@ public class EulerTourTree {
         Node edgeVU = keyToNodes.get(new Pair<>(v, u)).getFirst();
 
         Pair<Optional<Node>, Optional<Node>> roots = SplayTree.split(edgeUV);
-        Optional<Node> J = null;
-        Optional<Node> K = null;
-        Node L = null;
+        Optional<Node> J = Optional.empty();
+        Optional<Node> K = Optional.empty();
+        Optional<Node> L = Optional.empty();
 
-        roots.setFirst(Optional.of(SplayTree.removeNode(edgeUV)));
+        roots.setFirst(SplayTree.removeNode(edgeUV));
         keyToNodes.get(new Pair<>(u, v)).remove(edgeUV);
 
         Pair<Optional<Node>, Optional<Node>> trees2 = SplayTree.split(edgeVU);
         if(SplayTree.getRootNode(roots.getFirst().get()).equals(SplayTree.getRootNode(edgeVU))) {
             J = SplayTree.removeNode(edgeVU);
-            if(trees2.getSecond().isPresent())
-                K = trees2.getSecond();
-            if(roots.getSecond().isPresent())
-                L = roots.getSecond().get();
+            K = trees2.getSecond();
+            L = roots.getSecond();
         } else {
-            if(roots.getFirst().isPresent())
-                J = roots.getFirst();
+            J = roots.getFirst();
             K = SplayTree.removeNode(edgeVU);
-            if(trees2.getSecond().isPresent())
-                L = trees2.getSecond().get();
+            L = trees2.getSecond();
         }
         keyToNodes.get(new Pair<>(v, u)).remove(edgeVU);
 
-        J = SplayTree.removeNode(SplayTree.lastNode(J.get()));
+        J = SplayTree.removeNode(SplayTree.lastNode(J.get()).get());
         Optional<Node> joined;
-        if(J.isPresent())
-            joined = SplayTree.join(J.get(), L);
-        else
-            joined = SplayTree.join(null, J);
-
+        joined = SplayTree.join(J.get(), L.get());
 
         return new Pair<>(K, joined);
     }
@@ -173,7 +165,7 @@ public class EulerTourTree {
     }
 
     public static Integer getEulerTourRoot(Node treeNode){
-        return SplayTree.firstNode(treeNode).key.getFirst();
+        return SplayTree.firstNode(treeNode).get().key.getFirst();
     }
 
     public static Set<Pair<Integer, Integer>> getEdges(Node treeNode){

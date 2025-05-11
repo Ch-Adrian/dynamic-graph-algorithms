@@ -9,6 +9,7 @@ import pl.edu.agh.cs.eulerTourTree.splay.SplayTree;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -64,10 +65,10 @@ public class EulerTourTreeTest {
         keyToNodes.get(new Pair<>(2,0)).add(node.right.right.right.right.right.right.right);
         keyToNodes.get(new Pair<>(0,0)).add(node.right.right.right.right.right.right.right.right);
 
-        node = EulerTourTree.reRoot(node, 1, keyToNodes);
+        node = EulerTourTree.reRoot(node, 1, keyToNodes).get();
         assertEquals(Integer.valueOf(1), EulerTourTree.getEulerTourRoot(node));
 
-        node = EulerTourTree.reRoot(node, 2, keyToNodes);
+        node = EulerTourTree.reRoot(node, 2, keyToNodes).get();
         assertEquals(Integer.valueOf(2), EulerTourTree.getEulerTourRoot(node));
     }
 
@@ -160,7 +161,7 @@ public class EulerTourTreeTest {
         keyToNodes.get(new Pair<>(6,6)).add(node.left.left);
         keyToNodes.get(new Pair<>(6,4)).add(node.left.left.right);
 
-        node = EulerTourTree.reRoot(node, 4, keyToNodes);
+        node = EulerTourTree.reRoot(node, 4, keyToNodes).get();
         assertEquals(Integer.valueOf(4), EulerTourTree.getEulerTourRoot(node));
 //        tree.show();
 
@@ -177,12 +178,12 @@ public class EulerTourTreeTest {
             EulerTourTree.addEdgeToNonExistingVertex(treeNode, 2, 6, keyToNodes);
 
             assertEquals(Integer.valueOf(0), EulerTourTree.getEulerTourRoot(treeNode));
-            assertEquals(new Pair<>(0,0), SplayTree.getRootNode(treeNode).key);
+            assertEquals(new Pair<>(0,0), SplayTree.getRootNode(treeNode).get().key);
 
-            treeNode = EulerTourTree.reRoot(treeNode, 0, keyToNodes);
+            treeNode = EulerTourTree.reRoot(treeNode, 0, keyToNodes).get();
             assertEquals(Integer.valueOf(0), EulerTourTree.getEulerTourRoot(treeNode));
 
-            treeNode = EulerTourTree.reRoot(treeNode, 1, keyToNodes);
+            treeNode = EulerTourTree.reRoot(treeNode, 1, keyToNodes).get();
             assertEquals(Integer.valueOf(1), EulerTourTree.getEulerTourRoot(treeNode));
 
         } catch (Exception e){
@@ -207,7 +208,7 @@ public class EulerTourTreeTest {
             Node treeNodeRight = EulerTourTree.createNewEulerTourTree(2, 3, keyToNodes);
             EulerTourTree.link(1, 2, keyToNodes);
 
-            Node splayRoot = SplayTree.getRootNode(treeNodeRight);
+            Node splayRoot = SplayTree.getRootNode(treeNodeRight).get();
             assertEquals(new Pair<>(2,1), splayRoot.key);
             assertEquals(new Pair<>(1,1), splayRoot.right.key);
             assertEquals(new Pair<>(2,2), splayRoot.left.key);
@@ -231,10 +232,10 @@ public class EulerTourTreeTest {
             EulerTourTree.addEdgeToNonExistingVertex(treeNode, 2, 5, keyToNodes);
             EulerTourTree.addEdgeToNonExistingVertex(treeNode, 2, 6, keyToNodes);
 
-            Pair<Node, Node> trees = EulerTourTree.cut(0, 2, keyToNodes);
+            Pair<Optional<Node>, Optional<Node>> trees = EulerTourTree.cut(0, 2, keyToNodes);
 
-            Node splayRootRight = SplayTree.getRootNode(trees.getFirst());
-            Node splayRootLeft = SplayTree.getRootNode(trees.getSecond());
+            Node splayRootRight = SplayTree.getRootNode(trees.getFirst().get()).get();
+            Node splayRootLeft = SplayTree.getRootNode(trees.getSecond().get()).get();
 
             assertEquals(new Pair<>(2,2), splayRootLeft.key);
             assertEquals(new Pair<>(0,1), splayRootLeft.right.left.key);
@@ -257,9 +258,9 @@ public class EulerTourTreeTest {
     public void testCutTree1(){
         try {
             Node treeNode = EulerTourTree.createNewEulerTourTree(0, 1, keyToNodes);
-            Pair<Node, Node> trees = EulerTourTree.cut(0, 1, keyToNodes);
-            Node splayRootRight = SplayTree.getRootNode(trees.getFirst());
-            Node splayRootLeft = SplayTree.getRootNode(trees.getSecond());
+            Pair<Optional<Node>, Optional<Node>> trees = EulerTourTree.cut(0, 1, keyToNodes);
+            Node splayRootRight = SplayTree.getRootNode(trees.getFirst().get()).get();
+            Node splayRootLeft = SplayTree.getRootNode(trees.getSecond().get()).get();
 
             assertEquals(new Pair<>(1,1), splayRootRight.key);
             assertEquals(new Pair<>(0,0), splayRootLeft.key);

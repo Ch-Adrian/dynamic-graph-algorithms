@@ -90,7 +90,7 @@ public class DynamicConnectivityTest {
             assertEquals(1, keyToNodes.get(new Pair<>(4,8)).size());
             assertEquals(1, keyToNodes.get(new Pair<>(8,4)).size());
             assertEquals(1, keyToNodes.get(new Pair<>(8,8)).size());
-            assertEquals(new Pair<>(2, 4), forest.getRepresentativeTreeNode(0).key);
+            assertEquals(new Pair<>(2, 4), forest.getRepresentativeTreeNode(0).get().key);
 
             dc.addEdge(1, 3);
 
@@ -140,7 +140,7 @@ public class DynamicConnectivityTest {
             assertEquals(1, keyToNodes.get(new Pair<>(4,8)).size());
             assertEquals(1, keyToNodes.get(new Pair<>(8,4)).size());
             assertEquals(1, keyToNodes.get(new Pair<>(8,8)).size());
-            assertEquals(new Pair<>(2, 4), forest.getRepresentativeTreeNode(0).key);
+            assertEquals(new Pair<>(2, 4), forest.getRepresentativeTreeNode(0).get().key);
 
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
