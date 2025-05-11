@@ -34,7 +34,51 @@ public class EulerTourTreeTest {
     }
 
     @Test
-    public void testReroot(){
+    public void testCreateNewEulerTourTree(){
+        Node newTree = EulerTourTree.createNewEulerTourTree(0, 1, keyToNodes);
+        assertEquals(new Pair<>(0, 0), newTree.key);
+        assertEquals(4, keyToNodes.size());
+        assertEquals(2, keyToNodes.get(new Pair<>(0,0)).size());
+        assertEquals(1, keyToNodes.get(new Pair<>(0,1)).size());
+        assertEquals(1, keyToNodes.get(new Pair<>(1,0)).size());
+        assertEquals(1, keyToNodes.get(new Pair<>(1,1)).size());
+    }
+
+    @Test
+    public void testAddNode(){
+        Node newNode = EulerTourTree.addNode(new Pair<>(0,0), keyToNodes);
+        assertEquals(new Pair<>(0,0), newNode.key);
+        assertEquals(1, keyToNodes.size());
+    }
+
+    @Test
+    public void testReRoot(){
+        Node node = new Node(new Pair<>(0,0));
+        node.right = new Node(new Pair<>(0,1));
+        node.right.right = new Node(new Pair<>(1,1));
+        node.right.right.right = new Node(new Pair<>(1,0));
+        node.right.right.right.right = new Node(new Pair<>(0,0));
+
+        dfsSetParent(node);
+
+        keyToNodes.put(new Pair<>(0,0), new LinkedHashSet<>());
+        keyToNodes.put(new Pair<>(0,1), new LinkedHashSet<>());
+        keyToNodes.put(new Pair<>(1,1), new LinkedHashSet<>());
+        keyToNodes.put(new Pair<>(1,0), new LinkedHashSet<>());
+
+        keyToNodes.get(new Pair<>(0,0)).add(node);
+        keyToNodes.get(new Pair<>(0,1)).add(node.right);
+        keyToNodes.get(new Pair<>(1,1)).add(node.right.right);
+        keyToNodes.get(new Pair<>(1,0)).add(node.right.right.right);
+        keyToNodes.get(new Pair<>(0,0)).add(node.right.right.right.right);
+
+        node = EulerTourTree.reRoot(node, 0, keyToNodes).get();
+        assertEquals(Integer.valueOf(0), EulerTourTree.getEulerTourRoot(node));
+
+    }
+
+    @Test
+    public void testReroot1(){
         Node node = new Node(new Pair<>(0,0));
         node.right = new Node(new Pair<>(0,1));
         node.right.right = new Node(new Pair<>(1,1));

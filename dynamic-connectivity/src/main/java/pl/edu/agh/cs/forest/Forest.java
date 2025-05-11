@@ -26,12 +26,12 @@ public class Forest {
     public Map<Pair<Integer, Integer>, LinkedHashSet<Node>> getKeyToNodes() { return keyToNodes; }
 
     public Optional<Node> getRepresentativeTreeNode(Integer u){
-        if(checkIfVertexHasNodeInTheTree(u))
+        if(checkIfVertexHasNodeInTheTree(u, keyToNodes))
             return SplayTree.getRootNode(keyToNodes.get(new Pair<>(u,u)).getFirst());
         else return Optional.empty();
     }
 
-    public boolean checkIfVertexHasNodeInTheTree(Integer v){
+    public static boolean checkIfVertexHasNodeInTheTree(Integer v, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes){
         if(keyToNodes.containsKey(new Pair<>(v,v)))
             return !keyToNodes.get(new Pair<>(v,v)).isEmpty();
         return false;
@@ -95,12 +95,12 @@ public class Forest {
     }
 
     public void deleteTreeEdge(Integer u, Integer v) {
-        if(!this.checkIfTreeEdgeExists(u, v)) return;
+
         Optional<Node> nodeU = getRepresentativeTreeNode(u);
         Optional<Node> nodeV = getRepresentativeTreeNode(v);
 
         if(nodeU.isPresent() && nodeV.isPresent() && Objects.equals(nodeU.get(), nodeV.get())){
-            EulerTourTree.deleteEdge(nodeU.get(), u, v, keyToNodes);
+            EulerTourTree.deleteEdge(u, v, keyToNodes);
         }
     }
 
@@ -122,14 +122,15 @@ public class Forest {
 
         if(Tmin != null){
             for(Pair<Integer, Integer> edge: EulerTourTree.getEdges(Tmin)){
-                this.hierarchicalForests.get(level+1).addTreeEdge(edge.getFirst(), edge.getSecond());
+                if(!this.hierarchicalForests.get(level+1).checkIfTreeEdgeExists(edge.getFirst(), edge.getSecond()))
+                    this.hierarchicalForests.get(level+1).addTreeEdge(edge.getFirst(), edge.getSecond());
             }
             boolean nonTreeEdgeFound = false;
             Pair<Integer, Integer> nonTreeEdge = null;
 
             for(Integer vertex: EulerTourTree.getVertices(Tmin)){
                 for(Integer nonTreeEdgeEnd: this.hierarchicalForests.get(level).getNonTreeEdges(vertex)){
-                    if(!getRepresentativeTreeNode(nonTreeEdgeEnd).equals(SplayTree.getRootNode(Tmin))){
+                    if(!getRepresentativeTreeNode(nonTreeEdgeEnd).get().equals(SplayTree.getRootNode(Tmin).get())){
                         nonTreeEdgeFound = true;
                         nonTreeEdge = new Pair<>(vertex, nonTreeEdgeEnd);
                         for (Forest hierarchicalForest : hierarchicalForests) {
@@ -137,7 +138,8 @@ public class Forest {
                         }
                         break;
                     } else {
-                        hierarchicalForests.get(level+1).addNonTreeEdge(vertex, nonTreeEdgeEnd);
+                        if(!hierarchicalForests.get(level+1).checkIfNonTreeEdgeExists(vertex, nonTreeEdgeEnd))
+                            hierarchicalForests.get(level+1).addNonTreeEdge(vertex, nonTreeEdgeEnd);
                     }
                 }
                 if(nonTreeEdgeFound) break;

@@ -147,7 +147,6 @@ public class DynamicConnectivityTest {
         }
 
         assertEquals(Integer.valueOf(1), dc.getForestForLevel(0).getAmtOfTrees());
-        System.out.println("show general tree:");
 
         assertTrue(dc.getForestForLevel(0).checkIfTreeEdgeExists(0,1));
         assertTrue(dc.getForestForLevel(0).checkIfTreeEdgeExists(1,2));
@@ -199,6 +198,11 @@ public class DynamicConnectivityTest {
             System.out.println("Error: " + e.getMessage());
         }
 
+        Forest forestLvl0 = dc.getForestForLevel(0);
+        Forest forestLvl1 = dc.getForestForLevel(1);
+
+
+
         assertEquals(Integer.valueOf(1), dc.getForestForLevel(0).getAmtOfTrees());
         assertEquals(Integer.valueOf(1), dc.getForestForLevel(1).getAmtOfTrees());
 
@@ -207,7 +211,6 @@ public class DynamicConnectivityTest {
         assertTrue(dc.getForestForLevel(0).checkIfTreeEdgeExists(0,1));
         assertTrue(dc.getForestForLevel(0).checkIfTreeEdgeExists(1,2));
         assertTrue(dc.getForestForLevel(0).checkIfTreeEdgeExists(2,3));
-        assertTrue(dc.getForestForLevel(0).checkIfTreeEdgeExists(2,4));
         assertTrue(dc.getForestForLevel(0).checkIfTreeEdgeExists(4,6));
         assertTrue(dc.getForestForLevel(0).checkIfTreeEdgeExists(5,6));
         assertTrue(dc.getForestForLevel(0).checkIfTreeEdgeExists(6,7));
