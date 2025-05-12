@@ -45,13 +45,16 @@ public class EulerTourTree {
             return Optional.of(newRoot);
         }
 
-        SplayTree.splay(newRoot);
         Node firstNode = SplayTree.firstNode(newRoot).get();
         SplayTree.removeNode(firstNode);
         keyToNodes.get(firstNode.key).remove(firstNode);
 
-        Optional<Node> leftSubTree = SplayTree.detachSubTreeFromTree(newRoot.left);
-        leftSubTree.ifPresent(node -> SplayTree.join(newRoot, node));
+        Optional<Node> newRootPredecessor = SplayTree.predecessor(newRoot);
+        if(newRootPredecessor.isPresent()) {
+            Pair<Optional<Node>, Optional<Node>> trees = SplayTree.split(newRootPredecessor.get());
+            SplayTree.join(trees.getSecond().get(), trees.getFirst().get());
+        }
+
         SplayTree.join(newRoot, addNode(newRoot.key, keyToNodes));
 
         return SplayTree.getRootNode(newRoot);
