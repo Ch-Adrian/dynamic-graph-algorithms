@@ -48,6 +48,11 @@ public class EulerTourTree {
     }
 
     public static Optional<Node> reRoot(Node treeNode, Integer vertex, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes){
+
+        /* preconditions */
+        if(!Forest.checkIfVertexHasNodeInTheTree(vertex, keyToNodes))
+            throw new RuntimeException(String.format("There is no vertex: %d%n", vertex));
+
         Node newRoot = keyToNodes.get(new Pair<>(vertex, vertex)).getFirst();
         Optional<Node> optTreeNode = SplayTree.getRootNode(treeNode);
         if(optTreeNode.isPresent() && Objects.equals(newRoot.key.getFirst(), newRoot.key.getSecond()) &&
