@@ -446,6 +446,7 @@ public class EulerTourTreeTest {
         assertFalse(vertices.contains(2));
 
         EulerTourTree.addEdgeToNonExistingVertex(0, 2, keyToNodes);
+        EulerTourTree.reRoot(1, keyToNodes);
         vertices = EulerTourTree.getVertices(keyToNodes.get(new Pair<>(0,0)).getFirst());
         assertTrue(vertices.contains(0));
         assertTrue(vertices.contains(1));
@@ -463,6 +464,7 @@ public class EulerTourTreeTest {
         assertFalse(edges.contains(new Pair<>(0,2)));
 
         EulerTourTree.addEdgeToNonExistingVertex(0, 2, keyToNodes);
+        EulerTourTree.reRoot(1, keyToNodes);
         edges = EulerTourTree.getEdges(keyToNodes.get(new Pair<>(0,0)).getFirst());
         assertTrue(edges.contains(new Pair<>(0,1)));
         assertFalse(edges.contains(new Pair<>(1,0)));

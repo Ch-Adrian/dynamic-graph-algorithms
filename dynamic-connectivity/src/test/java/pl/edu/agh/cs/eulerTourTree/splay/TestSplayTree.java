@@ -105,6 +105,25 @@ public class TestSplayTree {
     }
 
     @Test
+    public void testRightRotate(){
+        Node grandParent = new Node(new Pair<>(0,0));
+        Node parent = new Node(new Pair<>(0,1));
+        Node child1 = new Node(new Pair<>(1,1));
+
+        grandParent.right = parent;
+        parent.parent = grandParent;
+        parent.left = child1;
+        child1.parent = parent;
+
+        SplayTree.rightRotate(child1);
+        assertEquals(grandParent, child1.parent);
+        assertEquals(parent, child1.right);
+        assertEquals(child1, parent.parent);
+        assertEquals(child1, grandParent.right);
+        assertNull(parent.left);
+    }
+
+    @Test
     public void testLeftAndRightRotate(){
         SplayTree.leftRotate(root1.right);
         assertEquals(new Pair<>(1,2), root1.parent.key);
@@ -189,6 +208,22 @@ public class TestSplayTree {
         SplayTree.splay(node.right.right);
         assertEquals(new Pair<>(1,1), SplayTree.getRootNode(node).get().key);
 
+    }
+
+    @Test
+    public void testSplay3(){
+        Node grandParent = new Node(new Pair<>(0,0));
+        Node parent = new Node(new Pair<>(0,1));
+        Node child = new Node(new Pair<>(1,1));
+
+        grandParent.left = parent;
+        parent.parent = grandParent;
+        parent.left = child;
+        child.parent = parent;
+
+        SplayTree.splay(child);
+
+        assertEquals(new Pair<>(1,1), SplayTree.getRootNode(grandParent).get().key);
     }
 
     @Test

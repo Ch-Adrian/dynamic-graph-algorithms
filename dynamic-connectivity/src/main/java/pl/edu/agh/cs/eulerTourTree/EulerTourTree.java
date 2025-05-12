@@ -34,19 +34,6 @@ public class EulerTourTree {
         return n;
     }
 
-    public static void dfs(Node n){
-        System.out.println("dfs: "+n.key);
-        if(n.left != null){
-            System.out.println("Go left: ");
-            dfs(n.left);
-        }
-        if(n.right != null) {
-            System.out.println("Go right: ");
-            dfs(n.right);
-        }
-        System.out.println("back");
-    }
-
     public static Optional<Node> reRoot(Integer vertex, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes){
 
         /* preconditions */
@@ -172,20 +159,6 @@ public class EulerTourTree {
             optSplayRoot.ifPresent(node -> insertEdgeToETT(node, treeVertex, nonExistingVertex, keyToNodes));
         }
         return  optSplayRoot;
-    }
-
-    private static void dfsCheckParent(Node node){
-        System.out.println("node: "+node.key);
-        if(node.left != null){
-            System.out.println("Left: "+node.left.key+" Parent: "+node.left.parent.key);
-            if(node.left.parent != node) System.out.println("Left child lacks parent: "+node.left.parent);
-            dfsCheckParent(node.left);
-        }
-        if(node.right != null){
-            System.out.println("Right: "+node.right.key+" Parent: "+node.right.parent.key);
-            if(node.right.parent != node) System.out.println("Right child lacks parent: "+node.right.parent);
-            dfsCheckParent(node.right);
-        }
     }
 
     private static void insertEdgeToETT(Node treeNode, Integer splayVertex,

@@ -18,6 +18,8 @@ public class SplayTree {
     public static void rightRotate(Node node){
         if(node == null) return;
         if(node.parent == null) return;
+        if(node.parent.left != node) return;
+
         Node parent = node.parent;
         Node grandParent = parent.parent;
 
@@ -46,6 +48,8 @@ public class SplayTree {
     public static void leftRotate(Node node){
         if(node == null) return;
         if(node.parent == null) return;
+        if(node.parent.right != node) return;
+
         Node parent = node.parent;
         Node grandParent = parent.parent;
 
@@ -75,28 +79,13 @@ public class SplayTree {
         if(node == null) return;
 
         while(node.parent != null){
-            if(node.parent.parent == null){
-                if(node.parent.left == node){
-                    SplayTree.rightRotate(node);
-                } else {
-                    SplayTree.leftRotate(node);
-                }
+            if(node.parent.left == node){
+                SplayTree.rightRotate(node);
             } else {
-                if(node.parent.parent.left == node.parent){
-                    if(node.parent.left == node){
-                        SplayTree.rightRotate(node);
-                    } else {
-                        SplayTree.leftRotate(node);
-                    }
-                } else {
-                    if(node.parent.left == node){
-                        SplayTree.rightRotate(node);
-                    } else {
-                        SplayTree.leftRotate(node);
-                    }
-                }
+                SplayTree.leftRotate(node);
             }
         }
+
     }
 
     public static Node insertToRight(Node treeNode, Pair<Integer, Integer> key) {
