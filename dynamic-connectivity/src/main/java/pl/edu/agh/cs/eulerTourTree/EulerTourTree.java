@@ -95,6 +95,23 @@ public class EulerTourTree {
     }
 
     public static Pair<Optional<Node>, Optional<Node>> cut(Integer u, Integer v, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes) {
+
+        /* check preconditions */
+        if(!Forest.checkIfVertexHasNodeInTheTree(u, keyToNodes))
+            throw new RuntimeException(String.format("There is no vertex: %d%n", u));
+        if(!Forest.checkIfVertexHasNodeInTheTree(v, keyToNodes))
+            throw new RuntimeException(String.format("There is no vertex: %d%n", v));
+
+        if(u.equals(v))
+            return new Pair<>(Optional.of(keyToNodes.get(new Pair<>(u,u)).getFirst()),
+                Optional.empty());
+
+        if(!SplayTree.getRootNode(keyToNodes.get(new Pair<>(u, u)).getFirst()).get().equals(
+                SplayTree.getRootNode(keyToNodes.get(new Pair<>(v, v)).getFirst()).get()))
+            return new Pair<>(Optional.of(keyToNodes.get(new Pair<>(u,u)).getFirst()),
+                    Optional.of(keyToNodes.get(new Pair<>(v,v)).getFirst()));
+
+
         Node edgeUV = keyToNodes.get(new Pair<>(u, v)).getFirst();
         Node edgeVU = keyToNodes.get(new Pair<>(v, u)).getFirst();
 
