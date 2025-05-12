@@ -10,6 +10,12 @@ import java.util.*;
 public class EulerTourTree {
 
     public static Node createNewEulerTourTree(Integer u, Integer v, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes) {
+
+        /* preconditions */
+        if(Forest.checkIfVertexHasNodeInTheTree(u, keyToNodes) || Forest.checkIfVertexHasNodeInTheTree(v, keyToNodes)){
+           throw new RuntimeException("There is node already in the tree!");
+        }
+
         Node splayRoot = new Node(new Pair<>(u,u));
         keyToNodes.put(new Pair<>(u,u), new LinkedHashSet<>());
         keyToNodes.put(new Pair<>(v,v), new LinkedHashSet<>());

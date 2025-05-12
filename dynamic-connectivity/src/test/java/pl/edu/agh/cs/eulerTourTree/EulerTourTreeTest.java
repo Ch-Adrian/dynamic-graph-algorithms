@@ -11,7 +11,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class EulerTourTreeTest {
 
@@ -34,7 +34,23 @@ public class EulerTourTreeTest {
     }
 
     @Test
-    public void testCreateNewEulerTourTree(){
+    public void testCreateNewEulerTourTreeCheckPreconditions(){
+        keyToNodes.put(new Pair<>(0,0), new LinkedHashSet<>());
+        keyToNodes.get(new Pair<>(0,0)).add(new Node(new Pair<>(0,0)));
+        assertThrows(RuntimeException.class, () -> EulerTourTree.createNewEulerTourTree(0, 1, keyToNodes));
+
+        keyToNodes.put(new Pair<>(1,1), new LinkedHashSet<>());
+        keyToNodes.get(new Pair<>(1,1)).add(new Node(new Pair<>(1,1)));
+        keyToNodes.get(new Pair<>(0,0)).clear();
+        assertThrows(RuntimeException.class, () -> EulerTourTree.createNewEulerTourTree(0, 1, keyToNodes));
+
+        keyToNodes.get(new Pair<>(1,1)).clear();
+        assertDoesNotThrow(() -> EulerTourTree.createNewEulerTourTree(0, 1, keyToNodes));
+
+    }
+
+    @Test
+    public void testCreateNewEulerTourTree() {
         Node newTree = EulerTourTree.createNewEulerTourTree(0, 1, keyToNodes);
         assertEquals(new Pair<>(0, 0), newTree.key);
         assertEquals(4, keyToNodes.size());
