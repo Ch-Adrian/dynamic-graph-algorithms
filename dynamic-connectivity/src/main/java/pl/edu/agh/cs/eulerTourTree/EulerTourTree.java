@@ -76,11 +76,11 @@ public class EulerTourTree {
         /* check preconditions */
         if(!Forest.checkIfVertexHasNodeInTheTree(internal, keyToNodes))
             throw new RuntimeException(String.format("There is no vertex: %d%n", internal));
-         if(!Forest.checkIfVertexHasNodeInTheTree(external, keyToNodes))
+        if(!Forest.checkIfVertexHasNodeInTheTree(external, keyToNodes))
              throw new RuntimeException(String.format("There is no vertex: %d%n", external));
 
-         if(internal.equals(external)) return;
-         if(SplayTree.getRootNode(keyToNodes.get(new Pair<>(internal, internal)).getFirst()).get().equals(
+        if(internal.equals(external)) return;
+        if(SplayTree.getRootNode(keyToNodes.get(new Pair<>(internal, internal)).getFirst()).get().equals(
                  SplayTree.getRootNode(keyToNodes.get(new Pair<>(external, external)).getFirst()).get()))
              return;
 
@@ -209,10 +209,20 @@ public class EulerTourTree {
 
     public static void deleteEdge(Integer u, Integer v,
                                   Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes){
-        if(keyToNodes.containsKey(new Pair<>(u,v)) &&
-                keyToNodes.containsKey(new Pair<>(v,u))){
-            cut(u, v, keyToNodes);
-        }
+
+        /* preconditions */
+        if(!Forest.checkIfVertexHasNodeInTheTree(u, keyToNodes))
+            throw new RuntimeException(String.format("There is no vertex: %d%n", u));
+        if(!Forest.checkIfVertexHasNodeInTheTree(v, keyToNodes))
+            throw new RuntimeException(String.format("There is no vertex: %d%n", v));
+
+        if(u.equals(v)) return;
+        if(!SplayTree.getRootNode(keyToNodes.get(new Pair<>(u, u)).getFirst()).get().equals(
+                SplayTree.getRootNode(keyToNodes.get(new Pair<>(v, v)).getFirst()).get()))
+            return;
+
+        cut(u, v, keyToNodes);
+
     }
 
     public static Integer getEulerTourRoot(Node treeNode){

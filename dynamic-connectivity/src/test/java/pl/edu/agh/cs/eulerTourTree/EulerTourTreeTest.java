@@ -402,6 +402,30 @@ public class EulerTourTreeTest {
 
     @Test
     public void testDeleteEdge(){
+        Node node11 = EulerTourTree.addNode(new Pair<>(1,1), keyToNodes);
+        assertThrows(RuntimeException.class, () -> EulerTourTree.deleteEdge(0, 1, keyToNodes));
+        assertThrows(RuntimeException.class, () -> EulerTourTree.deleteEdge(1, 0, keyToNodes));
+        assertDoesNotThrow(() -> EulerTourTree.deleteEdge(1, 1, keyToNodes));
+        assertEquals(1, keyToNodes.size());
+
+        Node node00 = EulerTourTree.addNode(new Pair<>(0, 0), keyToNodes);
+        EulerTourTree.deleteEdge(0, 1, keyToNodes);
+
+        EulerTourTree.link(0, 1, keyToNodes);
+
+        assertEquals(4, keyToNodes.size());
+        assertEquals(2, keyToNodes.get(new Pair<>(0,0)).size());
+        assertEquals(1, keyToNodes.get(new Pair<>(0,1)).size());
+        assertEquals(1, keyToNodes.get(new Pair<>(1,0)).size());
+        assertEquals(1, keyToNodes.get(new Pair<>(1,1)).size());
+
+        EulerTourTree.deleteEdge(0, 1, keyToNodes);
+
+        assertEquals(4, keyToNodes.size());
+        assertEquals(1, keyToNodes.get(new Pair<>(0,0)).size());
+        assertEquals(0, keyToNodes.get(new Pair<>(0,1)).size());
+        assertEquals(0, keyToNodes.get(new Pair<>(1,0)).size());
+        assertEquals(1, keyToNodes.get(new Pair<>(1,1)).size());
 
     }
 
