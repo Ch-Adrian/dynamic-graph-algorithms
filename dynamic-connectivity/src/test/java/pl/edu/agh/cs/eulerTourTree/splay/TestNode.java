@@ -4,8 +4,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import pl.edu.agh.cs.common.Pair;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class TestNode {
@@ -33,6 +32,9 @@ public class TestNode {
 
     @Test
     public void testNode(){
+        assertEquals(0, root.parent.getUniqueKey());
+        assertEquals(1, root.left.getUniqueKey());
+
         assertEquals(1, (int)root.key.getFirst());
         assertEquals(1, (int)root.key.getSecond());
         assertEquals(2, (int)root.left.key.getFirst());
@@ -42,5 +44,11 @@ public class TestNode {
         assertNull(parent.right);
         assertEquals(1, (int)left.parent.key.getFirst());
         assertEquals(1, (int)right.parent.key.getFirst());
+
+        assertEquals("Node{key=Pair{first=0, second=0}}", root.parent.toString());
+        assertNotEquals(root, new Node(new Pair<>(1, 1)));
+        assertNotEquals(root, root.left);
+        assertEquals(root.hashCode(), root.hashCode());
+        assertNotEquals(root.hashCode(), root.left.hashCode());
     }
 }
