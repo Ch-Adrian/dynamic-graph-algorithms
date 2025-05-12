@@ -47,18 +47,15 @@ public class EulerTourTree {
         System.out.println("back");
     }
 
-    public static Optional<Node> reRoot(Node treeNode, Integer vertex, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes){
+    public static Optional<Node> reRoot(Integer vertex, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes){
 
         /* preconditions */
         if(!Forest.checkIfVertexHasNodeInTheTree(vertex, keyToNodes))
             throw new RuntimeException(String.format("There is no vertex: %d%n", vertex));
 
         Node newRoot = keyToNodes.get(new Pair<>(vertex, vertex)).getFirst();
-        Optional<Node> optTreeNode = SplayTree.getRootNode(treeNode);
-        if(optTreeNode.isPresent() && Objects.equals(newRoot.key.getFirst(), newRoot.key.getSecond()) &&
-                Objects.equals(newRoot.key.getFirst(), vertex) &&
-                Objects.equals(SplayTree.firstNode(optTreeNode.get()).get().key, newRoot.key)){
-                return Optional.of(newRoot);
+        if(Objects.equals(EulerTourTree.getEulerTourRoot(newRoot), vertex)){
+            return Optional.of(newRoot);
         }
 
         SplayTree.splay(newRoot);
@@ -83,8 +80,8 @@ public class EulerTourTree {
         Optional<Node> rootInternal = getFirstNodeFromKeyToNodesList(internal, keyToNodes);
         Optional<Node> rootExternal = getFirstNodeFromKeyToNodesList(external, keyToNodes);
 
-        rootInternal = reRoot(rootInternal.get(), internal, keyToNodes);
-        rootExternal = reRoot(rootExternal.get(), external, keyToNodes);
+        rootInternal = reRoot(internal, keyToNodes);
+        rootExternal = reRoot(external, keyToNodes);
 
         if(rootExternal.isPresent() && rootInternal.isPresent()) {
             SplayTree.join(rootInternal.get(), addNode(new Pair<>(internal, external), keyToNodes));
@@ -142,7 +139,7 @@ public class EulerTourTree {
             keyToNodes.put(new Pair<>(nonExistingVertex, nonExistingVertex), new LinkedHashSet<>());
 
         if(optSplayRoot.isPresent()) {
-            optSplayRoot = reRoot(optSplayRoot.get(), treeVertex, keyToNodes);
+            optSplayRoot = reRoot(treeVertex, keyToNodes);
             optSplayRoot.ifPresent(node -> insertEdgeToETT(node, treeVertex, nonExistingVertex, keyToNodes));
         }
         return  optSplayRoot;

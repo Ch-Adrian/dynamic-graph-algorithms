@@ -6,7 +6,6 @@ import pl.edu.agh.cs.common.Pair;
 import pl.edu.agh.cs.eulerTourTree.splay.Node;
 import pl.edu.agh.cs.eulerTourTree.splay.SplayTree;
 
-import java.lang.annotation.ElementType;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -69,7 +68,7 @@ public class EulerTourTreeTest {
     }
 
     @Test public void testReRootPreconditions(){
-        assertThrows(RuntimeException.class, () -> EulerTourTree.reRoot(null, 0, keyToNodes));
+        assertThrows(RuntimeException.class, () -> EulerTourTree.reRoot(0, keyToNodes));
     }
 
     @Test public void testReRoot(){
@@ -77,7 +76,7 @@ public class EulerTourTreeTest {
         keyToNodes.put(new Pair<>(0,0), new LinkedHashSet<>());
         keyToNodes.get(new Pair<>(0,0)).add(node);
 
-        Optional<Node> optNodeAfterReroot = EulerTourTree.reRoot(node, 0, keyToNodes);
+        Optional<Node> optNodeAfterReroot = EulerTourTree.reRoot(0, keyToNodes);
         assertTrue(optNodeAfterReroot.isPresent());
         assertEquals(node, optNodeAfterReroot.get());
     }
@@ -96,7 +95,7 @@ public class EulerTourTreeTest {
         dfsSetParent(node00);
 
         assertEquals(Integer.valueOf(0), EulerTourTree.getEulerTourRoot(node00));
-        Optional<Node> optNodeAfterReRoot = EulerTourTree.reRoot(node00, 1, keyToNodes);
+        Optional<Node> optNodeAfterReRoot = EulerTourTree.reRoot(1, keyToNodes);
 
         assertNotEquals(SplayTree.getRootNode(optNodeAfterReRoot.get()), SplayTree.getRootNode(node00));
         assertEquals(Integer.valueOf(1), EulerTourTree.getEulerTourRoot(optNodeAfterReRoot.get()));
@@ -134,10 +133,10 @@ public class EulerTourTreeTest {
         keyToNodes.get(new Pair<>(2,0)).add(node.right.right.right.right.right.right.right);
         keyToNodes.get(new Pair<>(0,0)).add(node.right.right.right.right.right.right.right.right);
 
-        node = EulerTourTree.reRoot(node, 1, keyToNodes).get();
+        node = EulerTourTree.reRoot(1, keyToNodes).get();
         assertEquals(Integer.valueOf(1), EulerTourTree.getEulerTourRoot(node));
 
-        node = EulerTourTree.reRoot(node, 2, keyToNodes).get();
+        node = EulerTourTree.reRoot(2, keyToNodes).get();
         assertEquals(Integer.valueOf(2), EulerTourTree.getEulerTourRoot(node));
     }
 
@@ -230,7 +229,7 @@ public class EulerTourTreeTest {
         keyToNodes.get(new Pair<>(6,6)).add(node.left.left);
         keyToNodes.get(new Pair<>(6,4)).add(node.left.left.right);
 
-        node = EulerTourTree.reRoot(node, 4, keyToNodes).get();
+        node = EulerTourTree.reRoot(4, keyToNodes).get();
         assertEquals(Integer.valueOf(4), EulerTourTree.getEulerTourRoot(node));
     }
 
@@ -247,10 +246,10 @@ public class EulerTourTreeTest {
             assertEquals(Integer.valueOf(2), EulerTourTree.getEulerTourRoot(optTreeNode.get()));
             assertEquals(new Pair<>(0,2), SplayTree.getRootNode(optTreeNode.get()).get().key);
 
-            treeNode = EulerTourTree.reRoot(optTreeNode.get(), 0, keyToNodes).get();
+            treeNode = EulerTourTree.reRoot(0, keyToNodes).get();
             assertEquals(Integer.valueOf(0), EulerTourTree.getEulerTourRoot(treeNode));
 
-            treeNode = EulerTourTree.reRoot(treeNode, 1, keyToNodes).get();
+            treeNode = EulerTourTree.reRoot(1, keyToNodes).get();
             assertEquals(Integer.valueOf(1), EulerTourTree.getEulerTourRoot(treeNode));
 
         } catch (Exception e){
