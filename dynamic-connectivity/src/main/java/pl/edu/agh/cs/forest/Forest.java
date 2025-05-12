@@ -1,6 +1,5 @@
 package pl.edu.agh.cs.forest;
 
-import pl.edu.agh.cs.DynamicConnectivity;
 import pl.edu.agh.cs.common.Pair;
 import pl.edu.agh.cs.eulerTourTree.EulerTourTree;
 import pl.edu.agh.cs.eulerTourTree.splay.Node;
@@ -64,9 +63,9 @@ public class Forest {
         if(nodeU.isPresent() && nodeV.isPresent()){
             EulerTourTree.link(u, v, keyToNodes);
         } else if(nodeU.isPresent()){
-            EulerTourTree.addEdgeToNonExistingVertex(nodeU.get(), u, v, keyToNodes);
+            EulerTourTree.addEdgeToNonExistingVertex(u, v, keyToNodes);
         } else if(nodeV.isPresent()){
-            EulerTourTree.addEdgeToNonExistingVertex(nodeV.get(), v, u, keyToNodes);
+            EulerTourTree.addEdgeToNonExistingVertex(v, u, keyToNodes);
         } else {
             EulerTourTree.createNewEulerTourTree(u, v, keyToNodes);
         }

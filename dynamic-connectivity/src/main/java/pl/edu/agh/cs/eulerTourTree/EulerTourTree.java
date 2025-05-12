@@ -70,7 +70,8 @@ public class EulerTourTree {
         return SplayTree.getRootNode(newRoot);
     }
 
-    public static void link(Integer internal, Integer external, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes) {
+    public static void link(Integer internal, Integer external,
+                            Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes) {
 
         /* check preconditions */
         if(!Forest.checkIfVertexHasNodeInTheTree(internal, keyToNodes))
@@ -94,7 +95,9 @@ public class EulerTourTree {
         }
     }
 
-    public static Pair<Optional<Node>, Optional<Node>> cut(Integer u, Integer v, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes) {
+    public static Pair<Optional<Node>, Optional<Node>> cut(Integer u,
+                                                           Integer v,
+                                                           Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes) {
 
         /* check preconditions */
         if(!Forest.checkIfVertexHasNodeInTheTree(u, keyToNodes))
@@ -153,8 +156,14 @@ public class EulerTourTree {
         return new Pair<>(K, joined);
     }
 
-    public static Optional<Node> addEdgeToNonExistingVertex(Node treeNodeRepresentative, Integer treeVertex, Integer nonExistingVertex, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes){
-        Optional<Node> optSplayRoot = SplayTree.getRootNode(treeNodeRepresentative);
+    public static Optional<Node> addEdgeToNonExistingVertex(Integer treeVertex,
+                                                            Integer nonExistingVertex,
+                                                            Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes) {
+
+        if(!Forest.checkIfVertexHasNodeInTheTree(treeVertex, keyToNodes))
+            throw new RuntimeException(String.format("There is no vertex: %d%n", treeVertex));
+
+        Optional<Node> optSplayRoot = SplayTree.getRootNode(keyToNodes.get(new Pair<>(treeVertex, treeVertex)).getFirst());
         if(!keyToNodes.containsKey(new Pair<>(nonExistingVertex, nonExistingVertex)))
             keyToNodes.put(new Pair<>(nonExistingVertex, nonExistingVertex), new LinkedHashSet<>());
 
@@ -179,7 +188,9 @@ public class EulerTourTree {
         }
     }
 
-    private static void insertEdgeToETT(Node treeNode, Integer splayVertex, Integer nonExistingVertex, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes) {
+    private static void insertEdgeToETT(Node treeNode, Integer splayVertex,
+                                        Integer nonExistingVertex,
+                                        Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes) {
         Optional<Node> optSplayRoot = SplayTree.getRootNode(treeNode);
         if(optSplayRoot.isEmpty()) return;
 
@@ -196,7 +207,8 @@ public class EulerTourTree {
                 .add(SplayTree.insertToRight(optSplayRoot.get(), new Pair<>(splayVertex, splayVertex)));
     }
 
-    public static void deleteEdge(Integer u, Integer v, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes){
+    public static void deleteEdge(Integer u, Integer v,
+                                  Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes){
         if(keyToNodes.containsKey(new Pair<>(u,v)) &&
                 keyToNodes.containsKey(new Pair<>(v,u))){
             cut(u, v, keyToNodes);
@@ -234,7 +246,8 @@ public class EulerTourTree {
     }
 
     private static void dfsEdges(Node root, Set<Pair<Integer, Integer>> listOfEdges) {
-        if(!root.key.getFirst().equals(root.key.getSecond()) && !listOfEdges.contains(new Pair<>(root.key.getSecond(),root.key.getFirst()))){
+        if(!root.key.getFirst().equals(root.key.getSecond()) &&
+                !listOfEdges.contains(new Pair<>(root.key.getSecond(),root.key.getFirst()))){
             listOfEdges.add(root.key);
         }
         if(root.left != null){
