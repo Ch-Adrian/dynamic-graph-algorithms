@@ -6,10 +6,7 @@ import pl.edu.agh.cs.common.Pair;
 import pl.edu.agh.cs.eulerTourTree.splay.Node;
 import pl.edu.agh.cs.eulerTourTree.splay.SplayTree;
 
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -436,6 +433,48 @@ public class EulerTourTreeTest {
         EulerTourTree.createNewEulerTourTree(0, 1, keyToNodes);
         assertEquals(Integer.valueOf(0), EulerTourTree.getEulerTourRoot(keyToNodes.get(new Pair<>(0,0)).getFirst()));
         assertEquals(Integer.valueOf(0), EulerTourTree.getEulerTourRoot(keyToNodes.get(new Pair<>(1,1)).getFirst()));
+    }
+
+    @Test
+    public void testGetVertices(){
+        assertTrue(EulerTourTree.getVertices(null).isEmpty());
+
+        EulerTourTree.createNewEulerTourTree(0, 1, keyToNodes);
+        Set<Integer> vertices = EulerTourTree.getVertices(keyToNodes.get(new Pair<>(0,0)).getFirst());
+        assertTrue(vertices.contains(0));
+        assertTrue(vertices.contains(1));
+        assertFalse(vertices.contains(2));
+
+        EulerTourTree.addEdgeToNonExistingVertex(0, 2, keyToNodes);
+        vertices = EulerTourTree.getVertices(keyToNodes.get(new Pair<>(0,0)).getFirst());
+        assertTrue(vertices.contains(0));
+        assertTrue(vertices.contains(1));
+        assertTrue(vertices.contains(2));
+    }
+
+    @Test
+    public void testGetEdges(){
+        assertTrue(EulerTourTree.getEdges(null).isEmpty());
+
+        EulerTourTree.createNewEulerTourTree(0, 1, keyToNodes);
+        Set<Pair<Integer, Integer>> edges = EulerTourTree.getEdges(keyToNodes.get(new Pair<>(0,0)).getFirst());
+        assertTrue(edges.contains(new Pair<>(0,1)));
+        assertFalse(edges.contains(new Pair<>(1,0)));
+        assertFalse(edges.contains(new Pair<>(0,2)));
+
+        EulerTourTree.addEdgeToNonExistingVertex(0, 2, keyToNodes);
+        edges = EulerTourTree.getEdges(keyToNodes.get(new Pair<>(0,0)).getFirst());
+        assertTrue(edges.contains(new Pair<>(0,1)));
+        assertFalse(edges.contains(new Pair<>(1,0)));
+        assertFalse(edges.contains(new Pair<>(2,0)));
+        assertTrue(edges.contains(new Pair<>(0,2)));
+    }
+
+    @Test
+    public void testGetSizeOfATree(){
+        assertEquals(0, EulerTourTree.getSizeOfTree(null));
+        Node node = EulerTourTree.createNewEulerTourTree(0, 1, keyToNodes);
+        assertEquals(5, EulerTourTree.getSizeOfTree(node));
     }
 
 }

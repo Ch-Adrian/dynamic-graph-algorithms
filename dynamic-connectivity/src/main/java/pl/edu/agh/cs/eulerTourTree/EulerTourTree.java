@@ -269,6 +269,7 @@ public class EulerTourTree {
     }
 
     public static int getSizeOfTree(Node treeNode){
+        if(treeNode == null) return 0;
         return SplayTree.getSizeOfTree(treeNode);
     }
 
