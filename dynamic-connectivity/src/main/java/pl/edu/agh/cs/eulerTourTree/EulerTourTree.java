@@ -9,6 +9,8 @@ import java.util.*;
 
 public class EulerTourTree {
 
+    static SelfBalancingTree splayTree = new SplayTree();
+
     public static Node createNewEulerTourTree(Integer u, Integer v, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes) {
 
         /* preconditions */
@@ -45,19 +47,19 @@ public class EulerTourTree {
             return Optional.of(newRoot);
         }
 
-        Node firstNode = SplayTree.firstNode(newRoot).get();
-        SplayTree.removeNode(firstNode);
+        Node firstNode = splayTree.firstNode(newRoot).get();
+        splayTree.removeNode(firstNode);
         keyToNodes.get(firstNode.key).remove(firstNode);
 
-        Optional<Node> newRootPredecessor = SplayTree.predecessor(newRoot);
+        Optional<Node> newRootPredecessor = splayTree.predecessor(newRoot);
         if(newRootPredecessor.isPresent()) {
-            Pair<Optional<Node>, Optional<Node>> trees = SplayTree.split(newRootPredecessor.get());
-            SplayTree.join(trees.getSecond().get(), trees.getFirst().get());
+            Pair<Optional<Node>, Optional<Node>> trees = splayTree.split(newRootPredecessor.get());
+            splayTree.join(trees.getSecond().get(), trees.getFirst().get());
         }
 
-        SplayTree.join(newRoot, addNode(newRoot.key, keyToNodes));
+        splayTree.join(newRoot, addNode(newRoot.key, keyToNodes));
 
-        return SplayTree.getRootNode(newRoot);
+        return splayTree.getRootNode(newRoot);
     }
 
     public static void link(Integer internal, Integer external,
@@ -70,18 +72,18 @@ public class EulerTourTree {
              throw new RuntimeException(String.format("There is no vertex: %d%n", external));
 
         if(internal.equals(external)) return;
-        if(SplayTree.getRootNode(keyToNodes.get(new Pair<>(internal, internal)).getFirst()).get().equals(
-                 SplayTree.getRootNode(keyToNodes.get(new Pair<>(external, external)).getFirst()).get()))
+        if(splayTree.getRootNode(keyToNodes.get(new Pair<>(internal, internal)).getFirst()).get().equals(
+                 splayTree.getRootNode(keyToNodes.get(new Pair<>(external, external)).getFirst()).get()))
              return;
 
         Optional<Node> rootInternal = reRoot(internal, keyToNodes);
         Optional<Node> rootExternal = reRoot(external, keyToNodes);
 
         if(rootExternal.isPresent() && rootInternal.isPresent()) {
-            SplayTree.join(rootInternal.get(), addNode(new Pair<>(internal, external), keyToNodes));
-            SplayTree.join(rootInternal.get(), rootExternal.get());
-            SplayTree.join(rootInternal.get(), addNode(new Pair<>(external, internal), keyToNodes));
-            SplayTree.join(rootInternal.get(), addNode(new Pair<>(internal, internal), keyToNodes));
+            splayTree.join(rootInternal.get(), addNode(new Pair<>(internal, external), keyToNodes));
+            splayTree.join(rootInternal.get(), rootExternal.get());
+            splayTree.join(rootInternal.get(), addNode(new Pair<>(external, internal), keyToNodes));
+            splayTree.join(rootInternal.get(), addNode(new Pair<>(internal, internal), keyToNodes));
         }
     }
 
@@ -99,8 +101,8 @@ public class EulerTourTree {
             return new Pair<>(Optional.of(keyToNodes.get(new Pair<>(u,u)).getFirst()),
                 Optional.empty());
 
-        if(!SplayTree.getRootNode(keyToNodes.get(new Pair<>(u, u)).getFirst()).get().equals(
-                SplayTree.getRootNode(keyToNodes.get(new Pair<>(v, v)).getFirst()).get()))
+        if(!splayTree.getRootNode(keyToNodes.get(new Pair<>(u, u)).getFirst()).get().equals(
+                splayTree.getRootNode(keyToNodes.get(new Pair<>(v, v)).getFirst()).get()))
             return new Pair<>(Optional.of(keyToNodes.get(new Pair<>(u,u)).getFirst()),
                     Optional.of(keyToNodes.get(new Pair<>(v,v)).getFirst()));
 
@@ -108,38 +110,38 @@ public class EulerTourTree {
         Node edgeUV = keyToNodes.get(new Pair<>(u, v)).getFirst();
         Node edgeVU = keyToNodes.get(new Pair<>(v, u)).getFirst();
 
-        Pair<Optional<Node>, Optional<Node>> roots = SplayTree.split(edgeUV);
+        Pair<Optional<Node>, Optional<Node>> roots = splayTree.split(edgeUV);
         Optional<Node> J = Optional.empty();
         Optional<Node> K = Optional.empty();
         Optional<Node> L = Optional.empty();
 
-        roots.setFirst(SplayTree.removeNode(edgeUV));
+        roots.setFirst(splayTree.removeNode(edgeUV));
         keyToNodes.get(new Pair<>(u, v)).remove(edgeUV);
 
-        if(SplayTree.getRootNode(roots.getFirst().get()).equals(SplayTree.getRootNode(edgeVU))) {
-            Pair<Optional<Node>, Optional<Node>> trees2 = SplayTree.split(edgeVU);
-            J = SplayTree.removeNode(edgeVU);
+        if(splayTree.getRootNode(roots.getFirst().get()).equals(splayTree.getRootNode(edgeVU))) {
+            Pair<Optional<Node>, Optional<Node>> trees2 = splayTree.split(edgeVU);
+            J = splayTree.removeNode(edgeVU);
             K = trees2.getSecond();
             L = roots.getSecond();
         } else {
-            Pair<Optional<Node>, Optional<Node>> trees2 = SplayTree.split(edgeVU);
+            Pair<Optional<Node>, Optional<Node>> trees2 = splayTree.split(edgeVU);
             J = roots.getFirst();
-            K = SplayTree.removeNode(edgeVU);
+            K = splayTree.removeNode(edgeVU);
             L = trees2.getSecond();
         }
         keyToNodes.get(new Pair<>(v, u)).remove(edgeVU);
 
-        Optional<Node> lastNode = SplayTree.lastNode(J.get());
-        J = SplayTree.removeNode(lastNode.get());
+        Optional<Node> lastNode = splayTree.lastNode(J.get());
+        J = splayTree.removeNode(lastNode.get());
         keyToNodes.get(lastNode.get().key).remove(lastNode.get());
 
         Optional<Node> joined;
         if(J.isPresent() && L.isPresent())
-            joined = SplayTree.join(J.get(), L.get());
+            joined = splayTree.join(J.get(), L.get());
         else if(J.isPresent())
-            joined = SplayTree.join(J.get(), null);
+            joined = splayTree.join(J.get(), null);
         else if(L.isPresent())
-            joined = SplayTree.join(null, L.get());
+            joined = splayTree.join(null, L.get());
         else
             joined = Optional.empty();
 
@@ -153,7 +155,7 @@ public class EulerTourTree {
         if(!Forest.checkIfVertexHasNodeInTheTree(treeVertex, keyToNodes))
             throw new RuntimeException(String.format("There is no vertex: %d%n", treeVertex));
 
-        Optional<Node> optSplayRoot = SplayTree.getRootNode(keyToNodes.get(new Pair<>(treeVertex, treeVertex)).getFirst());
+        Optional<Node> optSplayRoot = splayTree.getRootNode(keyToNodes.get(new Pair<>(treeVertex, treeVertex)).getFirst());
         if(!keyToNodes.containsKey(new Pair<>(nonExistingVertex, nonExistingVertex)))
             keyToNodes.put(new Pair<>(nonExistingVertex, nonExistingVertex), new LinkedHashSet<>());
 
@@ -167,20 +169,20 @@ public class EulerTourTree {
     private static void insertEdgeToETT(Node treeNode, Integer splayVertex,
                                         Integer nonExistingVertex,
                                         Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes) {
-        Optional<Node> optSplayRoot = SplayTree.getRootNode(treeNode);
+        Optional<Node> optSplayRoot = splayTree.getRootNode(treeNode);
         if(optSplayRoot.isEmpty()) return;
 
         keyToNodes.put(new Pair<>(nonExistingVertex, splayVertex), new LinkedHashSet<>());
         keyToNodes.put(new Pair<>(splayVertex, nonExistingVertex), new LinkedHashSet<>());
 
         keyToNodes.get(new Pair<>(splayVertex, nonExistingVertex))
-                .add(SplayTree.insertToRight(optSplayRoot.get(), new Pair<>(splayVertex, nonExistingVertex)));
+                .add(splayTree.insertToRight(optSplayRoot.get(), new Pair<>(splayVertex, nonExistingVertex)));
         keyToNodes.get(new Pair<>(nonExistingVertex, nonExistingVertex))
-                .add(SplayTree.insertToRight(optSplayRoot.get(), new Pair<>(nonExistingVertex, nonExistingVertex)));
+                .add(splayTree.insertToRight(optSplayRoot.get(), new Pair<>(nonExistingVertex, nonExistingVertex)));
         keyToNodes.get(new Pair<>(nonExistingVertex, splayVertex))
-                .add(SplayTree.insertToRight(optSplayRoot.get(), new Pair<>(nonExistingVertex, splayVertex)));
+                .add(splayTree.insertToRight(optSplayRoot.get(), new Pair<>(nonExistingVertex, splayVertex)));
         keyToNodes.get(new Pair<>(splayVertex, splayVertex))
-                .add(SplayTree.insertToRight(optSplayRoot.get(), new Pair<>(splayVertex, splayVertex)));
+                .add(splayTree.insertToRight(optSplayRoot.get(), new Pair<>(splayVertex, splayVertex)));
     }
 
     public static void deleteEdge(Integer u, Integer v,
@@ -193,8 +195,8 @@ public class EulerTourTree {
             throw new RuntimeException(String.format("There is no vertex: %d%n", v));
 
         if(u.equals(v)) return;
-        if(!SplayTree.getRootNode(keyToNodes.get(new Pair<>(u, u)).getFirst()).get().equals(
-                SplayTree.getRootNode(keyToNodes.get(new Pair<>(v, v)).getFirst()).get()))
+        if(!splayTree.getRootNode(keyToNodes.get(new Pair<>(u, u)).getFirst()).get().equals(
+                splayTree.getRootNode(keyToNodes.get(new Pair<>(v, v)).getFirst()).get()))
             return;
 
         cut(u, v, keyToNodes);
@@ -203,19 +205,19 @@ public class EulerTourTree {
 
     public static Integer getEulerTourRoot(Node treeNode){
         if(treeNode == null) return -1;
-        return SplayTree.firstNode(treeNode).get().key.getFirst();
+        return splayTree.firstNode(treeNode).get().key.getFirst();
     }
 
     public static Set<Pair<Integer, Integer>> getEdges(Node treeNode){
         Set<Pair<Integer, Integer>> listOfEdges = new HashSet<>();
-        Optional<Node> optSplayRoot = SplayTree.getRootNode(treeNode);
+        Optional<Node> optSplayRoot = splayTree.getRootNode(treeNode);
         optSplayRoot.ifPresent(node -> dfsEdges(node, listOfEdges));
         return listOfEdges;
     }
 
     public static Set<Integer> getVertices(Node treeNode){
         Set<Integer> listOfVertices = new HashSet<>();
-        Optional<Node> optSplayRoot = SplayTree.getRootNode(treeNode);
+        Optional<Node> optSplayRoot = splayTree.getRootNode(treeNode);
         optSplayRoot.ifPresent(node -> dfsVertices(node, listOfVertices));
         return listOfVertices;
     }
@@ -246,12 +248,12 @@ public class EulerTourTree {
 
     public static int getSizeOfTree(Node treeNode){
         if(treeNode == null) return 0;
-        return SplayTree.getSizeOfTree(treeNode);
+        return splayTree.getSizeOfTree(treeNode);
     }
 
     public static void show(Node treeNode){
         System.out.println("Show ETT:");
-        Optional<Node> optSplayRoot = SplayTree.getRootNode(treeNode);
+        Optional<Node> optSplayRoot = splayTree.getRootNode(treeNode);
         optSplayRoot.ifPresent(EulerTourTree::dfsShow);
     }
 

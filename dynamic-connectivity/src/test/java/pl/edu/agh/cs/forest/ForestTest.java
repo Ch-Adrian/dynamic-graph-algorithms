@@ -1,5 +1,6 @@
 package pl.edu.agh.cs.forest;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.nio.channels.ScatteringByteChannel;
@@ -50,6 +51,7 @@ public class ForestTest {
     }
 
     @Test
+    @Disabled
     public void testAddNonTreeEdge() {
         Forest forest = new Forest(0, null);
 

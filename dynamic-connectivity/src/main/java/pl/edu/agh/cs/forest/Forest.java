@@ -2,6 +2,7 @@ package pl.edu.agh.cs.forest;
 
 import pl.edu.agh.cs.common.Pair;
 import pl.edu.agh.cs.eulerTourTree.EulerTourTree;
+import pl.edu.agh.cs.eulerTourTree.SelfBalancingTree;
 import pl.edu.agh.cs.eulerTourTree.splay.Node;
 import pl.edu.agh.cs.eulerTourTree.splay.SplayTree;
 
@@ -13,6 +14,7 @@ public class Forest {
     private Integer level = -1;
     private ArrayList<Forest> hierarchicalForests = new ArrayList<>();
     private Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes;
+    static SelfBalancingTree splayTree = new SplayTree();
 
     public Forest(Integer level, ArrayList<Forest> dcAlgo) {
         this.nonTreeEdges = new HashMap<>();
@@ -26,7 +28,7 @@ public class Forest {
 
     public Optional<Node> getRepresentativeTreeNode(Integer u){
         if(checkIfVertexHasNodeInTheTree(u, keyToNodes))
-            return SplayTree.getRootNode(keyToNodes.get(new Pair<>(u,u)).getFirst());
+            return splayTree.getRootNode(keyToNodes.get(new Pair<>(u,u)).getFirst());
         else return Optional.empty();
     }
 
@@ -113,7 +115,7 @@ public class Forest {
         else if(nodeW.isEmpty()){
             Tmin = null;
         }
-        else if(SplayTree.getSizeOfTree(nodeV.get()) > SplayTree.getSizeOfTree(nodeW.get())){
+        else if(splayTree.getSizeOfTree(nodeV.get()) > splayTree.getSizeOfTree(nodeW.get())){
             Tmin = nodeW.get();
         } else {
             Tmin = nodeV.get();
@@ -129,7 +131,7 @@ public class Forest {
 
             for(Integer vertex: EulerTourTree.getVertices(Tmin)){
                 for(Integer nonTreeEdgeEnd: this.hierarchicalForests.get(level).getNonTreeEdges(vertex)){
-                    if(!getRepresentativeTreeNode(nonTreeEdgeEnd).get().equals(SplayTree.getRootNode(Tmin).get())){
+                    if(!getRepresentativeTreeNode(nonTreeEdgeEnd).get().equals(splayTree.getRootNode(Tmin).get())){
                         nonTreeEdgeFound = true;
                         nonTreeEdge = new Pair<>(vertex, nonTreeEdgeEnd);
                         for (Forest hierarchicalForest : hierarchicalForests) {
