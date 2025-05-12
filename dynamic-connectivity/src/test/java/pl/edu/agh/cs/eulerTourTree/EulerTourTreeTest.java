@@ -267,8 +267,32 @@ public class EulerTourTreeTest {
 
     }
 
+    @Test public void testLink(){
+        Node node11 = EulerTourTree.addNode(new Pair<>(1,1), keyToNodes);
+        assertThrows(RuntimeException.class, () -> EulerTourTree.link(0, 1, keyToNodes));
+        assertThrows(RuntimeException.class, () -> EulerTourTree.link(1, 0, keyToNodes));
+        assertDoesNotThrow(() -> EulerTourTree.link(1, 1, keyToNodes));
+        assertEquals(1, keyToNodes.size());
+
+        Node node00 = EulerTourTree.addNode(new Pair<>(0, 0), keyToNodes);
+        EulerTourTree.link(0, 1, keyToNodes);
+
+        assertEquals(4, keyToNodes.size());
+        assertEquals(2, keyToNodes.get(new Pair<>(0,0)).size());
+        assertEquals(1, keyToNodes.get(new Pair<>(0,1)).size());
+        assertEquals(1, keyToNodes.get(new Pair<>(1,0)).size());
+        assertEquals(1, keyToNodes.get(new Pair<>(1,1)).size());
+
+        Optional<Node> splayRootNode = SplayTree.getRootNode(keyToNodes.get(new Pair<>(0,0)).getFirst());
+
+        assertEquals(new Pair<>(1,0), splayRootNode.get().key);
+        assertEquals(node11, splayRootNode.get().left);
+
+        assertDoesNotThrow(() -> EulerTourTree.link(0, 1, keyToNodes));
+    }
+
     @Test
-    public void testLink(){
+    public void testLink2(){
         try {
             Node treeNodeLeft = EulerTourTree.createNewEulerTourTree(0, 1, keyToNodes);
             Node treeNodeRight = EulerTourTree.createNewEulerTourTree(2, 3, keyToNodes);

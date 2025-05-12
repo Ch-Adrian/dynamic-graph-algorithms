@@ -70,18 +70,21 @@ public class EulerTourTree {
         return SplayTree.getRootNode(newRoot);
     }
 
-    public static Optional<Node> getFirstNodeFromKeyToNodesList(Integer v, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes){
-        if(Forest.checkIfVertexHasNodeInTheTree(v, keyToNodes))
-            return Optional.of(keyToNodes.get(new Pair<>(v, v)).getFirst());
-        else return Optional.empty();
-    }
-
     public static void link(Integer internal, Integer external, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes) {
-        Optional<Node> rootInternal = getFirstNodeFromKeyToNodesList(internal, keyToNodes);
-        Optional<Node> rootExternal = getFirstNodeFromKeyToNodesList(external, keyToNodes);
 
-        rootInternal = reRoot(internal, keyToNodes);
-        rootExternal = reRoot(external, keyToNodes);
+        /* check preconditions */
+        if(!Forest.checkIfVertexHasNodeInTheTree(internal, keyToNodes))
+            throw new RuntimeException(String.format("There is no vertex: %d%n", internal));
+         if(!Forest.checkIfVertexHasNodeInTheTree(external, keyToNodes))
+             throw new RuntimeException(String.format("There is no vertex: %d%n", external));
+
+         if(internal.equals(external)) return;
+         if(SplayTree.getRootNode(keyToNodes.get(new Pair<>(internal, internal)).getFirst()).get().equals(
+                 SplayTree.getRootNode(keyToNodes.get(new Pair<>(external, external)).getFirst()).get()))
+             return;
+
+        Optional<Node> rootInternal = reRoot(internal, keyToNodes);
+        Optional<Node> rootExternal = reRoot(external, keyToNodes);
 
         if(rootExternal.isPresent() && rootInternal.isPresent()) {
             SplayTree.join(rootInternal.get(), addNode(new Pair<>(internal, external), keyToNodes));
