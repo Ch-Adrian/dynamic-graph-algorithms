@@ -63,6 +63,7 @@ public class EulerTourTreeTest {
         Node newNode = EulerTourTree.addNode(new Pair<>(0,0), keyToNodes);
         assertEquals(new Pair<>(0,0), newNode.key);
         assertEquals(1, keyToNodes.size());
+        assertEquals(newNode, keyToNodes.get(new Pair<>(0, 0)).getFirst());
     }
 
     @Test public void testReRootPreconditions(){
@@ -427,6 +428,14 @@ public class EulerTourTreeTest {
         assertEquals(0, keyToNodes.get(new Pair<>(1,0)).size());
         assertEquals(1, keyToNodes.get(new Pair<>(1,1)).size());
 
+    }
+
+    @Test
+    public void testGetEulerTourRoot(){
+        assertEquals(Integer.valueOf(-1), EulerTourTree.getEulerTourRoot(null));
+        EulerTourTree.createNewEulerTourTree(0, 1, keyToNodes);
+        assertEquals(Integer.valueOf(0), EulerTourTree.getEulerTourRoot(keyToNodes.get(new Pair<>(0,0)).getFirst()));
+        assertEquals(Integer.valueOf(0), EulerTourTree.getEulerTourRoot(keyToNodes.get(new Pair<>(1,1)).getFirst()));
     }
 
 }
