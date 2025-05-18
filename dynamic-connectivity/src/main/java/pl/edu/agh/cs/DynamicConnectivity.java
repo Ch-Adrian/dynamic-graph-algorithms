@@ -12,7 +12,7 @@ public class DynamicConnectivity {
     private final ArrayList<Forest> forests = new ArrayList<>();
 
     public DynamicConnectivity(Integer n) {
-        Integer amtOfLevels = Integer.valueOf((int) Math.ceil(Math.log(n)));
+        int amtOfLevels = (int) Math.ceil(Math.log(n)) + 1;
         for (int i = 0; i <= amtOfLevels; i++) {
             forests.add(new Forest(i, forests));
         }

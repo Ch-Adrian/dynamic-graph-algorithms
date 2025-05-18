@@ -23,6 +23,8 @@ public class EulerTourTree {
         keyToNodes.put(new Pair<>(v,v), new LinkedHashSet<>());
 
         keyToNodes.get(new Pair<>(u,u)).add(splayRoot);
+        if(u.equals(v)) return splayRoot;
+
         insertEdgeToETT(splayRoot, u, v, keyToNodes);
         return splayRoot;
     }

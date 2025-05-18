@@ -16,11 +16,11 @@ public class Forest {
     private Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes;
     static SelfBalancingTree splayTree = new SplayTree();
 
-    public Forest(Integer level, ArrayList<Forest> dcAlgo) {
+    public Forest(Integer level, ArrayList<Forest> forests) {
         this.nonTreeEdges = new HashMap<>();
         this.keyToNodes = new HashMap<>();
         this.level = level;
-        this.hierarchicalForests = dcAlgo;
+        this.hierarchicalForests = forests;
     }
 
     public Map<Integer, LinkedHashSet<Integer>> getNonTreeEdges(){ return nonTreeEdges; }
@@ -62,11 +62,11 @@ public class Forest {
         Optional<Node> nodeU = getRepresentativeTreeNode(u);
         Optional<Node> nodeV = getRepresentativeTreeNode(v);
 
-        if(nodeU.isPresent() && nodeV.isPresent()){
+        if(nodeU.isPresent() && nodeV.isPresent() && !u.equals(v)) {
             EulerTourTree.link(u, v, keyToNodes);
-        } else if(nodeU.isPresent()){
+        } else if(nodeU.isPresent() && !u.equals(v)) {
             EulerTourTree.addEdgeToNonExistingVertex(u, v, keyToNodes);
-        } else if(nodeV.isPresent()){
+        } else if(nodeV.isPresent() && !u.equals(v)) {
             EulerTourTree.addEdgeToNonExistingVertex(v, u, keyToNodes);
         } else {
             EulerTourTree.createNewEulerTourTree(u, v, keyToNodes);
@@ -74,6 +74,7 @@ public class Forest {
     }
 
     public void addNonTreeEdge(Integer u, Integer v){
+        if(u.equals(v)) return;
         if(!this.nonTreeEdges.containsKey(u))
             this.nonTreeEdges.put(u, new LinkedHashSet<>());
         if(!this.nonTreeEdges.containsKey(v))
@@ -82,11 +83,15 @@ public class Forest {
         this.nonTreeEdges.get(v).add(u);
     }
 
-    public void deleteNonTreeEdge(Integer u, Integer v){
-        if(this.nonTreeEdges.containsKey(u) && this.nonTreeEdges.containsKey(v)){
-            this.nonTreeEdges.get(u).remove(v);
-            this.nonTreeEdges.get(v).remove(u);
-        }
+    public void deleteNonTreeEdge(Integer u, Integer v) {
+        if(u.equals(v)) return;
+        if(!this.nonTreeEdges.containsKey(u) || !this.nonTreeEdges.get(u).contains(v))
+            return;
+        if(!this.nonTreeEdges.containsKey(v) || !this.nonTreeEdges.get(v).contains(u))
+            return;
+
+        this.nonTreeEdges.get(u).remove(v);
+        this.nonTreeEdges.get(v).remove(u);
     }
 
     public LinkedHashSet<Integer> getNonTreeEdges(Integer u){
@@ -96,7 +101,7 @@ public class Forest {
     }
 
     public void deleteTreeEdge(Integer u, Integer v) {
-
+        if(u.equals(v)) return;
         Optional<Node> nodeU = getRepresentativeTreeNode(u);
         Optional<Node> nodeV = getRepresentativeTreeNode(v);
 
@@ -106,52 +111,51 @@ public class Forest {
     }
 
     public void findReplacementEdge(Integer v, Integer w, Integer level) {
+        if(level < 0 || v.equals(w)) return;
+
         Optional<Node> nodeV = getRepresentativeTreeNode(v);
         Optional<Node> nodeW = getRepresentativeTreeNode(w);
+
+        if(nodeV.isPresent() && nodeW.isPresent() && nodeV.get().equals(nodeW.get())) return;
+
         Node Tmin;
-        if(nodeV.isEmpty()){
-            Tmin = null;
-        }
-        else if(nodeW.isEmpty()){
-            Tmin = null;
-        }
+        if(nodeV.isEmpty() || nodeW.isEmpty()) return;
+        else if(nodeV.get().equals(nodeW.get())) return;
         else if(splayTree.getSizeOfTree(nodeV.get()) > splayTree.getSizeOfTree(nodeW.get())){
             Tmin = nodeW.get();
         } else {
             Tmin = nodeV.get();
         }
 
-        if(Tmin != null){
-            for(Pair<Integer, Integer> edge: EulerTourTree.getEdges(Tmin)){
-                if(!this.hierarchicalForests.get(level+1).checkIfTreeEdgeExists(edge.getFirst(), edge.getSecond()))
-                    this.hierarchicalForests.get(level+1).addTreeEdge(edge.getFirst(), edge.getSecond());
-            }
-            boolean nonTreeEdgeFound = false;
-            Pair<Integer, Integer> nonTreeEdge = null;
+        for (Pair<Integer, Integer> edge : EulerTourTree.getEdges(Tmin)) {
+            if (!this.hierarchicalForests.get(level + 1).checkIfTreeEdgeExists(edge.getFirst(), edge.getSecond()))
+                this.hierarchicalForests.get(level + 1).addTreeEdge(edge.getFirst(), edge.getSecond());
+        }
+        boolean nonTreeEdgeFound = false;
+        Pair<Integer, Integer> nonTreeEdge = null;
 
-            for(Integer vertex: EulerTourTree.getVertices(Tmin)){
-                for(Integer nonTreeEdgeEnd: this.hierarchicalForests.get(level).getNonTreeEdges(vertex)){
-                    if(!getRepresentativeTreeNode(nonTreeEdgeEnd).get().equals(splayTree.getRootNode(Tmin).get())){
-                        nonTreeEdgeFound = true;
-                        nonTreeEdge = new Pair<>(vertex, nonTreeEdgeEnd);
-                        for (Forest hierarchicalForest : hierarchicalForests) {
-                            hierarchicalForest.deleteNonTreeEdge(vertex, nonTreeEdgeEnd);
-                        }
-                        break;
-                    } else {
-                        if(!hierarchicalForests.get(level+1).checkIfNonTreeEdgeExists(vertex, nonTreeEdgeEnd))
-                            hierarchicalForests.get(level+1).addNonTreeEdge(vertex, nonTreeEdgeEnd);
+        for(Integer vertex: EulerTourTree.getVertices(Tmin)){
+            for(Integer nonTreeEdgeEnd: this.hierarchicalForests.get(level).getNonTreeEdges(vertex)){
+                if(!getRepresentativeTreeNode(nonTreeEdgeEnd).get().equals(splayTree.getRootNode(Tmin).get())){
+                    nonTreeEdgeFound = true;
+                    nonTreeEdge = new Pair<>(vertex, nonTreeEdgeEnd);
+                    for (Forest hierarchicalForest : hierarchicalForests) {
+                        hierarchicalForest.deleteNonTreeEdge(vertex, nonTreeEdgeEnd);
                     }
+                    break;
+                } else {
+                    if(!hierarchicalForests.get(level+1).checkIfNonTreeEdgeExists(vertex, nonTreeEdgeEnd))
+                        hierarchicalForests.get(level+1).addNonTreeEdge(vertex, nonTreeEdgeEnd);
                 }
-                if(nonTreeEdgeFound) break;
             }
-            if(nonTreeEdgeFound){
-                for(int lvl= 0; lvl <= level; lvl++){
-                    hierarchicalForests.get(lvl).addTreeEdge(nonTreeEdge.getFirst(), nonTreeEdge.getSecond());
-                }
-            } else {
-                this.findReplacementEdge(v, w, level-1);
+            if(nonTreeEdgeFound) break;
+        }
+        if(nonTreeEdgeFound){
+            for(int lvl= 0; lvl <= level; lvl++){
+                hierarchicalForests.get(lvl).addTreeEdge(nonTreeEdge.getFirst(), nonTreeEdge.getSecond());
             }
+        } else {
+            this.findReplacementEdge(v, w, level-1);
         }
     }
 

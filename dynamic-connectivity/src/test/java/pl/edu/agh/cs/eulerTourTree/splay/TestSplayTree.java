@@ -3,7 +3,6 @@ package pl.edu.agh.cs.eulerTourTree.splay;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pl.edu.agh.cs.common.Pair;
-import pl.edu.agh.cs.eulerTourTree.SelfBalancingTree;
 
 import java.util.ArrayList;
 import java.util.Optional;
