@@ -304,20 +304,20 @@ public class DynamicConnectivityTest {
 
     @Test
     public void testDCBruteForce(){
-        Integer amtOfVertices = 11;
+        Integer amtOfVertices = 1000001;
         DynamicConnectivity dc = new DynamicConnectivity(amtOfVertices);
         for(int i =0; i<amtOfVertices; i++){
             dc.addEdge(i, i+1);
         }
 
-        if(dc.getForestForLevel(0).getKeyToNodes().get(new Pair<>(0,0)).getFirst().left != null){
+        if(dc.getForestForLevel(0).getKeyToNodes().get(new Pair<>(0,0)).getFirst() != null){
             Node n = dc.getForestForLevel(0).getKeyToNodes().get(new Pair<>(0,0)).getFirst();
             SplayTree splayTree = new SplayTree();
             Optional<Node> r = splayTree.getRootNode(n);
             if(r.isPresent()){
                 System.out.println(r.get());
                 System.out.println(r.get().sizeOfTree);
-                EulerTourTree.show(r.get());
+//                EulerTourTree.show(r.get());
             }
         }
 

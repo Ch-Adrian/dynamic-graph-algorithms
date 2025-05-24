@@ -80,9 +80,23 @@ public class SplayTree implements SelfBalancingTree {
         if(node == null) return;
 
         while(node.parent != null){
-            if(node.parent.left == node){
+            if(node.parent.parent == null) {
+                if (node.parent.left == node) {
+                    rightRotate(node);
+                } else {
+                    leftRotate(node);
+                }
+            } else if (node == node.parent.left  && node.parent.parent.left == node.parent){
+                rightRotate(node.parent);
+                rightRotate(node);
+            } else if (node == node.parent.right && node.parent.parent.right == node.parent){
+                leftRotate(node.parent);
+                leftRotate(node);
+            } else if (node == node.parent.right && node.parent.parent.left == node.parent){
+                leftRotate(node);
                 rightRotate(node);
             } else {
+                rightRotate(node);
                 leftRotate(node);
             }
         }
@@ -97,6 +111,7 @@ public class SplayTree implements SelfBalancingTree {
         treeNode.sizeOfTree++;
         treeNode.right = newNode;
         newNode.parent = treeNode;
+        splay(newNode);
         return newNode;
     }
 
@@ -226,4 +241,5 @@ public class SplayTree implements SelfBalancingTree {
         if(treeNode == null) return 0;
         return getRootNode(treeNode).get().sizeOfTree;
     }
+
 }
