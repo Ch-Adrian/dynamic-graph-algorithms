@@ -2,11 +2,14 @@ package pl.edu.agh.cs;
 
 import org.junit.jupiter.api.Test;
 import pl.edu.agh.cs.common.Pair;
+import pl.edu.agh.cs.eulerTourTree.EulerTourTree;
 import pl.edu.agh.cs.eulerTourTree.splay.Node;
+import pl.edu.agh.cs.eulerTourTree.splay.SplayTree;
 import pl.edu.agh.cs.forest.Forest;
 
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -299,5 +302,27 @@ public class DynamicConnectivityTest {
         assertFalse(dc.isConnected(1, 0));
     }
 
+    @Test
+    public void testDCBruteForce(){
+        Integer amtOfVertices = 11;
+        DynamicConnectivity dc = new DynamicConnectivity(amtOfVertices);
+        for(int i =0; i<amtOfVertices; i++){
+            dc.addEdge(i, i+1);
+        }
 
+        if(dc.getForestForLevel(0).getKeyToNodes().get(new Pair<>(0,0)).getFirst().left != null){
+            Node n = dc.getForestForLevel(0).getKeyToNodes().get(new Pair<>(0,0)).getFirst();
+            SplayTree splayTree = new SplayTree();
+            Optional<Node> r = splayTree.getRootNode(n);
+            if(r.isPresent()){
+                System.out.println(r.get());
+                System.out.println(r.get().sizeOfTree);
+                EulerTourTree.show(r.get());
+            }
+        }
+
+        for(int i =0; i<amtOfVertices; i++){
+            dc.deleteEdge(i, i+1);
+        }
+    }
 }

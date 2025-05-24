@@ -151,4 +151,39 @@ public class EvenShiloachTreeTest {
 
     }
 
+    @Test
+    public void testBruteForce(){
+        EvenShiloachTree evenShiloachTree = new EvenShiloachTree();
+        ArrayList<Pair<Integer, Integer>> edges = new ArrayList<>();
+        Integer amtOfVertices = 10001;
+
+        for(int i = 0; i< amtOfVertices; i++){
+            edges.add(new Pair<>(i, i+1));
+        }
+
+        for(Pair<Integer, Integer> edge : edges){
+            try {
+                evenShiloachTree.addEdge(edge.getFirst(), edge.getSecond());
+            } catch (Exception e) {
+                System.out.println("Error: " + e.getMessage());
+                return;
+            }
+        }
+
+        evenShiloachTree.changeOperatingMode();
+        try {
+            evenShiloachTree.runBFS();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+
+        for(Pair<Integer, Integer> edge : edges) {
+            try {
+                evenShiloachTree.deleteEdge(edge.getFirst(), edge.getSecond());
+            } catch (Exception e) {
+                System.out.println("Error: " + e.getMessage());
+            }
+        }
+    }
+
 }

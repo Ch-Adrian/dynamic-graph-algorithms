@@ -35,7 +35,7 @@ public class Graph {
         this.addDirectedEdge(vertexTo, vertexFrom);
     }
 
-    public void addNonDirectedEdge(int idVertexFrom, int idVertexTo){
+    public void addNonDirectedEdge(Integer idVertexFrom, Integer idVertexTo){
         Vertex vertexFrom;
         Vertex vertexTo;
         if(this.vertices.containsKey(idVertexFrom))
