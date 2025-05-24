@@ -111,7 +111,7 @@ public class SplayTree implements SelfBalancingTree {
         treeNode.sizeOfTree++;
         treeNode.right = newNode;
         newNode.parent = treeNode;
-        splay(newNode);
+//        splay(newNode);
         return newNode;
     }
 

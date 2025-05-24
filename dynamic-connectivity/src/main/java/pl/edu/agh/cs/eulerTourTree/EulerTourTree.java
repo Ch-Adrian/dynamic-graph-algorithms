@@ -259,7 +259,7 @@ public class EulerTourTree {
         optSplayRoot.ifPresent(EulerTourTree::dfsShow);
     }
 
-    private static void dfsShow(Node node){
+    public static void dfsShow(Node node){
         System.out.println("node: "+node.key);
         if(node.left != null){
             System.out.println("Left");
