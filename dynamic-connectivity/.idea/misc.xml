@@ -9,6 +9,7 @@
         <option value="$PROJECT_DIR$/../dynamic-connectivity-incremental/pom.xml" />
         <option value="$PROJECT_DIR$/../dynamic-single-source-shortest-path/pom.xml" />
         <option value="$PROJECT_DIR$/../dynamic-single-source-shortest-path-decremental/pom.xml" />
+        <option value="$PROJECT_DIR$/../dynamic-connectivity-LCT/pom.xml" />
       </list>
     </option>
   </component>
