@@ -1,8 +1,7 @@
 package pl.edu.agh.cs.linkCutTree.splay;
 
-import pl.edu.agh.cs.common.Pair;
-import pl.edu.agh.cs.linkCutTree.SelfBalancingTree;
-
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 public class SplayTree {

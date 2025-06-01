@@ -4,7 +4,6 @@ import pl.edu.agh.cs.common.Pair;
 
 import pl.edu.agh.cs.linkCutTree.LinkCutTree;
 import pl.edu.agh.cs.linkCutTree.splay.Node;
-import pl.edu.agh.cs.linkCutTree.splay.SplayTree;
 
 import java.util.*;
 
@@ -22,6 +21,7 @@ public class Forest {
         this.keyToNode = new HashMap<>();
         this.level = level;
         this.hierarchicalForests = forests;
+        this.treeEdges = new HashMap<>();
     }
 
     public Map<Integer, LinkedHashSet<Integer>> getNonTreeEdges(){ return nonTreeEdges; }
@@ -60,6 +60,10 @@ public class Forest {
     public void addTreeEdge(Integer u, Integer v) {
         Optional<Node> nodeU = getRepresentativeTreeNode(u);
         Optional<Node> nodeV = getRepresentativeTreeNode(v);
+        if(!this.treeEdges.containsKey(u))
+            this.treeEdges.put(u, new LinkedHashSet<>());
+        if(!this.treeEdges.containsKey(v))
+            this.treeEdges.put(v, new LinkedHashSet<>());
         this.treeEdges.get(u).add(v);
         this.treeEdges.get(v).add(u);
 
@@ -104,7 +108,9 @@ public class Forest {
 
     public void deleteTreeEdge(Integer u, Integer v) {
         if(u.equals(v)) return;
-        if(!treeEdges.get(u).contains(v)) return;
+        if(treeEdges.containsKey(u))
+            if(!treeEdges.get(u).contains(v)) return;
+        else return;
         Optional<Node> nodeU = getRepresentativeTreeNode(u);
         Optional<Node> nodeV = getRepresentativeTreeNode(v);
 
@@ -132,14 +138,14 @@ public class Forest {
             Tmin = nodeV.get();
         }
 
-        for (Pair<Integer, Integer> edge : linkCutTree.getEdges(Tmin)) {
+        for (Pair<Integer, Integer> edge : getEdges(Tmin.key)) {
             if (!this.hierarchicalForests.get(level + 1).checkIfTreeEdgeExists(edge.getFirst(), edge.getSecond()))
                 this.hierarchicalForests.get(level + 1).addTreeEdge(edge.getFirst(), edge.getSecond());
         }
         boolean nonTreeEdgeFound = false;
         Pair<Integer, Integer> nonTreeEdge = null;
 
-        for(Integer vertex: linkCutTree.getVertices(Tmin)){
+        for(Integer vertex: getVertices(Tmin.key)){
             for(Integer nonTreeEdgeEnd: this.hierarchicalForests.get(level).getNonTreeEdges(vertex)){
                 if(!getRepresentativeTreeNode(nonTreeEdgeEnd).get().equals(linkCutTree.getRootNode(Tmin).get())){
                     nonTreeEdgeFound = true;
@@ -161,6 +167,37 @@ public class Forest {
             }
         } else {
             this.findReplacementEdge(v, w, level-1);
+        }
+    }
+
+    public Set<Pair<Integer, Integer>> getEdges(Integer key){
+        Optional<Node> optNode = getRepresentativeTreeNode(key);
+        Set<Pair<Integer, Integer>> edges = new HashSet<>();
+        optNode.ifPresent(node -> dfsEdges(node.key, -1, edges));
+        return edges;
+    }
+
+    public Set<Integer> getVertices(Integer key){
+        Optional<Node> optNode = getRepresentativeTreeNode(key);
+        Set<Integer> vertices = new HashSet<>();
+        optNode.ifPresent(node -> dfsVertices(node.key, -1, vertices));
+        return vertices;
+    }
+
+    private void dfsEdges(Integer rootKey, Integer prev, Set<Pair<Integer, Integer>> edges){
+        for (Integer n : treeEdges.get(rootKey)) {
+            if(!n.equals(prev)) {
+                edges.add(new Pair<>(rootKey, n));
+                dfsEdges(n, rootKey, edges);
+            }
+        }
+    }
+
+    public void dfsVertices(Integer rootKey, Integer prev, Set<Integer> vertices){
+        vertices.add(rootKey);
+        for(Integer n: treeEdges.get(rootKey)){
+            if(!n.equals(prev))
+                dfsVertices(n, rootKey, vertices);
         }
     }
 

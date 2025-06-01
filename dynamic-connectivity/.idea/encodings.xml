@@ -7,6 +7,8 @@
     <file url="file://$PROJECT_DIR$/../dynamic-connectivity-incremental/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../dynamic-mst-ett/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../dynamic-mst-ett/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/../dynamic-single-source-shortest-path-decremental/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/../dynamic-single-source-shortest-path-decremental/src/main/resources" charset="UTF-8" />
   </component>

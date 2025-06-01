@@ -36,7 +36,7 @@ public class LinkCutTree extends SplayTree {
         this.link(tree, optNode.get());
     }
 
-    private void detachRightSide(Node node){
+    public void detachRightSide(Node node){
         if(node == null) return;
         if(node.right != null){
             node.right.pathParent = node;
@@ -46,7 +46,7 @@ public class LinkCutTree extends SplayTree {
         }
     }
 
-    private void access(Node node){
+    public void access(Node node){
         if(node == null) return;
         splay(node);
         detachRightSide(node);
@@ -108,9 +108,9 @@ public class LinkCutTree extends SplayTree {
         this.access(nodeU);
         this.access(nodeV);
 
-        if(nodeU.pathParent.equals(nodeV)){
+        if(Objects.equals(nodeU.pathParent, nodeV)){
             this.cut(nodeU);
-        } else if(nodeV.pathParent.equals(nodeU)){
+        } else if(Objects.equals(nodeV.pathParent, nodeU)){
             this.cut(nodeV);
         } else if(nodeV.left == nodeU){
             this.cut(nodeV);
@@ -119,46 +119,5 @@ public class LinkCutTree extends SplayTree {
         }
 
     }
-
-    public Set<Pair<Integer, Integer>> getEdges(Node treeNode){
-        Set<Pair<Integer, Integer>> listOfEdges = new HashSet<>();
-        Optional<Node> optSplayRoot = this.getRootNode(treeNode);
-        optSplayRoot.ifPresent(node -> dfsEdges(node, listOfEdges));
-        return listOfEdges;
-    }
-
-    public Set<Integer> getVertices(Node treeNode){
-        Set<Integer> listOfVertices = new HashSet<>();
-        Optional<Node> optSplayRoot = this.getRootNode(treeNode);
-        optSplayRoot.ifPresent(node -> dfsVertices(node, listOfVertices));
-        return listOfVertices;
-    }
-
-    private void dfsVertices(Node root, Set<Integer> listOfVertices){
-        listOfVertices.add(root.key);
-        if(root.left != null){
-            dfsVertices(root.left, listOfVertices);
-        }
-        if(root.right != null){
-            dfsVertices(root.right, listOfVertices);
-        }
-
-    }
-
-    private void dfsEdges(Node root, Set<Pair<Integer, Integer>> listOfEdges) {
-        if(root.left != null){
-            if(!listOfEdges.contains(new Pair<>(root.left.key, root.key)) &&
-                    !listOfEdges.contains(new Pair<>(root.key, root.left.key)))
-                listOfEdges.add(new Pair<>(root.left.key, root.key));
-            dfsEdges(root.left, listOfEdges);
-        }
-        if(root.right != null){
-            if(!listOfEdges.contains(new Pair<>(root.right.key, root.key)) &&
-                    !listOfEdges.contains(new Pair<>(root.key, root.right.key)))
-                listOfEdges.add(new Pair<>(root.right.key, root.key));
-            dfsEdges(root.right, listOfEdges);
-        }
-    }
-
 
 }
