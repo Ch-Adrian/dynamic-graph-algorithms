@@ -55,6 +55,82 @@ public class ForestTest {
     }
 
     @Test
+    public void testAddTreeEdge(){
+        ArrayList<Forest> arrayListForests = new ArrayList<>();
+        arrayListForests.add(new Forest(0, arrayListForests));
+        arrayListForests.add(new Forest(1, arrayListForests));
+        arrayListForests.add(new Forest(2, arrayListForests));
+
+        Forest forest0 = arrayListForests.get(0);
+
+        forest0.addTreeEdge(0, 1);
+
+        Map<Integer, Optional<Node>> keyToNode = forest0.getKeyToNodes();
+        assertEquals(2, keyToNode.size());
+
+        forest0.addTreeEdge(2, 3);
+        assertEquals(4, keyToNode.size());
+
+        forest0.addNonTreeEdge(1, 2);
+        assertEquals(4, keyToNode.size());
+        assertFalse(forest0.isConnected(0, 2));
+        assertTrue(forest0.checkIfTreeEdgeExists(0, 1));
+        assertTrue(forest0.checkIfTreeEdgeExists(2, 3));
+        assertTrue(forest0.checkIfNonTreeEdgeExists(1, 2));
+
+        forest0.addTreeEdge(0, 3);
+        assertEquals(4, keyToNode.size());
+        assertTrue(forest0.isConnected(0, 2));
+        assertTrue(forest0.checkIfTreeEdgeExists(0, 3));
+
+        forest0.deleteTreeEdge(0,3);
+        assertFalse(forest0.isConnected(0, 2));
+        assertFalse(forest0.checkIfTreeEdgeExists(0, 3));
+
+        forest0.findReplacementEdge(1,2, 0);
+        assertTrue(forest0.isConnected(0, 2));
+        assertFalse(forest0.checkIfNonTreeEdgeExists(1,2));
+        assertTrue(forest0.checkIfTreeEdgeExists(1,2));
+    }
+
+    @Test
+    public void testFindReplacementEdge(){
+        ArrayList<Forest> arrayListForests = new ArrayList<>();
+        arrayListForests.add(new Forest(0, arrayListForests));
+        arrayListForests.add(new Forest(1, arrayListForests));
+        arrayListForests.add(new Forest(2, arrayListForests));
+
+        Forest forest0 = arrayListForests.get(0);
+
+        forest0.addTreeEdge(0, 1);
+        forest0.addTreeEdge(2, 3);
+        forest0.addNonTreeEdge(0, 1);
+        forest0.addNonTreeEdge(1, 3);
+
+        forest0.findReplacementEdge(0, 3, 0);
+
+        Map<Integer, Optional<Node>> keyToNodes0 = forest0.getKeyToNodes();
+        Map<Integer, Optional<Node>> keyToNodes1 = arrayListForests.get(1).getKeyToNodes();
+        Map<Integer, Optional<Node>> keyToNodes2 = arrayListForests.get(2).getKeyToNodes();
+        Map<Integer, LinkedHashSet<Integer>> nonTreeEdges0 = arrayListForests.get(0).getNonTreeEdges();
+        Map<Integer, LinkedHashSet<Integer>> nonTreeEdges1 = arrayListForests.get(1).getNonTreeEdges();
+        Map<Integer, LinkedHashSet<Integer>> nonTreeEdges2 = arrayListForests.get(2).getNonTreeEdges();
+
+        assertEquals(4, keyToNodes0.size());
+        assertTrue(forest0.checkIfTreeEdgeExists(1, 3));
+        assertFalse(forest0.checkIfNonTreeEdgeExists(1, 3));
+
+        assertEquals(2, keyToNodes1.size());
+
+        assertEquals(2, nonTreeEdges1.size());
+        assertEquals(1, nonTreeEdges1.get(1).size());
+        assertEquals(1, nonTreeEdges1.get(0).size());
+
+        assertEquals(0, nonTreeEdges2.size());
+        assertEquals(0, keyToNodes2.size());
+    }
+
+    @Test
     public void testFindReplacementEdgeHigherLevel() {
         ArrayList<Forest> arrayListForests = new ArrayList<>();
         arrayListForests.add(new Forest(0, arrayListForests));

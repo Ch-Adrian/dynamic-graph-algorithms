@@ -13,12 +13,15 @@ public class Node {
     public Node right;
     public Node parent;
     public Integer sizeOfTree;
+    public Integer virtualSize;
     public Node pathParent;
+    public boolean rev = false;
 
     public Node(Integer key) {
         this.uniqueKey = nodeCounter++;
         this.key = key;
         this.sizeOfTree = 1;
+        this.virtualSize = 0;
     }
 
     public long getUniqueKey(){ return this.uniqueKey; }

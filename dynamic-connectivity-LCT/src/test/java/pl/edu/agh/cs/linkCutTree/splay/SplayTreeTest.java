@@ -28,6 +28,16 @@ public class SplayTreeTest {
         node.right = right;
         right.parent = node;
         tree = node;
+        SplayTree splayTree = new SplayTree();
+        splayTree.updateSize(left);
+        splayTree.updateSize(right);
+        splayTree.updateSize(node);
+        splayTree.updateSize(parent);
+        assert(left.sizeOfTree == 1);
+        assert(right.sizeOfTree == 1);
+        assert(node.sizeOfTree == 3);
+        assert(parent.sizeOfTree == 4);
+        assert(parent.pathParent.sizeOfTree == 1);
     }
 
     @Test
@@ -41,6 +51,7 @@ public class SplayTreeTest {
 
         assertEquals(Integer.valueOf(4), node.pathParent.key);
         assertNull(parent.pathParent);
+        assertEquals(Integer.valueOf(4), splayTree.getSizeOfSplayTree(parent));
     }
 
     @Test
@@ -48,6 +59,7 @@ public class SplayTreeTest {
         Node parent = tree.parent;
         Node node = tree;
         parent.right = node;
+        parent.left = null;
 
         SplayTree splayTree = new SplayTree();
 
@@ -56,6 +68,9 @@ public class SplayTreeTest {
 
         assertEquals(Integer.valueOf(4), node.pathParent.key);
         assertNull(parent.pathParent);
+        assertNull(parent.left);
+        assertEquals(Integer.valueOf(2), parent.sizeOfTree);
+        assertEquals(Integer.valueOf(4), splayTree.getSizeOfSplayTree(parent));
     }
 
     @Test
@@ -67,7 +82,7 @@ public class SplayTreeTest {
         assertEquals(Integer.valueOf(4), left.pathParent.key);
         assertNull(left.parent);
         assertEquals(Integer.valueOf(1), left.right.key);
-
+        assertEquals(Integer.valueOf(4), splayTree.getSizeOfSplayTree(left));
     }
 
 

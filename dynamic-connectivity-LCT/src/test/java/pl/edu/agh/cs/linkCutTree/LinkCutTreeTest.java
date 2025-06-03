@@ -24,6 +24,7 @@ public class LinkCutTreeTest {
         assertEquals(Integer.valueOf(1), keyToNode.get(1).get().key);
         assertEquals(Integer.valueOf(1), keyToNode.get(0).get().parent.key);
         assertEquals(Integer.valueOf(0), keyToNode.get(1).get().left.key);
+        assertEquals(Integer.valueOf(2), linkCutTree.getSizeOfTree(keyToNode.get(0).get()));
     }
 
     @Test
@@ -36,6 +37,7 @@ public class LinkCutTreeTest {
         assertEquals(Integer.valueOf(2), keyToNode.get(2).get().key);
         assertEquals(Integer.valueOf(2), keyToNode.get(1).get().parent.key);
         assertEquals(Integer.valueOf(1), keyToNode.get(2).get().left.key);
+        assertEquals(Integer.valueOf(3), linkCutTree.getSizeOfTree(keyToNode.get(2).get()));
     }
 
     @Test
@@ -50,6 +52,8 @@ public class LinkCutTreeTest {
 
         assertEquals(Integer.valueOf(1), keyToNode.get(2).get().pathParent.key);
         assertNull(keyToNode.get(1).get().right);
+        assertEquals(Integer.valueOf(3), linkCutTree.getSizeOfTree(keyToNode.get(0).get()));
+        assertEquals(Integer.valueOf(3), linkCutTree.getSizeOfTree(keyToNode.get(2).get()));
 
     }
 
@@ -103,10 +107,12 @@ public class LinkCutTreeTest {
         Node b = new Node(2);
 
         LinkCutTree linkCutTree = new LinkCutTree();
+        assertEquals(Integer.valueOf(1), linkCutTree.getSizeOfTree(a));
         linkCutTree.link(a, b);
 
         assertEquals(Integer.valueOf(1), b.left.key);
         assertEquals(Integer.valueOf(1), linkCutTree.findLinkCutRoot(b).get().key);
+        assertEquals(Integer.valueOf(2), linkCutTree.getSizeOfTree(a));
 
         Node z = new Node(0);
 
@@ -116,6 +122,7 @@ public class LinkCutTreeTest {
         assertEquals(a, b.pathParent);
         assertEquals(a, z.parent);
         assertNull(b.parent);
+        assertEquals(Integer.valueOf(3), linkCutTree.getSizeOfTree(a));
 
     }
 
@@ -136,8 +143,13 @@ public class LinkCutTreeTest {
         linkCutTree.addNonExistingNodeToTree(keyToNode.get(1).get(), 2, keyToNode);
         linkCutTree.addNonExistingNodeToTree(keyToNode.get(1).get(), 3, keyToNode);
 
+        assertEquals(Integer.valueOf(4), linkCutTree.getSizeOfTree(keyToNode.get(0).get()));
+        assertEquals(Integer.valueOf(4), linkCutTree.getSizeOfTree(keyToNode.get(2).get()));
         linkCutTree.cut(keyToNode.get(1).get());
 
+        assertEquals(Integer.valueOf(3), linkCutTree.getSizeOfTree(keyToNode.get(2).get()));
+        assertEquals(Integer.valueOf(3), linkCutTree.getSizeOfTree(keyToNode.get(3).get()));
+        assertEquals(Integer.valueOf(1), linkCutTree.getSizeOfTree(keyToNode.get(0).get()));
         assertNull(keyToNode.get(1).get().parent);
         assertNull(keyToNode.get(1).get().pathParent);
         assertNull(keyToNode.get(0).get().right);
@@ -153,6 +165,7 @@ public class LinkCutTreeTest {
         linkCutTree.addNonExistingNodeToTree(keyToNode.get(1).get(), 2, keyToNode);
         linkCutTree.addNonExistingNodeToTree(keyToNode.get(1).get(), 3, keyToNode);
 
+        assertEquals(Integer.valueOf(4), linkCutTree.getSizeOfTree(keyToNode.get(0).get()));
         linkCutTree.deleteTreeEdge(0, 1, keyToNode);
 
         assertNull(keyToNode.get(1).get().parent);
@@ -160,9 +173,12 @@ public class LinkCutTreeTest {
         assertNull(keyToNode.get(0).get().right);
         assertNotEquals(linkCutTree.findLinkCutRoot(keyToNode.get(0).get()),
                 linkCutTree.findLinkCutRoot(keyToNode.get(3).get()));
+        assertEquals(Integer.valueOf(1), linkCutTree.getSizeOfTree(keyToNode.get(0).get()));
 
         linkCutTree.deleteTreeEdge(3, 1, keyToNode);
 
+        assertEquals(Integer.valueOf(1), linkCutTree.getSizeOfTree(keyToNode.get(3).get()));
+        assertEquals(Integer.valueOf(2), linkCutTree.getSizeOfTree(keyToNode.get(2).get()));
         assertNull(keyToNode.get(3).get().parent);
         assertNull(keyToNode.get(3).get().pathParent);
         assertNull(keyToNode.get(3).get().left);

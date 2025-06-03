@@ -68,11 +68,11 @@ public class Forest {
         this.treeEdges.get(v).add(u);
 
         if(nodeU.isPresent() && nodeV.isPresent() && !u.equals(v)) {
-            linkCutTree.link(nodeU.get(), nodeV.get());
+            linkCutTree.link(keyToNode.get(u).get(), keyToNode.get(v).get());
         } else if(nodeU.isPresent() && !u.equals(v)) {
-            linkCutTree.addNonExistingNodeToTree(nodeU.get(), v, keyToNode);
+            linkCutTree.addNonExistingNodeToTree(keyToNode.get(u).get(), v, keyToNode);
         } else if(nodeV.isPresent() && !u.equals(v)) {
-            linkCutTree.addNonExistingNodeToTree(nodeV.get(), u, keyToNode);
+            linkCutTree.addNonExistingNodeToTree(keyToNode.get(v).get(), u, keyToNode);
         } else {
             linkCutTree.createNewLinkCutTree(u, v, keyToNode);
         }
@@ -108,8 +108,11 @@ public class Forest {
 
     public void deleteTreeEdge(Integer u, Integer v) {
         if(u.equals(v)) return;
-        if(treeEdges.containsKey(u))
-            if(!treeEdges.get(u).contains(v)) return;
+        if(treeEdges.containsKey(u)) {
+            if (!treeEdges.get(u).contains(v)) {
+                return;
+            }
+        }
         else return;
         Optional<Node> nodeU = getRepresentativeTreeNode(u);
         Optional<Node> nodeV = getRepresentativeTreeNode(v);
@@ -208,7 +211,9 @@ public class Forest {
     }
 
     public boolean checkIfTreeEdgeExists(Integer v, Integer u){
-        return this.treeEdges.get(v).contains(u);
+        if(this.treeEdges.containsKey(v))
+            return this.treeEdges.get(v).contains(u);
+        return false;
     }
 
     public boolean isConnected(Integer u, Integer v){

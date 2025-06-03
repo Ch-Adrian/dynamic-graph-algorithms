@@ -1,5 +1,6 @@
 package pl.edu.agh.cs.linkCutTree.splay;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -11,7 +12,20 @@ public class SplayTree {
         int size = 0;
         if(treeNode.left != null) size += treeNode.left.sizeOfTree;
         if(treeNode.right != null) size += treeNode.right.sizeOfTree;
-        treeNode.sizeOfTree = size + 1;
+        treeNode.sizeOfTree = size + 1 + treeNode.virtualSize;
+    }
+
+    public void pushDown(Node node){
+        if(node == null || !node.rev) return;
+
+        Node leftChild = node.left;
+        Node rightChild = node.right;
+        node.left = rightChild;
+        node.right = leftChild;
+
+        if(leftChild != null) leftChild.rev = !leftChild.rev;
+        if(rightChild != null) rightChild.rev = !rightChild.rev;
+        node.rev = false;
     }
 
     public void rightRotate(Node node){
@@ -80,31 +94,55 @@ public class SplayTree {
         updateSize(node);
     }
 
+    public void propagateUp(Node node){
+        ArrayList<Node> pathToRoot = new ArrayList<>();
+        Node pointer = node;
+        while(pointer.parent != null){
+            pathToRoot.add(pointer);
+            pointer = pointer.parent;
+        }
+        pathToRoot.add(pointer);
+
+        for(int i = pathToRoot.size()-1; i>=0; i--){
+            pushDown(pathToRoot.get(i));
+        }
+    }
+
     public void splay(Node node){
         if(node == null) return;
 
+        propagateUp(node);
+
         while(node.parent != null){
             if(node.parent.parent == null) {
+                pushDown(node.parent);
+                pushDown(node);
                 if (node.parent.left == node) {
                     rightRotate(node);
                 } else {
                     leftRotate(node);
                 }
-            } else if (node == node.parent.left  && node.parent.parent.left == node.parent){
-                rightRotate(node.parent);
-                rightRotate(node);
-            } else if (node == node.parent.right && node.parent.parent.right == node.parent){
-                leftRotate(node.parent);
-                leftRotate(node);
-            } else if (node == node.parent.right && node.parent.parent.left == node.parent){
-                leftRotate(node);
-                rightRotate(node);
             } else {
-                rightRotate(node);
-                leftRotate(node);
+                pushDown(node.parent.parent);
+                pushDown(node.parent);
+                pushDown(node);
+                if (node == node.parent.left && node.parent.parent.left == node.parent) {
+                    rightRotate(node.parent);
+                    rightRotate(node);
+                } else if (node == node.parent.right && node.parent.parent.right == node.parent) {
+                    leftRotate(node.parent);
+                    leftRotate(node);
+                } else if (node == node.parent.right && node.parent.parent.left == node.parent) {
+                    leftRotate(node);
+                    rightRotate(node);
+                } else {
+                    rightRotate(node);
+                    leftRotate(node);
+                }
             }
         }
 
+        updateSize(node);
     }
 
 //    public  Node insertToRight(Node treeNode, Pair<Integer, Integer> key) {
@@ -250,7 +288,7 @@ public class SplayTree {
         return Optional.of(pred);
     }
 
-    public  Integer getSizeOfTree(Node treeNode){
+    public  Integer getSizeOfSplayTree(Node treeNode){
         if(treeNode == null) return 0;
         return getRootNode(treeNode).get().sizeOfTree;
     }

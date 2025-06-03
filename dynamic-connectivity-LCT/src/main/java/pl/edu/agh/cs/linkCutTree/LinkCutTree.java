@@ -1,6 +1,5 @@
 package pl.edu.agh.cs.linkCutTree;
 
-import pl.edu.agh.cs.common.Pair;
 import pl.edu.agh.cs.forest.Forest;
 import pl.edu.agh.cs.linkCutTree.splay.Node;
 import pl.edu.agh.cs.linkCutTree.splay.SplayTree;
@@ -39,6 +38,7 @@ public class LinkCutTree extends SplayTree {
     public void detachRightSide(Node node){
         if(node == null) return;
         if(node.right != null){
+            node.virtualSize += node.right.sizeOfTree;
             node.right.pathParent = node;
             node.right.parent = null;
             node.right = null;
@@ -57,17 +57,29 @@ public class LinkCutTree extends SplayTree {
             splay(pointer);
             detachRightSide(pointer);
             pointer.right = node;
+            pointer.virtualSize -= node.sizeOfTree;
             node.parent = pointer;
             node.pathParent = null;
+            super.updateSize(pointer);
             splay(node);
         }
+    }
+
+    public void makeRoot(Node node){
+        access(node);
+        node.rev = !node.rev;
+        pushDown(node);
     }
 
     public Optional<Node> findLinkCutRoot(Node node){
         if(node == null) return Optional.empty();
         this.access(node);
-        Node pointer;
-        for(pointer = node; pointer.left != null; pointer = pointer.left);
+        Node pointer = node;
+        pushDown(pointer);
+        for(; pointer.left != null;){
+            pointer = pointer.left;
+            pushDown(pointer);
+        }
         this.access(pointer);
         return Optional.of(pointer);
     }
@@ -76,11 +88,19 @@ public class LinkCutTree extends SplayTree {
         if(parent == null || child == null) return;
         // child is a root in a general tree and splay tree
         // parent is a root in a splay tree
+
+        //this.access(child);
+        //this.access(parent);
+        //assert (child.left == null);
+        //child.left = parent;
+        //parent.parent = child;
+        //super.updateSize(child);
+
+        this.makeRoot(parent);
         this.access(child);
-        this.access(parent);
-        assert(child.left == null);
-        child.left = parent;
-        parent.parent = child;
+        parent.pathParent = child;
+        child.virtualSize += parent.sizeOfTree;
+        super.updateSize(child);
     }
 
     public Optional<Node> addNode(Integer key, Map<Integer, Optional<Node>> keyToNode){
@@ -92,8 +112,11 @@ public class LinkCutTree extends SplayTree {
     public void cut(Node tree){
         if(tree == null) return;
         this.access(tree);
-        tree.left.parent = null;
-        tree.left = null;
+        if(tree.left != null) {
+            tree.left.parent = null;
+            tree.left = null;
+            super.updateSize(tree);
+        }
     }
 
     public void deleteTreeEdge(Integer u, Integer v, Map<Integer, Optional<Node>> keyToNode){
@@ -118,6 +141,11 @@ public class LinkCutTree extends SplayTree {
             throw new RuntimeException("Delete Tree Edge error!");
         }
 
+    }
+
+    public Integer getSizeOfTree(Node node){
+        Optional<Node> root = findLinkCutRoot(node);
+        return getRootNode(root.get()).get().sizeOfTree;
     }
 
 }
