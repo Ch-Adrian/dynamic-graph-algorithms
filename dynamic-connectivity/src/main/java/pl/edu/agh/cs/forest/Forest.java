@@ -6,10 +6,12 @@ import pl.edu.agh.cs.eulerTourTree.SelfBalancingTree;
 import pl.edu.agh.cs.eulerTourTree.splay.Node;
 import pl.edu.agh.cs.eulerTourTree.splay.SplayTree;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class Forest {
+public class Forest implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private final Map<Integer, Set<Integer>> nonTreeEdges;
     private List<Forest> hierarchicalForests = new ArrayList<>();
     private final Map<Pair<Integer, Integer>, Set<Node>> keyToNodes;
@@ -189,4 +191,16 @@ public class Forest {
         return trees.size();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Forest)) return false;
+        Forest forest = (Forest) o;
+        return Objects.equals(nonTreeEdges, forest.nonTreeEdges) && Objects.equals(keyToNodes, forest.keyToNodes);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nonTreeEdges, keyToNodes);
+    }
 }

@@ -1,11 +1,14 @@
 package pl.edu.agh.cs.linkCutTree.splay;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class SplayTree {
+public class SplayTree implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     public void updateSize(Node treeNode){
         if(treeNode == null) return;

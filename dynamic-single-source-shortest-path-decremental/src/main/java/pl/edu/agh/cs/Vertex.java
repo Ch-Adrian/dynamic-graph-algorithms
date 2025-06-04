@@ -1,9 +1,11 @@
 package pl.edu.agh.cs;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class Vertex {
-    
+public class Vertex implements Serializable {
+
+    private static final long serialVersionUID = 1L;
     private Integer id;
     private Map<Integer, Edge> adjacencyList;
     private Integer rank;
@@ -47,18 +49,6 @@ public class Vertex {
 
     public Collection<Edge> getAdjacencyEdges(){
         return this.adjacencyList.values();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Vertex vertex)) return false;
-        return Objects.equals(id, vertex.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
     }
 
     public void addParent(Vertex vertex){
@@ -171,5 +161,16 @@ public class Vertex {
     }
 
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Vertex)) return false;
+        Vertex vertex = (Vertex) o;
+        return Objects.equals(id, vertex.id);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 }

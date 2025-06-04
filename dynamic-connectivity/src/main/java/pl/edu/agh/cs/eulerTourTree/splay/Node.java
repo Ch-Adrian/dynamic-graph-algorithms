@@ -2,10 +2,12 @@ package pl.edu.agh.cs.eulerTourTree.splay;
 
 import pl.edu.agh.cs.common.Pair;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Node {
+public class Node implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     public static long nodeCounter = 0;
     private long uniqueKey = 0;
     public Pair<Integer, Integer> key;

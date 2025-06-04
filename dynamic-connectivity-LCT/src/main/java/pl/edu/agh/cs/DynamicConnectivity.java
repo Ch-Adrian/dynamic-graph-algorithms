@@ -3,12 +3,14 @@ package pl.edu.agh.cs;
 import pl.edu.agh.cs.linkCutTree.splay.Node;
 import pl.edu.agh.cs.forest.Forest;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Optional;
 
-public class DynamicConnectivity {
+public class DynamicConnectivity implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private final ArrayList<Forest> forests = new ArrayList<>();
 
     public DynamicConnectivity(Integer n) {

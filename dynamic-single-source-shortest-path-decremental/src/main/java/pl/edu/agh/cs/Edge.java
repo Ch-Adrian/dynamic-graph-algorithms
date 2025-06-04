@@ -1,9 +1,11 @@
 package pl.edu.agh.cs;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Edge {
+public class Edge implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private final Vertex source;
     private final Vertex destination;
     private int rank = 0;

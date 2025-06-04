@@ -4,9 +4,12 @@ import pl.edu.agh.cs.common.Pair;
 import pl.edu.agh.cs.eulerTourTree.SelfBalancingTree;
 
 import javax.swing.text.html.Option;
+import java.io.Serializable;
 import java.util.Optional;
 
-public class SplayTree implements SelfBalancingTree {
+public class SplayTree implements SelfBalancingTree, Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     public void updateSize(Node treeNode){
         if(treeNode == null) return;

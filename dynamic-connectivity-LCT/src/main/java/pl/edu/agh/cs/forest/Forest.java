@@ -1,14 +1,17 @@
 package pl.edu.agh.cs.forest;
 
+import com.sun.source.doctree.SerialDataTree;
 import pl.edu.agh.cs.common.Pair;
 
 import pl.edu.agh.cs.linkCutTree.LinkCutTree;
 import pl.edu.agh.cs.linkCutTree.splay.Node;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class Forest {
+public class Forest implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private Map<Integer, LinkedHashSet<Integer>> nonTreeEdges;
     private Map<Integer, LinkedHashSet<Integer>> treeEdges;
     private Integer level = -1;

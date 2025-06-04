@@ -5,10 +5,12 @@ import pl.edu.agh.cs.eulerTourTree.splay.Node;
 import pl.edu.agh.cs.eulerTourTree.splay.SplayTree;
 import pl.edu.agh.cs.forest.Forest;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class EulerTourTree {
+public class EulerTourTree implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     static SelfBalancingTree splayTree = new SplayTree();
 
     public static Node createNewEulerTourTree(Integer u, Integer v, Map<Pair<Integer, Integer>, Set<Node>> keyToNodes) {

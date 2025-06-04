@@ -1,11 +1,13 @@
 package pl.edu.agh.cs;
 
+import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Queue;
 
-public class EvenShiloachTree extends Graph {
+public class EvenShiloachTree extends Graph implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private OperatingMode operatingMode;
     private Vertex source = null;
     private Deque<Pair<Vertex, Integer>> queue = new ArrayDeque<>();

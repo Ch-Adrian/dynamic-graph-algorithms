@@ -3,12 +3,14 @@ package pl.edu.agh.cs;
 import pl.edu.agh.cs.eulerTourTree.splay.Node;
 import pl.edu.agh.cs.forest.Forest;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Optional;
 
-public class DynamicConnectivity {
+public class DynamicConnectivity implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private final ArrayList<Forest> forests = new ArrayList<>();
 
     public DynamicConnectivity(Integer n) {
@@ -58,5 +60,18 @@ public class DynamicConnectivity {
 
     public boolean isConnected(Integer v, Integer w){
         return this.forests.get(0).isConnected(v, w);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DynamicConnectivity)) return false;
+        DynamicConnectivity that = (DynamicConnectivity) o;
+        return Objects.equals(forests, that.forests);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(forests);
     }
 }

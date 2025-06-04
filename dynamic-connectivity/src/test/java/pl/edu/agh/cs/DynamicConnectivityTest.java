@@ -7,10 +7,7 @@ import pl.edu.agh.cs.eulerTourTree.splay.Node;
 import pl.edu.agh.cs.eulerTourTree.splay.SplayTree;
 import pl.edu.agh.cs.forest.Forest;
 
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -325,5 +322,48 @@ public class DynamicConnectivityTest {
         for(int i =0; i<amtOfVertices; i++){
             dc.deleteEdge(i, i+1);
         }
+    }
+
+    @Test
+    public void test3() {
+        DynamicConnectivity dynamicConnectivity = new DynamicConnectivity(10);
+        ArrayList<Pair<Integer, Integer>> treeEdges = new ArrayList<>();
+        ArrayList<Pair<Integer, Integer>> nonTreeEdges = new ArrayList<>();
+
+        treeEdges.add(new Pair<>(0,1));
+        treeEdges.add(new Pair<>(1,2));
+        treeEdges.add(new Pair<>(2,3));
+        treeEdges.add(new Pair<>(2,4));
+        treeEdges.add(new Pair<>(4,5));
+        treeEdges.add(new Pair<>(4,8));
+        treeEdges.add(new Pair<>(5,6));
+        treeEdges.add(new Pair<>(5,7));
+
+        nonTreeEdges.add(new Pair<>(0,6));
+        nonTreeEdges.add(new Pair<>(1,3));
+        nonTreeEdges.add(new Pair<>(3,8));
+        nonTreeEdges.add(new Pair<>(8,7));
+
+        for(Pair<Integer, Integer> edge : treeEdges){
+            dynamicConnectivity.addEdge(edge.getFirst(), edge.getSecond());
+        }
+
+        for(Pair<Integer, Integer> edge : nonTreeEdges){
+            dynamicConnectivity.addEdge(edge.getFirst(), edge.getSecond());
+        }
+
+        assertTrue(dynamicConnectivity.isConnected(1,5));
+        dynamicConnectivity.deleteEdge(2,4);
+        assertTrue(dynamicConnectivity.isConnected(1,5));
+        dynamicConnectivity.deleteEdge(0,6);
+        assertTrue(dynamicConnectivity.isConnected(1,5));
+        dynamicConnectivity.deleteEdge(3,8);
+        assertFalse(dynamicConnectivity.isConnected(1,5));
+        assertTrue(dynamicConnectivity.isConnected(1,3));
+        dynamicConnectivity.deleteEdge(1,2);
+        assertTrue(dynamicConnectivity.isConnected(1,3));
+        dynamicConnectivity.deleteEdge(1,3);
+        assertFalse(dynamicConnectivity.isConnected(1,3));
+
     }
 }

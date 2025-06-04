@@ -1,8 +1,11 @@
 package pl.edu.agh.cs.common;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Pair<T1, T2> {
+public class Pair<T1, T2> implements Serializable {
+
+    private static final long serialVersionUID = 1L;
     private T1 first;
     private T2 second;
 

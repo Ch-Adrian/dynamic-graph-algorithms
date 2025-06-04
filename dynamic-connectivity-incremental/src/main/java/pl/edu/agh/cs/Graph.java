@@ -1,10 +1,12 @@
 package pl.edu.agh.cs;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Graph {
+public class Graph implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private Map<Integer, Vertex> vertices = new HashMap<>();
 
     public Graph(){}

@@ -4,9 +4,12 @@ import pl.edu.agh.cs.forest.Forest;
 import pl.edu.agh.cs.linkCutTree.splay.Node;
 import pl.edu.agh.cs.linkCutTree.splay.SplayTree;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class LinkCutTree extends SplayTree {
+public class LinkCutTree extends SplayTree implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     public Optional<Node> createNewLinkCutTree(Integer u, Integer v, Map<Integer, Optional<Node>> keyToNode) {
 

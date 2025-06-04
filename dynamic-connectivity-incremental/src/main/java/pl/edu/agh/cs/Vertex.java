@@ -1,11 +1,13 @@
 package pl.edu.agh.cs;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class Vertex {
+public class Vertex implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private Integer id;
     private Map<Integer, Vertex> adjacencyList;
     private Integer rank;

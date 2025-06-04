@@ -1,6 +1,8 @@
 package pl.edu.agh.cs;
 
-public enum OperatingMode {
+import java.io.Serializable;
+
+public enum OperatingMode implements Serializable {
     INCREMENTAL,
     DECREMENTAL
 }
