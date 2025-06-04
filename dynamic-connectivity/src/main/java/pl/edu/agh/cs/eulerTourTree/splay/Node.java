@@ -29,10 +29,12 @@ public class Node {
                 '}';
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Node node)) return false;
+        if (!(o instanceof Node)) return false;
+        Node node = (Node) o;
         return uniqueKey == node.uniqueKey && Objects.equals(key, node.key);
     }
 
@@ -40,6 +42,4 @@ public class Node {
     public int hashCode() {
         return Objects.hash(uniqueKey, key);
     }
-
-
 }

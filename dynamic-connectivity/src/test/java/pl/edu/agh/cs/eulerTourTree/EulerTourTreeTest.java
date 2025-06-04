@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class EulerTourTreeTest {
 
-    Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes = new HashMap<>();
+    Map<Pair<Integer, Integer>, Set<Node>> keyToNodes = new HashMap<>();
     static SelfBalancingTree splayTree = new SplayTree();
     @BeforeEach
     void setUp() {
@@ -60,7 +60,7 @@ public class EulerTourTreeTest {
         Node newNode = EulerTourTree.addNode(new Pair<>(0,0), keyToNodes);
         assertEquals(new Pair<>(0,0), newNode.key);
         assertEquals(1, keyToNodes.size());
-        assertEquals(newNode, keyToNodes.get(new Pair<>(0, 0)).getFirst());
+        assertEquals(newNode, keyToNodes.get(new Pair<>(0, 0)).iterator().next());
     }
 
     @Test public void testReRootPreconditions(){
@@ -225,7 +225,7 @@ public class EulerTourTreeTest {
         assertEquals(1, keyToNodes.get(new Pair<>(1,0)).size());
         assertEquals(1, keyToNodes.get(new Pair<>(1,1)).size());
 
-        Optional<Node> splayRootNode = splayTree.getRootNode(keyToNodes.get(new Pair<>(0,0)).getFirst());
+        Optional<Node> splayRootNode = splayTree.getRootNode(keyToNodes.get(new Pair<>(0,0)).iterator().next());
 
         assertEquals(new Pair<>(1,0), splayRootNode.get().key);
         assertEquals(node11, splayRootNode.get().left);
@@ -431,8 +431,8 @@ public class EulerTourTreeTest {
     public void testGetEulerTourRoot(){
         assertEquals(Integer.valueOf(-1), EulerTourTree.getEulerTourRoot(null));
         EulerTourTree.createNewEulerTourTree(0, 1, keyToNodes);
-        assertEquals(Integer.valueOf(0), EulerTourTree.getEulerTourRoot(keyToNodes.get(new Pair<>(0,0)).getFirst()));
-        assertEquals(Integer.valueOf(0), EulerTourTree.getEulerTourRoot(keyToNodes.get(new Pair<>(1,1)).getFirst()));
+        assertEquals(Integer.valueOf(0), EulerTourTree.getEulerTourRoot(keyToNodes.get(new Pair<>(0,0)).iterator().next()));
+        assertEquals(Integer.valueOf(0), EulerTourTree.getEulerTourRoot(keyToNodes.get(new Pair<>(1,1)).iterator().next()));
     }
 
     @Test
@@ -440,14 +440,14 @@ public class EulerTourTreeTest {
         assertTrue(EulerTourTree.getVertices(null).isEmpty());
 
         EulerTourTree.createNewEulerTourTree(0, 1, keyToNodes);
-        Set<Integer> vertices = EulerTourTree.getVertices(keyToNodes.get(new Pair<>(0,0)).getFirst());
+        Set<Integer> vertices = EulerTourTree.getVertices(keyToNodes.get(new Pair<>(0,0)).iterator().next());
         assertTrue(vertices.contains(0));
         assertTrue(vertices.contains(1));
         assertFalse(vertices.contains(2));
 
         EulerTourTree.addEdgeToNonExistingVertex(0, 2, keyToNodes);
         EulerTourTree.reRoot(1, keyToNodes);
-        vertices = EulerTourTree.getVertices(keyToNodes.get(new Pair<>(0,0)).getFirst());
+        vertices = EulerTourTree.getVertices(keyToNodes.get(new Pair<>(0,0)).iterator().next());
         assertTrue(vertices.contains(0));
         assertTrue(vertices.contains(1));
         assertTrue(vertices.contains(2));
@@ -458,14 +458,14 @@ public class EulerTourTreeTest {
         assertTrue(EulerTourTree.getEdges(null).isEmpty());
 
         EulerTourTree.createNewEulerTourTree(0, 1, keyToNodes);
-        Set<Pair<Integer, Integer>> edges = EulerTourTree.getEdges(keyToNodes.get(new Pair<>(0,0)).getFirst());
+        Set<Pair<Integer, Integer>> edges = EulerTourTree.getEdges(keyToNodes.get(new Pair<>(0,0)).iterator().next());
         assertTrue(edges.contains(new Pair<>(0,1)));
         assertFalse(edges.contains(new Pair<>(1,0)));
         assertFalse(edges.contains(new Pair<>(0,2)));
 
         EulerTourTree.addEdgeToNonExistingVertex(0, 2, keyToNodes);
         EulerTourTree.reRoot(1, keyToNodes);
-        edges = EulerTourTree.getEdges(keyToNodes.get(new Pair<>(0,0)).getFirst());
+        edges = EulerTourTree.getEdges(keyToNodes.get(new Pair<>(0,0)).iterator().next());
         assertTrue(edges.contains(new Pair<>(0,1)));
         assertFalse(edges.contains(new Pair<>(1,0)));
         assertFalse(edges.contains(new Pair<>(2,0)));

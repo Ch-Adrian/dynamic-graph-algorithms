@@ -10,29 +10,27 @@ import java.util.*;
 
 public class Forest {
 
-    private Map<Integer, LinkedHashSet<Integer>> nonTreeEdges;
-    private Integer level = -1;
-    private ArrayList<Forest> hierarchicalForests = new ArrayList<>();
-    private Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes;
+    private final Map<Integer, LinkedHashSet<Integer>> nonTreeEdges;
+    private List<Forest> hierarchicalForests = new ArrayList<>();
+    private final Map<Pair<Integer, Integer>, Set<Node>> keyToNodes;
     static SelfBalancingTree splayTree = new SplayTree();
 
     public Forest(Integer level, ArrayList<Forest> forests) {
         this.nonTreeEdges = new HashMap<>();
         this.keyToNodes = new HashMap<>();
-        this.level = level;
         this.hierarchicalForests = forests;
     }
 
     public Map<Integer, LinkedHashSet<Integer>> getNonTreeEdges(){ return nonTreeEdges; }
-    public Map<Pair<Integer, Integer>, LinkedHashSet<Node>> getKeyToNodes() { return keyToNodes; }
+    public Map<Pair<Integer, Integer>, Set<Node>> getKeyToNodes() { return keyToNodes; }
 
     public Optional<Node> getRepresentativeTreeNode(Integer u){
         if(checkIfVertexHasNodeInTheTree(u, keyToNodes))
-            return splayTree.getRootNode(keyToNodes.get(new Pair<>(u,u)).getFirst());
+            return splayTree.getRootNode(keyToNodes.get(new Pair<>(u,u)).iterator().next());
         else return Optional.empty();
     }
 
-    public static boolean checkIfVertexHasNodeInTheTree(Integer v, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes){
+    public static boolean checkIfVertexHasNodeInTheTree(Integer v, Map<Pair<Integer, Integer>, Set<Node>> keyToNodes){
         if(keyToNodes.containsKey(new Pair<>(v,v)))
             return !keyToNodes.get(new Pair<>(v,v)).isEmpty();
         return false;

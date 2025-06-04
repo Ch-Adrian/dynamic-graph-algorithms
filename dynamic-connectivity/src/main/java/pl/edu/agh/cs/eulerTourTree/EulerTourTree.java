@@ -11,7 +11,7 @@ public class EulerTourTree {
 
     static SelfBalancingTree splayTree = new SplayTree();
 
-    public static Node createNewEulerTourTree(Integer u, Integer v, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes) {
+    public static Node createNewEulerTourTree(Integer u, Integer v, Map<Pair<Integer, Integer>, Set<Node>> keyToNodes) {
 
         /* preconditions */
         if(Forest.checkIfVertexHasNodeInTheTree(u, keyToNodes) || Forest.checkIfVertexHasNodeInTheTree(v, keyToNodes)){
@@ -19,8 +19,8 @@ public class EulerTourTree {
         }
 
         Node splayRoot = new Node(new Pair<>(u,u));
-        keyToNodes.put(new Pair<>(u,u), new LinkedHashSet<>());
-        keyToNodes.put(new Pair<>(v,v), new LinkedHashSet<>());
+        keyToNodes.put(new Pair<>(u,u), new HashSet<>());
+        keyToNodes.put(new Pair<>(v,v), new HashSet<>());
 
         keyToNodes.get(new Pair<>(u,u)).add(splayRoot);
         if(u.equals(v)) return splayRoot;
@@ -29,22 +29,22 @@ public class EulerTourTree {
         return splayRoot;
     }
 
-    public static Node addNode(Pair<Integer, Integer> key, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes){
+    public static Node addNode(Pair<Integer, Integer> key, Map<Pair<Integer, Integer>, Set<Node>> keyToNodes){
         Node n = new Node(key);
         if(!keyToNodes.containsKey(key)) {
-            keyToNodes.put(key, new LinkedHashSet<>());
+            keyToNodes.put(key, new HashSet<>());
         }
         keyToNodes.get(key).add(n);
         return n;
     }
 
-    public static Optional<Node> reRoot(Integer vertex, Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes){
+    public static Optional<Node> reRoot(Integer vertex, Map<Pair<Integer, Integer>, Set<Node>> keyToNodes){
 
         /* preconditions */
         if(!Forest.checkIfVertexHasNodeInTheTree(vertex, keyToNodes))
             throw new RuntimeException(String.format("There is no vertex: %d%n", vertex));
 
-        Node newRoot = keyToNodes.get(new Pair<>(vertex, vertex)).getFirst();
+        Node newRoot = keyToNodes.get(new Pair<>(vertex, vertex)).iterator().next();
         if(Objects.equals(EulerTourTree.getEulerTourRoot(newRoot), vertex)){
             return Optional.of(newRoot);
         }
@@ -65,7 +65,7 @@ public class EulerTourTree {
     }
 
     public static void link(Integer internal, Integer external,
-                            Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes) {
+                            Map<Pair<Integer, Integer>, Set<Node>> keyToNodes) {
 
         /* check preconditions */
         if(!Forest.checkIfVertexHasNodeInTheTree(internal, keyToNodes))
@@ -74,8 +74,8 @@ public class EulerTourTree {
              throw new RuntimeException(String.format("There is no vertex: %d%n", external));
 
         if(internal.equals(external)) return;
-        if(splayTree.getRootNode(keyToNodes.get(new Pair<>(internal, internal)).getFirst()).get().equals(
-                 splayTree.getRootNode(keyToNodes.get(new Pair<>(external, external)).getFirst()).get()))
+        if(splayTree.getRootNode(keyToNodes.get(new Pair<>(internal, internal)).iterator().next()).get().equals(
+                 splayTree.getRootNode(keyToNodes.get(new Pair<>(external, external)).iterator().next()).get()))
              return;
 
         Optional<Node> rootInternal = reRoot(internal, keyToNodes);
@@ -91,7 +91,7 @@ public class EulerTourTree {
 
     public static Pair<Optional<Node>, Optional<Node>> cut(Integer u,
                                                            Integer v,
-                                                           Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes) {
+                                                           Map<Pair<Integer, Integer>, Set<Node>> keyToNodes) {
 
         /* check preconditions */
         if(!Forest.checkIfVertexHasNodeInTheTree(u, keyToNodes))
@@ -100,17 +100,17 @@ public class EulerTourTree {
             throw new RuntimeException(String.format("There is no vertex: %d%n", v));
 
         if(u.equals(v))
-            return new Pair<>(Optional.of(keyToNodes.get(new Pair<>(u,u)).getFirst()),
+            return new Pair<>(Optional.of(keyToNodes.get(new Pair<>(u,u)).iterator().next()),
                 Optional.empty());
 
-        if(!splayTree.getRootNode(keyToNodes.get(new Pair<>(u, u)).getFirst()).get().equals(
-                splayTree.getRootNode(keyToNodes.get(new Pair<>(v, v)).getFirst()).get()))
-            return new Pair<>(Optional.of(keyToNodes.get(new Pair<>(u,u)).getFirst()),
-                    Optional.of(keyToNodes.get(new Pair<>(v,v)).getFirst()));
+        if(!splayTree.getRootNode(keyToNodes.get(new Pair<>(u, u)).iterator().next()).get().equals(
+                splayTree.getRootNode(keyToNodes.get(new Pair<>(v, v)).iterator().next()).get()))
+            return new Pair<>(Optional.of(keyToNodes.get(new Pair<>(u,u)).iterator().next()),
+                    Optional.of(keyToNodes.get(new Pair<>(v,v)).iterator().next()));
 
 
-        Node edgeUV = keyToNodes.get(new Pair<>(u, v)).getFirst();
-        Node edgeVU = keyToNodes.get(new Pair<>(v, u)).getFirst();
+        Node edgeUV = keyToNodes.get(new Pair<>(u, v)).iterator().next();
+        Node edgeVU = keyToNodes.get(new Pair<>(v, u)).iterator().next();
 
         Pair<Optional<Node>, Optional<Node>> roots = splayTree.split(edgeUV);
         Optional<Node> J = Optional.empty();
@@ -152,14 +152,14 @@ public class EulerTourTree {
 
     public static Optional<Node> addEdgeToNonExistingVertex(Integer treeVertex,
                                                             Integer nonExistingVertex,
-                                                            Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes) {
+                                                            Map<Pair<Integer, Integer>, Set<Node>> keyToNodes) {
 
         if(!Forest.checkIfVertexHasNodeInTheTree(treeVertex, keyToNodes))
             throw new RuntimeException(String.format("There is no vertex: %d%n", treeVertex));
 
-        Optional<Node> optSplayRoot = splayTree.getRootNode(keyToNodes.get(new Pair<>(treeVertex, treeVertex)).getFirst());
+        Optional<Node> optSplayRoot = splayTree.getRootNode(keyToNodes.get(new Pair<>(treeVertex, treeVertex)).iterator().next());
         if(!keyToNodes.containsKey(new Pair<>(nonExistingVertex, nonExistingVertex)))
-            keyToNodes.put(new Pair<>(nonExistingVertex, nonExistingVertex), new LinkedHashSet<>());
+            keyToNodes.put(new Pair<>(nonExistingVertex, nonExistingVertex), new HashSet<>());
 
         if(optSplayRoot.isPresent()) {
             optSplayRoot = reRoot(treeVertex, keyToNodes);
@@ -170,12 +170,12 @@ public class EulerTourTree {
 
     private static void insertEdgeToETT(Node treeNode, Integer splayVertex,
                                         Integer nonExistingVertex,
-                                        Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes) {
+                                        Map<Pair<Integer, Integer>, Set<Node>> keyToNodes) {
         Optional<Node> optSplayRoot = splayTree.getRootNode(treeNode);
         if(optSplayRoot.isEmpty()) return;
 
-        keyToNodes.put(new Pair<>(nonExistingVertex, splayVertex), new LinkedHashSet<>());
-        keyToNodes.put(new Pair<>(splayVertex, nonExistingVertex), new LinkedHashSet<>());
+        keyToNodes.put(new Pair<>(nonExistingVertex, splayVertex), new HashSet<>());
+        keyToNodes.put(new Pair<>(splayVertex, nonExistingVertex), new HashSet<>());
 
         keyToNodes.get(new Pair<>(splayVertex, nonExistingVertex))
                 .add(splayTree.insertToRight(optSplayRoot.get(), new Pair<>(splayVertex, nonExistingVertex)));
@@ -188,7 +188,7 @@ public class EulerTourTree {
     }
 
     public static void deleteEdge(Integer u, Integer v,
-                                  Map<Pair<Integer, Integer>, LinkedHashSet<Node>> keyToNodes){
+                                  Map<Pair<Integer, Integer>, Set<Node>> keyToNodes){
 
         /* preconditions */
         if(!Forest.checkIfVertexHasNodeInTheTree(u, keyToNodes))
@@ -197,8 +197,8 @@ public class EulerTourTree {
             throw new RuntimeException(String.format("There is no vertex: %d%n", v));
 
         if(u.equals(v)) return;
-        if(!splayTree.getRootNode(keyToNodes.get(new Pair<>(u, u)).getFirst()).get().equals(
-                splayTree.getRootNode(keyToNodes.get(new Pair<>(v, v)).getFirst()).get()))
+        if(!splayTree.getRootNode(keyToNodes.get(new Pair<>(u, u)).iterator().next()).get().equals(
+                splayTree.getRootNode(keyToNodes.get(new Pair<>(v, v)).iterator().next()).get()))
             return;
 
         cut(u, v, keyToNodes);

@@ -45,7 +45,8 @@ public class Vertex {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Vertex vertex)) return false;
+        if (!(o instanceof Vertex)) return false;
+        Vertex vertex = (Vertex) o;
         return Objects.equals(id, vertex.id);
     }
 
