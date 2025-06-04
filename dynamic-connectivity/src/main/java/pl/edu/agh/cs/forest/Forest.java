@@ -10,7 +10,7 @@ import java.util.*;
 
 public class Forest {
 
-    private final Map<Integer, LinkedHashSet<Integer>> nonTreeEdges;
+    private final Map<Integer, Set<Integer>> nonTreeEdges;
     private List<Forest> hierarchicalForests = new ArrayList<>();
     private final Map<Pair<Integer, Integer>, Set<Node>> keyToNodes;
     static SelfBalancingTree splayTree = new SplayTree();
@@ -21,7 +21,7 @@ public class Forest {
         this.hierarchicalForests = forests;
     }
 
-    public Map<Integer, LinkedHashSet<Integer>> getNonTreeEdges(){ return nonTreeEdges; }
+    public Map<Integer, Set<Integer>> getNonTreeEdges(){ return nonTreeEdges; }
     public Map<Pair<Integer, Integer>, Set<Node>> getKeyToNodes() { return keyToNodes; }
 
     public Optional<Node> getRepresentativeTreeNode(Integer u){
@@ -74,9 +74,9 @@ public class Forest {
     public void addNonTreeEdge(Integer u, Integer v){
         if(u.equals(v)) return;
         if(!this.nonTreeEdges.containsKey(u))
-            this.nonTreeEdges.put(u, new LinkedHashSet<>());
+            this.nonTreeEdges.put(u, new HashSet<>());
         if(!this.nonTreeEdges.containsKey(v))
-            this.nonTreeEdges.put(v, new LinkedHashSet<>());
+            this.nonTreeEdges.put(v, new HashSet<>());
         this.nonTreeEdges.get(u).add(v);
         this.nonTreeEdges.get(v).add(u);
     }
@@ -92,9 +92,9 @@ public class Forest {
         this.nonTreeEdges.get(v).remove(u);
     }
 
-    public LinkedHashSet<Integer> getNonTreeEdges(Integer u){
+    public Set<Integer> getNonTreeEdges(Integer u){
         if(!this.nonTreeEdges.containsKey(u))
-            this.nonTreeEdges.put(u, new LinkedHashSet<>());
+            this.nonTreeEdges.put(u, new HashSet<>());
         return this.nonTreeEdges.get(u);
     }
 

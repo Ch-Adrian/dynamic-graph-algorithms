@@ -74,7 +74,7 @@ public class ForestTest {
     @Test
     public void testAddNonTreeEdge(){
         Forest forest = new Forest(0, null);
-        Map<Integer, LinkedHashSet<Integer>> nonTreeEdges = forest.getNonTreeEdges();
+        Map<Integer, Set<Integer>> nonTreeEdges = forest.getNonTreeEdges();
         forest.addNonTreeEdge(0,1);
         assertEquals(2, nonTreeEdges.size());
         assertEquals(1, nonTreeEdges.get(0).size());
@@ -84,7 +84,7 @@ public class ForestTest {
     @Test
     public void testDeleteNonTreeEdge(){
         Forest forest = new Forest(0, null);
-        Map<Integer, LinkedHashSet<Integer>> nonTreeEdges = forest.getNonTreeEdges();
+        Map<Integer, Set<Integer>> nonTreeEdges = forest.getNonTreeEdges();
 
         forest.addNonTreeEdge(0,1);
         assertEquals(2, nonTreeEdges.size());
@@ -135,9 +135,9 @@ public class ForestTest {
         Map<Pair<Integer, Integer>, Set<Node>> keyToNodes0 = forest0.getKeyToNodes();
         Map<Pair<Integer, Integer>, Set<Node>> keyToNodes1 = arrayListForests.get(1).getKeyToNodes();
         Map<Pair<Integer, Integer>, Set<Node>> keyToNodes2 = arrayListForests.get(2).getKeyToNodes();
-        Map<Integer, LinkedHashSet<Integer>> nonTreeEdges0 = arrayListForests.get(0).getNonTreeEdges();
-        Map<Integer, LinkedHashSet<Integer>> nonTreeEdges1 = arrayListForests.get(1).getNonTreeEdges();
-        Map<Integer, LinkedHashSet<Integer>> nonTreeEdges2 = arrayListForests.get(2).getNonTreeEdges();
+        Map<Integer, Set<Integer>> nonTreeEdges0 = arrayListForests.get(0).getNonTreeEdges();
+        Map<Integer, Set<Integer>> nonTreeEdges1 = arrayListForests.get(1).getNonTreeEdges();
+        Map<Integer, Set<Integer>> nonTreeEdges2 = arrayListForests.get(2).getNonTreeEdges();
 
         assertEquals(10, keyToNodes0.size());
         assertEquals(1, keyToNodes0.get(new Pair<>(0,0)).size());
@@ -183,9 +183,9 @@ public class ForestTest {
         Map<Pair<Integer, Integer>, Set<Node>> keyToNodes0 = forest0.getKeyToNodes();
         Map<Pair<Integer, Integer>, Set<Node>> keyToNodes1 = arrayListForests.get(1).getKeyToNodes();
         Map<Pair<Integer, Integer>, Set<Node>> keyToNodes2 = arrayListForests.get(2).getKeyToNodes();
-        Map<Integer, LinkedHashSet<Integer>> nonTreeEdges0 = arrayListForests.get(0).getNonTreeEdges();
-        Map<Integer, LinkedHashSet<Integer>> nonTreeEdges1 = arrayListForests.get(1).getNonTreeEdges();
-        Map<Integer, LinkedHashSet<Integer>> nonTreeEdges2 = arrayListForests.get(2).getNonTreeEdges();
+        Map<Integer, Set<Integer>> nonTreeEdges0 = arrayListForests.get(0).getNonTreeEdges();
+        Map<Integer, Set<Integer>> nonTreeEdges1 = arrayListForests.get(1).getNonTreeEdges();
+        Map<Integer, Set<Integer>> nonTreeEdges2 = arrayListForests.get(2).getNonTreeEdges();
 
         forest0.addTreeEdge(0, 1);
         forest0.addTreeEdge(1, 2);
@@ -289,9 +289,9 @@ public class ForestTest {
         Map<Pair<Integer, Integer>, Set<Node>> keyToNodes0 = forest0.getKeyToNodes();
         Map<Pair<Integer, Integer>, Set<Node>> keyToNodes1 = arrayListForests.get(1).getKeyToNodes();
         Map<Pair<Integer, Integer>, Set<Node>> keyToNodes2 = arrayListForests.get(2).getKeyToNodes();
-        Map<Integer, LinkedHashSet<Integer>> nonTreeEdges0 = arrayListForests.get(0).getNonTreeEdges();
-        Map<Integer, LinkedHashSet<Integer>> nonTreeEdges1 = arrayListForests.get(1).getNonTreeEdges();
-        Map<Integer, LinkedHashSet<Integer>> nonTreeEdges2 = arrayListForests.get(2).getNonTreeEdges();
+        Map<Integer, Set<Integer>> nonTreeEdges0 = arrayListForests.get(0).getNonTreeEdges();
+        Map<Integer, Set<Integer>> nonTreeEdges1 = arrayListForests.get(1).getNonTreeEdges();
+        Map<Integer, Set<Integer>> nonTreeEdges2 = arrayListForests.get(2).getNonTreeEdges();
 
         forest0.addTreeEdge(0, 1);
         forest0.addTreeEdge(1, 2);
@@ -378,7 +378,7 @@ public class ForestTest {
     @Test
     public void testCheckIfNonTreeEdgeExists(){
         Forest forest = new Forest(0, null);
-        Map<Integer, LinkedHashSet<Integer>> nonTreeEdges = forest.getNonTreeEdges();
+        Map<Integer, Set<Integer>> nonTreeEdges = forest.getNonTreeEdges();
         forest.addNonTreeEdge(0,1);
         assertTrue(forest.checkIfNonTreeEdgeExists(0, 1));
         assertFalse(forest.checkIfNonTreeEdgeExists(0, 2));

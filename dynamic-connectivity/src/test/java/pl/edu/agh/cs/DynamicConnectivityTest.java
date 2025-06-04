@@ -20,7 +20,7 @@ public class DynamicConnectivityTest {
     public void testDC() {
         DynamicConnectivity dc = new DynamicConnectivity(16);
         Forest forest = dc.getForestForLevel(0);
-        Map<Integer, LinkedHashSet<Integer>> nonTreeEdges = forest.getNonTreeEdges();
+        Map<Integer, Set<Integer>> nonTreeEdges = forest.getNonTreeEdges();
         Map<Pair<Integer, Integer>, Set<Node>> keyToNodes = forest.getKeyToNodes();
 
         dc.addEdge(0, 1);
@@ -241,7 +241,7 @@ public class DynamicConnectivityTest {
     public void testDC2() {
         DynamicConnectivity dc = new DynamicConnectivity(3);
         Forest forest = dc.getForestForLevel(0);
-        Map<Integer, LinkedHashSet<Integer>> nonTreeEdges = forest.getNonTreeEdges();
+        Map<Integer, Set<Integer>> nonTreeEdges = forest.getNonTreeEdges();
         Map<Pair<Integer, Integer>, Set<Node>> keyToNodes = forest.getKeyToNodes();
 
         dc.addEdge(0, 1);
