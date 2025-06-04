@@ -86,21 +86,12 @@ public class LinkCutTree extends SplayTree {
 
     public void link(Node parent, Node child){
         if(parent == null || child == null) return;
-        // child is a root in a general tree and splay tree
-        // parent is a root in a splay tree
 
-        //this.access(child);
-        //this.access(parent);
-        //assert (child.left == null);
-        //child.left = parent;
-        //parent.parent = child;
-        //super.updateSize(child);
-
-        this.makeRoot(parent);
-        this.access(child);
-        parent.pathParent = child;
-        child.virtualSize += parent.sizeOfTree;
-        super.updateSize(child);
+        this.makeRoot(child);
+        this.access(parent);
+        child.pathParent = parent;
+        parent.virtualSize += child.sizeOfTree;
+        super.updateSize(parent);
     }
 
     public Optional<Node> addNode(Integer key, Map<Integer, Optional<Node>> keyToNode){

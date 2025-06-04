@@ -155,7 +155,8 @@ public class Forest {
                 hierarchicalForests.get(lvl).addTreeEdge(nonTreeEdge.getFirst(), nonTreeEdge.getSecond());
             }
         } else {
-            this.findReplacementEdge(v, w, level-1);
+            if(level-1 >= 0)
+                this.hierarchicalForests.get(level-1).findReplacementEdge(v, w, level-1);
         }
     }
 
