@@ -3,6 +3,7 @@ package pl.edu.agh.cs;
 import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.Objects;
 import java.util.Queue;
 
 public class EvenShiloachTree extends Graph implements Serializable {
@@ -156,4 +157,16 @@ public class EvenShiloachTree extends Graph implements Serializable {
 
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof EvenShiloachTree)) return false;
+        EvenShiloachTree that = (EvenShiloachTree) o;
+        return operatingMode == that.operatingMode && Objects.equals(source, that.source) && Objects.equals(queue, that.queue);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(operatingMode, source, queue);
+    }
 }

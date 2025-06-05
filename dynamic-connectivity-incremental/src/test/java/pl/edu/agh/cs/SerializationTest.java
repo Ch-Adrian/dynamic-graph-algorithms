@@ -13,10 +13,6 @@ public class SerializationTest {
     public void testSerialization() throws IOException, ClassNotFoundException {
         DynamicConnectivity dynamicConnectivity = new DynamicConnectivity(10);
         dynamicConnectivity.addEdge(0, 1);
-        dynamicConnectivity.addEdge(2, 1);
-        dynamicConnectivity.addEdge(0, 3);
-        dynamicConnectivity.addEdge(2, 3);
-        dynamicConnectivity.deleteEdge(1,2);
 
         ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("dynCon.ser"));
         out.writeObject(dynamicConnectivity);

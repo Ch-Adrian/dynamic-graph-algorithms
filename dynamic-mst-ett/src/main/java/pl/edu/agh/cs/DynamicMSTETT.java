@@ -1,6 +1,8 @@
 package pl.edu.agh.cs;
 
-import pl.edu.agh.cs.linkCutTree.splay.Node;
+import pl.edu.agh.cs.common.Edge;
+import pl.edu.agh.cs.common.OperatingMode;
+import pl.edu.agh.cs.eulerTourTree.splay.Node;
 import pl.edu.agh.cs.forest.Forest;
 
 import java.io.Serializable;
@@ -8,12 +10,12 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Optional;
 
-public class DynamicConnectivity implements Serializable {
+public class DynamicMSTETT implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private final ArrayList<Forest> forests = new ArrayList<>();
 
-    public DynamicConnectivity(Integer n) {
+    public DynamicMSTETT(Integer n) {
         int amtOfLevels = (int) Math.ceil(Math.log(n)) + 1;
         for (int i = 0; i <= amtOfLevels; i++) {
             forests.add(new Forest(i, forests));
@@ -24,14 +26,15 @@ public class DynamicConnectivity implements Serializable {
         return forests.get(level);
     }
 
-    public void addEdge(Integer from, Integer to) {
+    public void addEdge(Integer from, Integer to, Integer weight) {
         if(from.equals(to)) return;
 
         Optional<Node> treeFrom = this.forests.get(0).getRepresentativeTreeNode(from);
         Optional<Node> treeTo = this.forests.get(0).getRepresentativeTreeNode(to);
 
         if(treeFrom.isPresent() && treeTo.isPresent() && Objects.equals(treeFrom, treeTo)) {
-            this.forests.get(0).addNonTreeEdge(from, to);
+            if(!this.forests.get(0).checkIfTreeEdgeExists(from, to))
+                this.forests.get(0).addNonTreeEdge(from, to, weight);
         } else {
             this.forests.get(0).addTreeEdge(from, to);
         }
@@ -58,15 +61,24 @@ public class DynamicConnectivity implements Serializable {
         }
     }
 
+    public boolean checkIfTreeEdgeExists(Integer begin, Integer end){
+        return this.forests.get(0).checkIfTreeEdgeExists(begin, end);
+    }
+
+    public boolean checkifNonTreeEdgeExists(Integer begin, Integer end){
+        return this.forests.get(0).checkIfNonTreeEdgeExists(begin, end);
+    }
+
     public boolean isConnected(Integer v, Integer w){
         return this.forests.get(0).isConnected(v, w);
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof DynamicConnectivity)) return false;
-        DynamicConnectivity that = (DynamicConnectivity) o;
+        if (!(o instanceof DynamicMSTETT)) return false;
+        DynamicMSTETT that = (DynamicMSTETT) o;
         return Objects.equals(forests, that.forests);
     }
 

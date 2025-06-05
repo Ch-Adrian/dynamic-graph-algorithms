@@ -2,6 +2,7 @@ package pl.edu.agh.cs;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Edge implements Serializable {
 
@@ -27,4 +28,16 @@ public class Edge implements Serializable {
     public int getRank() { return this.rank; }
     public void setRank(int rank) { this.rank = rank; }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Edge)) return false;
+        Edge edge = (Edge) o;
+        return Objects.equals(source, edge.source) && Objects.equals(destination, edge.destination);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(source, destination);
+    }
 }

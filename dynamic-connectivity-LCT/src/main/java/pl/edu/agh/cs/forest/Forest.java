@@ -235,4 +235,16 @@ public class Forest implements Serializable {
         return trees.size();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Forest)) return false;
+        Forest forest = (Forest) o;
+        return Objects.equals(nonTreeEdges, forest.nonTreeEdges) && Objects.equals(treeEdges, forest.treeEdges) && Objects.equals(level, forest.level);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nonTreeEdges, treeEdges, level);
+    }
 }

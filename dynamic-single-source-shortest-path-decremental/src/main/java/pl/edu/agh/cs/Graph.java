@@ -3,6 +3,7 @@ package pl.edu.agh.cs;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public abstract class Graph implements Serializable {
 
@@ -81,4 +82,16 @@ public abstract class Graph implements Serializable {
     }
 
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Graph)) return false;
+        Graph graph = (Graph) o;
+        return Objects.equals(vertices, graph.vertices);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(vertices);
+    }
 }
